@@ -89,8 +89,8 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 	logger::info("Orbit Menu Starting");
 	logger::info("ImGui: Orbit Menu loading on Skyrim {}", REL::Module::get().version().string("."));
 
-	RMS::Config::LoadTranslation();
 	RMS::Config::SettingsStore::Get().Load();
+	RMS::Config::LoadTranslation(RMS::Config::SettingsStore::Get().Snapshot().languagePath);
 	RMS::Items::SlotStore::RegisterSerialization();
 
 	auto &input = RMS::Input::InputManager::Get();

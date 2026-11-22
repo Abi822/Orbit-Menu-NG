@@ -2,7 +2,7 @@
 
 namespace RMS::Config
 {
-	void LoadTranslation();
+	void LoadTranslation(std::string_view a_path);
 
 	[[nodiscard]] std::string_view Translate(std::string_view a_english);
 

@@ -101,7 +101,7 @@ namespace RMS::Input
 		[[nodiscard]] const Config::Settings &CurrentSettingsLocked();
 		void HandleButton(RE::ButtonEvent &a_button, const Config::Settings &a_settings, Outcome &a_outcome);
 		bool HandleMouseMove(const RE::MouseMoveEvent &a_move, float a_sensitivity, float a_deadzone);
-		void HandleThumbstick(RE::ThumbstickEvent &a_stick, float a_deadzone);
+		void HandleThumbstick(RE::ThumbstickEvent &a_stick, bool a_rightStick, float a_deadzone);
 		bool HandleCapture(RE::InputEvent &a_event);
 
 		[[nodiscard]] bool IsBlockedLocked(bool a_assign) const;
@@ -126,8 +126,8 @@ namespace RMS::Input
 
 		std::uint8_t _clicks = 0;
 
-		ImVec2 _leftStick{};
-		bool _leftStickCentred = false;
+		ImVec2 _stick{};
+		bool _stickCentred = false;
 
 		std::optional<CapturedPress> _capturedPress;
 

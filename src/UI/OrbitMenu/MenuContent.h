@@ -58,6 +58,7 @@ namespace RMS::UI::OrbitMenu
 			std::uint32_t swap = Input::kKeyBindNone;
 			bool assign = false;
 			bool releaseToEquip = false;
+			bool toggle = false;
 		};
 
 		[[nodiscard]] bool DescribeSlots(const Config::Settings &a_settings, bool a_force);

@@ -22,13 +22,10 @@ namespace RMS::UI
 		};
 
 		static void Initialize();
-		static void UpdateFont();
 		static void PreloadImages();
 
 		static inline State _state = State::kUninitialized;
 		static inline ImFont *_font = nullptr;
-		static inline std::filesystem::path _fontFile;
-		static inline std::uint32_t _fontGeneration = 0;
 		static inline std::atomic<bool> _imagesPending{false};
 	};
 }

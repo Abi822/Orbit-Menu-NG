@@ -29,6 +29,8 @@ namespace RMS::Config
 		std::uint32_t gamepadRightHandKey{};
 		std::uint32_t gamepadSwapHandsKey{};
 		bool releaseToEquip{};
+		bool toggleOrbitMenu{};
+		bool useRightStick{};
 		Core::PerSlot<std::uint32_t> slotKeys{};
 		float orbitMenuScale{};
 		std::int32_t positionX{};
@@ -72,6 +74,8 @@ namespace RMS::Config
 		std::int32_t pointerDistance{};
 		float animationSpeed{};
 		std::string skinPath;
+		std::string fontPath;
+		std::string languagePath;
 		bool useI4{};
 		bool showHudMessages{};
 		bool enablePages{};

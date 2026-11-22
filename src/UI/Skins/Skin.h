@@ -26,7 +26,6 @@ namespace RMS::UI::Skins
 		[[nodiscard]] std::uint32_t Generation() const noexcept { return _generation; }
 		[[nodiscard]] const std::filesystem::path &PartFile(Part a_part) const;
 		[[nodiscard]] std::filesystem::path IconFile(const RE::TESForm &a_form) const;
-		[[nodiscard]] const std::filesystem::path &FontFile() const noexcept { return _font; }
 
 	private:
 		void Index(const std::filesystem::path &a_folder);
@@ -38,6 +37,5 @@ namespace RMS::UI::Skins
 		std::map<std::string, std::filesystem::path, std::less<>> _typeIcons;
 		std::map<std::string, std::filesystem::path, std::less<>> _keywordIcons;
 		std::unordered_map<RE::FormID, std::filesystem::path> _itemIcons;
-		std::filesystem::path _font;
 	};
 }

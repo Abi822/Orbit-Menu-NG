@@ -1,4 +1,5 @@
 #include "UI/ImGuiLayer.h"
+#include "Config/Settings.h"
 #include "Game/SlowMotion.h"
 #include "Input/InputManager.h"
 #include "UI/Graphics/Font.h"
@@ -73,7 +74,6 @@ namespace RMS::UI
 		}
 		io.DeltaTime = std::clamp(delta, 1.0f / 1000.0f, 0.25f);
 
-		UpdateFont();
 		ImGui_ImplDX11_NewFrame();
 		ImGui::NewFrame();
 		renderer.Draw(*ImGui::GetForegroundDrawList(), *_font, io.DisplaySize);
@@ -103,10 +103,7 @@ namespace RMS::UI
 		io.ConfigFlags |= ImGuiConfigFlags_NoMouse | ImGuiConfigFlags_NoMouseCursorChange;
 		io.MouseDrawCursor = false;
 
-		const auto &renderer = OrbitMenu::OrbitRenderer::Get();
-		_fontFile = renderer.SkinFont();
-		_fontGeneration = renderer.SkinGeneration();
-		_font = Graphics::LoadFont(*io.Fonts, _fontFile);
+		_font = Graphics::LoadFont(*io.Fonts, Config::SettingsStore::Get().Snapshot().fontPath);
 
 		if (!_font || !ImGui_ImplDX11_Init(device, context))
 		{
@@ -119,27 +116,6 @@ namespace RMS::UI
 
 		_state = State::kReady;
 		logger::info("ImGui: {} initialised for Orbit Menu", IMGUI_VERSION);
-	}
-
-	void ImGuiLayer::UpdateFont()
-	{
-		const auto &renderer = OrbitMenu::OrbitRenderer::Get();
-		if (renderer.SkinGeneration() == _fontGeneration)
-		{
-			return;
-		}
-		_fontGeneration = renderer.SkinGeneration();
-		if (renderer.SkinFont() == _fontFile)
-		{
-			return;
-		}
-		_fontFile = renderer.SkinFont();
-		auto &atlas = *ImGui::GetIO().Fonts;
-		if (ImFont *font = Graphics::LoadFont(atlas, _fontFile))
-		{
-			atlas.RemoveFont(_font);
-			_font = font;
-		}
 	}
 
 	void ImGuiLayer::PreloadImages()

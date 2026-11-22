@@ -31,8 +31,8 @@ namespace RMS::UI::Skins
 			return std::filesystem::path{"Data"} / path;
 		}
 
-		template <class Svg, class Font>
-		void ForEachSkinFile(const std::filesystem::path &a_folder, Svg a_svg, Font a_font)
+		template <class Svg>
+		void ForEachSkinFile(const std::filesystem::path &a_folder, Svg a_svg)
 		{
 			std::error_code error;
 			for (std::filesystem::recursive_directory_iterator it{a_folder, error}, end; !error && it != end; it.increment(error))
@@ -46,10 +46,6 @@ namespace RMS::UI::Skins
 				if (_wcsicmp(extension.c_str(), L".svg") == 0)
 				{
 					a_svg(it->path(), SKSE::stl::utf16_to_utf8(it->path().stem().native()).value_or(std::string{}));
-				}
-				else if (_wcsicmp(extension.c_str(), L".ttf") == 0 || _wcsicmp(extension.c_str(), L".otf") == 0)
-				{
-					a_font(it->path());
 				}
 			}
 		}
@@ -90,7 +86,6 @@ namespace RMS::UI::Skins
 		_typeIcons.clear();
 		_keywordIcons.clear();
 		_itemIcons.clear();
-		_font.clear();
 
 		const auto folder = SkinFolder(a_path);
 		if (folder.empty())
@@ -103,7 +98,7 @@ namespace RMS::UI::Skins
 		const auto where = SKSE::stl::utf16_to_utf8(folder.native()).value_or(std::string{});
 		const auto parts = std::ranges::count_if(_parts, [](const std::filesystem::path &a_file)
 												 { return !a_file.empty(); });
-		if (parts == 0 && _typeIcons.empty() && _keywordIcons.empty() && _itemIcons.empty() && _font.empty())
+		if (parts == 0 && _typeIcons.empty() && _keywordIcons.empty() && _itemIcons.empty())
 		{
 			logger::info("Skin: Using the built-in look (no skin files in {})", where);
 			return;
@@ -157,7 +152,6 @@ namespace RMS::UI::Skins
 		auto *data = RE::TESDataHandler::GetSingleton();
 		std::array<std::size_t, kPartCount> partRanks{};
 		partRanks.fill(kPartNames.size());
-		std::size_t fonts = 0;
 		ForEachSkinFile(
 			a_folder, [this, data, &partRanks](const std::filesystem::path &a_file, const std::string &a_name)
 			{
@@ -186,28 +180,6 @@ namespace RMS::UI::Skins
 				else
 				{
 					_typeIcons.emplace(a_name, a_file);
-				}
-			},
-			[this, &fonts](const std::filesystem::path &a_file)
-			{
-				++fonts;
-				if (_font.empty() || _wcsicmp(a_file.filename().c_str(), _font.filename().c_str()) < 0)
-				{
-					_font = a_file;
-				}
-			});
-
-		if (!_font.empty())
-		{
-			const auto name = SKSE::stl::utf16_to_utf8(_font.native()).value_or(std::string{});
-			if (fonts > 1)
-			{
-				logger::info("Skin: {} font files found, using {}", fonts, name);
-			}
-			else
-			{
-				logger::info("Skin: Font {}", name);
-			}
-		}
+				} });
 	}
 }

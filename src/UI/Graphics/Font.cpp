@@ -7,6 +7,28 @@ namespace RMS::UI::Graphics
 	{
 		constexpr float kFontSize = 32.0f;
 
+		[[nodiscard]] std::filesystem::path FontFile(std::string_view a_fontPath)
+		{
+			const std::filesystem::path path{std::u8string{a_fontPath.begin(), a_fontPath.end()}};
+			std::filesystem::path font;
+			if (path.has_root_name() || path.relative_path().empty())
+			{
+				return font;
+			}
+			std::error_code error;
+			for (std::filesystem::directory_iterator it{std::filesystem::path{"Data"} / path.relative_path(), error}, end; !error && it != end; it.increment(error))
+			{
+				std::error_code fileError;
+				const auto extension = it->path().extension();
+				if (it->is_regular_file(fileError) && (_wcsicmp(extension.c_str(), L".ttf") == 0 || _wcsicmp(extension.c_str(), L".otf") == 0) &&
+					(font.empty() || _wcsicmp(it->path().filename().c_str(), font.filename().c_str()) < 0))
+				{
+					font = it->path();
+				}
+			}
+			return font;
+		}
+
 		[[nodiscard]] ImFont *AddFont(ImFontAtlas &a_atlas, const std::filesystem::path &a_path)
 		{
 			std::error_code ec;
@@ -25,11 +47,11 @@ namespace RMS::UI::Graphics
 		}
 	}
 
-	ImFont *LoadFont(ImFontAtlas &a_atlas, const std::filesystem::path &a_skinFont)
+	ImFont *LoadFont(ImFontAtlas &a_atlas, std::string_view a_fontPath)
 	{
-		if (!a_skinFont.empty())
+		if (const auto file = FontFile(a_fontPath); !file.empty())
 		{
-			if (ImFont *font = AddFont(a_atlas, a_skinFont))
+			if (ImFont *font = AddFont(a_atlas, file))
 			{
 				return font;
 			}

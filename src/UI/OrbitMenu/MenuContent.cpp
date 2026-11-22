@@ -170,6 +170,7 @@ namespace RMS::UI::OrbitMenu
 								 : HintKeys{s.activationKey, s.leftHandKey, s.rightHandKey, s.swapHandsKey};
 		keys.assign = _assign;
 		keys.releaseToEquip = s.releaseToEquip;
+		keys.toggle = s.toggleOrbitMenu;
 		_hint = Measure(a_text, BuildHint(keys));
 	}
 
@@ -184,7 +185,9 @@ namespace RMS::UI::OrbitMenu
 	{
 		using Config::Translate;
 		using Input::KeyName;
-		std::string hint = Translate(a_keys.releaseToEquip && !a_keys.assign ? "Release {} to equip" : "Release {} to close", KeyName(a_keys.open));
+		const bool equip = a_keys.releaseToEquip && !a_keys.assign;
+		std::string hint = a_keys.toggle ? Translate(equip ? "Press {} to equip" : "Press {} to close", KeyName(a_keys.open))
+										 : Translate(equip ? "Release {} to equip" : "Release {} to close", KeyName(a_keys.open));
 		const bool left = a_keys.left != Input::kKeyBindNone;
 		const bool right = a_keys.right != Input::kKeyBindNone;
 		if (a_keys.assign)

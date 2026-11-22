@@ -64,7 +64,7 @@ namespace RMS::Items
 
 			SlotStore::Get().ReplaceAll(slots);
 			logger::info("Slot Store: SKSE co-save {} slot(s) loaded", std::ranges::count_if(slots, [](const AssignedItem &a_slot)
-																				  { return !a_slot.IsEmpty(); }));
+																							 { return !a_slot.IsEmpty(); }));
 		}
 
 		void OnRevert(SKSE::SerializationInterface *)

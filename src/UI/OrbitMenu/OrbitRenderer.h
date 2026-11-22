@@ -21,9 +21,6 @@ namespace RMS::UI::OrbitMenu
 
 		void Draw(ImDrawList &a_drawList, ImFont &a_font, ImVec2 a_display);
 
-		[[nodiscard]] std::uint32_t SkinGeneration() const noexcept { return _skin.Generation(); }
-		[[nodiscard]] const std::filesystem::path &SkinFont() const noexcept { return _skin.FontFile(); }
-
 		[[nodiscard]] bool IsVisible() const noexcept { return _state.IsVisible(); }
 		[[nodiscard]] bool IsPreviewing() const noexcept { return _state.IsPreviewing(); }
 		void SetPreview(bool a_preview) noexcept { _state.SetPreview(a_preview); }

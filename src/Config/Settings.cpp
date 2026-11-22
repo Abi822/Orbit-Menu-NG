@@ -16,6 +16,7 @@ namespace RMS::Config
 		constexpr auto kIntegration = "Integration";
 		constexpr auto kMessages = "Messages";
 		constexpr auto kSkins = "Skins";
+		constexpr auto kTranslation = "Translation";
 		constexpr std::array kRemovedKeys{std::pair{kDisplay, "fTextScale"}, std::pair{kDisplay, "fSlotKeyTextScale"}, std::pair{kDisplay, "fItemDescriptionTextScale"},
 										  std::pair{kDisplay, "sSkinPath"}, std::pair{kDisplay, "iOctagonSize"}, std::pair{kDisplay, "sAccentColor"},
 										  std::pair{kDisplay, "bShowHands"}, std::pair{kDisplay, "bShowItemIcon"}, std::pair{kDisplay, "iItemIconSize"},
@@ -42,6 +43,8 @@ namespace RMS::Config
 			a_visit(kControls, "iGamepadRightHandKey", a_settings.gamepadRightHandKey);
 			a_visit(kControls, "iGamepadSwapHandsKey", a_settings.gamepadSwapHandsKey);
 			a_visit(kControls, "bReleaseToEquip", a_settings.releaseToEquip);
+			a_visit(kControls, "bToggleOrbitMenu", a_settings.toggleOrbitMenu);
+			a_visit(kControls, "bUseRightStick", a_settings.useRightStick);
 
 			for (std::size_t i = 0; i < a_settings.slotKeys.size(); ++i)
 			{
@@ -103,6 +106,9 @@ namespace RMS::Config
 			a_visit(kDisplay, "fAnimationSpeed", a_settings.animationSpeed);
 
 			a_visit(kSkins, "sSkinPath", a_settings.skinPath);
+			a_visit(kSkins, "sFontPath", a_settings.fontPath);
+
+			a_visit(kTranslation, "sLanguagePath", a_settings.languagePath);
 
 			a_visit(kIntegration, "bUseI4", a_settings.useI4);
 

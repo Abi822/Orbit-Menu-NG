@@ -7,7 +7,6 @@ namespace RMS::Config
 {
 	namespace
 	{
-		const std::filesystem::path kLanguageFolder{"Data/SKSE/Plugins/lang"};
 		std::map<std::string, std::string, std::less<>> g_texts;
 
 		void LoadFile(const std::filesystem::path &a_file)
@@ -37,10 +36,15 @@ namespace RMS::Config
 		}
 	}
 
-	void LoadTranslation()
+	void LoadTranslation(std::string_view a_path)
 	{
+		const std::filesystem::path path{std::u8string{a_path.begin(), a_path.end()}};
+		if (path.has_root_name() || path.relative_path().empty())
+		{
+			return;
+		}
 		std::error_code error;
-		for (std::filesystem::directory_iterator it{kLanguageFolder, error}, end; !error && it != end; it.increment(error))
+		for (std::filesystem::directory_iterator it{std::filesystem::path{"Data"} / path.relative_path(), error}, end; !error && it != end; it.increment(error))
 		{
 			std::error_code fileError;
 			if (it->is_regular_file(fileError) && _wcsicmp(it->path().extension().c_str(), L".json") == 0)

@@ -80,6 +80,8 @@ namespace RMS::Config
 			{
 				Text("%s", Translate("No key is bound, so Orbit Menu can not be opened."));
 			}
+			Check("Toggle Orbit Menu##wr", _settings.toggleOrbitMenu);
+			Check("Controller use right stick##wr", _settings.useRightStick);
 			Slider("Mouse sensitivity##wr", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
 				   "The lower it is, the more you have to move the mouse sideways to swing over to the next slot.");
 			Slider("Mouse DPI##wr", _settings.mouseDPI, Settings::kMinMouseDPI, Settings::kMaxMouseDPI,

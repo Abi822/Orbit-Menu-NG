@@ -133,7 +133,7 @@ namespace RMS::Input
 			case RE::INPUT_EVENT_TYPE::kThumbstick:
 				if (auto *stick = a_event->AsThumbstickEvent())
 				{
-					HandleThumbstick(*stick, Config::Settings::kControllerDeadzone);
+					HandleThumbstick(*stick, settings.useRightStick, Config::Settings::kControllerDeadzone);
 				}
 				break;
 			default:
@@ -234,6 +234,10 @@ namespace RMS::Input
 				}
 				else
 				{
+					if (a_settings.toggleOrbitMenu)
+					{
+						a_outcome.committed = ReleaseLocked(a_settings);
+					}
 					swallowed = true;
 					a_outcome.block = true;
 					return;
@@ -242,14 +246,14 @@ namespace RMS::Input
 			else if (up)
 			{
 				const bool wasSwallowed = std::exchange(swallowed, false);
-				if (_state.IsOpen())
+				if (_state.IsOpen() && !a_settings.toggleOrbitMenu)
 				{
 					a_outcome.committed = ReleaseLocked(a_settings);
 					a_outcome.block = true;
 				}
 				else
 				{
-					a_outcome.block = wasSwallowed;
+					a_outcome.block = wasSwallowed || _state.IsOpen();
 				}
 				return;
 			}
@@ -359,22 +363,23 @@ namespace RMS::Input
 		return true;
 	}
 
-	void InputManager::HandleThumbstick(RE::ThumbstickEvent &a_stick, float a_deadzone)
+	void InputManager::HandleThumbstick(RE::ThumbstickEvent &a_stick, bool a_rightStick, float a_deadzone)
 	{
-		if (a_stick.IsLeft())
+		const bool selects = a_rightStick ? a_stick.IsRight() : a_stick.IsLeft();
+		if (selects)
 		{
-			_leftStick = {a_stick.xValue, -a_stick.yValue};
+			_stick = {a_stick.xValue, -a_stick.yValue};
 		}
 		if (!_state.IsOpen())
 		{
 			return;
 		}
-		if (a_stick.IsLeft())
+		if (selects)
 		{
-			_leftStickCentred = _leftStickCentred || std::hypot(_leftStick.x, _leftStick.y) <= a_deadzone;
-			if (_leftStickCentred)
+			_stickCentred = _stickCentred || std::hypot(_stick.x, _stick.y) <= a_deadzone;
+			if (_stickCentred)
 			{
-				_state.SetPointer(_leftStick, {.deadzone = a_deadzone});
+				_state.SetPointer(_stick, {.deadzone = a_deadzone});
 			}
 		}
 		a_stick.xValue = 0.0f;
@@ -472,7 +477,7 @@ namespace RMS::Input
 	void InputManager::OpenLocked(bool a_gamepad, bool a_assign)
 	{
 		_state.Open();
-		_leftStickCentred = std::hypot(_leftStick.x, _leftStick.y) <= Config::Settings::kControllerDeadzone;
+		_stickCentred = std::hypot(_stick.x, _stick.y) <= Config::Settings::kControllerDeadzone;
 		_clicks = 0;
 		_openedWithGamepad = a_gamepad;
 		_assignMode.store(a_assign, std::memory_order_release);
