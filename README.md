@@ -30,5 +30,4 @@ Address Library. Tested in game on AE 1.6.1170. VR isn't supported.
 
 ## License
 
-GPL-3.0-or-later, because CommonLibSSE-NG is GPL-3.0. ImGui and nlohmann-json are MIT,
-nanosvg is zlib and the SKSE Menu Framework API header is LGPL-2.1.
+GPL-3.0-or-later
