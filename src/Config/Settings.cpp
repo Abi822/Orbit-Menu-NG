@@ -1,0 +1,467 @@
+#include "Config/Settings.h"
+#include "Input/KeyBinds.h"
+#include <SimpleIni.h>
+#include <fstream>
+#include <iterator>
+
+namespace RMS::Config
+{
+	namespace
+	{
+		constexpr auto kControls = "Controls";
+		constexpr auto kAssignment = "Assignment";
+		constexpr auto kPages = "Pages";
+		constexpr auto kSlowMotion = "SlowMotion";
+		constexpr auto kDisplay = "Display";
+		constexpr auto kIntegration = "Integration";
+		constexpr auto kMessages = "Messages";
+		constexpr auto kSkins = "Skins";
+		constexpr std::array kRemovedKeys{std::pair{kDisplay, "fTextScale"}, std::pair{kDisplay, "fSlotKeyTextScale"}, std::pair{kDisplay, "fItemDescriptionTextScale"},
+										  std::pair{kDisplay, "sSkinPath"}, std::pair{kDisplay, "iOctagonSize"}, std::pair{kDisplay, "sAccentColor"},
+										  std::pair{kDisplay, "bShowHands"}, std::pair{kDisplay, "bShowItemIcon"}, std::pair{kDisplay, "iItemIconSize"},
+										  std::pair{kSlowMotion, "fSlowMotionSpeed"}, std::pair{kPages, "iPageCount"}};
+		const std::filesystem::path kDefaultsPath{"Data/SKSE/Plugins/OrbitMenu_Default.ini"};
+		const std::filesystem::path kUserPath{"Data/SKSE/Plugins/OrbitMenu.ini"};
+
+		struct Color
+		{
+			std::uint32_t &value;
+		};
+
+		template <class Visit>
+		void ForEachSetting(Settings &a_settings, const Visit &a_visit)
+		{
+			a_visit(kControls, "iActivationKey", a_settings.activationKey);
+			a_visit(kControls, "fMouseSensitivity", a_settings.mouseSensitivity);
+			a_visit(kControls, "iMouseDPI", a_settings.mouseDPI);
+			a_visit(kControls, "iLeftHandKey", a_settings.leftHandKey);
+			a_visit(kControls, "iRightHandKey", a_settings.rightHandKey);
+			a_visit(kControls, "iSwapHandsKey", a_settings.swapHandsKey);
+			a_visit(kControls, "iGamepadActivationKey", a_settings.gamepadActivationKey);
+			a_visit(kControls, "iGamepadLeftHandKey", a_settings.gamepadLeftHandKey);
+			a_visit(kControls, "iGamepadRightHandKey", a_settings.gamepadRightHandKey);
+			a_visit(kControls, "iGamepadSwapHandsKey", a_settings.gamepadSwapHandsKey);
+			a_visit(kControls, "bReleaseToEquip", a_settings.releaseToEquip);
+
+			for (std::size_t i = 0; i < a_settings.slotKeys.size(); ++i)
+			{
+				a_visit(kAssignment, std::format("iSlotKey{}", i + 1).c_str(), a_settings.slotKeys[i]);
+			}
+
+			a_visit(kPages, "bEnablePages", a_settings.enablePages);
+			a_visit(kPages, "iNumberOfPages", a_settings.numberOfPages);
+			a_visit(kPages, "iNextPageKey", a_settings.nextPageKey);
+			a_visit(kPages, "iPreviousPageKey", a_settings.previousPageKey);
+			a_visit(kPages, "iGamepadNextPageKey", a_settings.gamepadNextPageKey);
+			a_visit(kPages, "iGamepadPreviousPageKey", a_settings.gamepadPreviousPageKey);
+
+			a_visit(kSlowMotion, "bEnableSlowMotion", a_settings.enableSlowMotion);
+			a_visit(kSlowMotion, "fSlowMotionTimeSpeed", a_settings.slowMotionTimeSpeed);
+			a_visit(kSlowMotion, "fSlowMotionFadeIn", a_settings.slowMotionFadeIn);
+			a_visit(kSlowMotion, "fSlowMotionFadeOut", a_settings.slowMotionFadeOut);
+
+			a_visit(kDisplay, "fOrbitMenuScale", a_settings.orbitMenuScale);
+			a_visit(kDisplay, "iPositionX", a_settings.positionX);
+			a_visit(kDisplay, "iPositionY", a_settings.positionY);
+			a_visit(kDisplay, "iCurve", a_settings.curve);
+			a_visit(kDisplay, "fBackgroundOpacity", a_settings.backgroundOpacity);
+			a_visit(kDisplay, "sBackgroundColor", Color{a_settings.backgroundColor});
+			a_visit(kDisplay, "sSlotColor", Color{a_settings.slotColor});
+			a_visit(kDisplay, "sHighlightColor", Color{a_settings.highlightColor});
+			a_visit(kDisplay, "sSlotNameColor", Color{a_settings.slotNameColor});
+			a_visit(kDisplay, "sSlotEmptyColor", Color{a_settings.slotEmptyColor});
+			a_visit(kDisplay, "sSlotKeyColor", Color{a_settings.slotKeyColor});
+			a_visit(kDisplay, "sHandColor", Color{a_settings.handColor});
+			a_visit(kDisplay, "sItemDescriptionColor", Color{a_settings.itemDescriptionColor});
+			a_visit(kDisplay, "sHintColor", Color{a_settings.hintColor});
+			a_visit(kDisplay, "iSlotNameTextSize", a_settings.slotNameTextSize);
+			a_visit(kDisplay, "iSlotEmptyTextSize", a_settings.slotEmptyTextSize);
+			a_visit(kDisplay, "iSlotKeyTextSize", a_settings.slotKeyTextSize);
+			a_visit(kDisplay, "iHandTextSize", a_settings.handTextSize);
+			a_visit(kDisplay, "iItemDescriptionTextSize", a_settings.itemDescriptionTextSize);
+			a_visit(kDisplay, "iHintTextSize", a_settings.hintTextSize);
+			a_visit(kDisplay, "bShowSlotKeys", a_settings.showSlotKeys);
+			a_visit(kDisplay, "bShowSlotKeysOnController", a_settings.showSlotKeysOnController);
+			a_visit(kDisplay, "iSlotDistance", a_settings.slotDistance);
+			a_visit(kDisplay, "iSlotSize", a_settings.slotSize);
+			a_visit(kDisplay, "iSlotIconSize", a_settings.slotIconSize);
+			a_visit(kDisplay, "bShowSlotBackground", a_settings.showSlotBackground);
+			a_visit(kDisplay, "bShowCenterBackground", a_settings.showCenterBackground);
+			a_visit(kDisplay, "iCenterBackgroundSize", a_settings.centerBackgroundSize);
+			a_visit(kDisplay, "iSlotKeyPosition", a_settings.slotKeyPosition);
+			a_visit(kDisplay, "bShowHand", a_settings.showHand);
+			a_visit(kDisplay, "iHandPosition", a_settings.handPosition);
+			a_visit(kDisplay, "bShowSlotEmpty", a_settings.showSlotEmpty);
+			a_visit(kDisplay, "bShowHint", a_settings.showHint);
+			a_visit(kDisplay, "bShowItemDescription", a_settings.showItemDescription);
+			a_visit(kDisplay, "bShowItemIconDescription", a_settings.showItemIconDescription);
+			a_visit(kDisplay, "iItemIconDescriptionSize", a_settings.itemIconDescriptionSize);
+			a_visit(kDisplay, "bShowSlotGlow", a_settings.showSlotGlow);
+			a_visit(kDisplay, "bShowPointer", a_settings.showPointer);
+			a_visit(kDisplay, "iPointerSize", a_settings.pointerSize);
+			a_visit(kDisplay, "iPointerDistance", a_settings.pointerDistance);
+			a_visit(kDisplay, "fAnimationSpeed", a_settings.animationSpeed);
+
+			a_visit(kSkins, "sSkinPath", a_settings.skinPath);
+
+			a_visit(kIntegration, "bUseI4", a_settings.useI4);
+
+			a_visit(kMessages, "bShowHudMessages", a_settings.showHudMessages);
+		}
+
+		class IniReader
+		{
+		public:
+			explicit IniReader(const CSimpleIniA &a_ini) noexcept : _ini(a_ini) {}
+
+			void operator()(const char *a_section, const char *a_key, std::uint32_t &a_value) const
+			{
+				a_value = static_cast<std::uint32_t>(_ini.GetLongValue(a_section, a_key, static_cast<long>(a_value)));
+			}
+
+			void operator()(const char *a_section, const char *a_key, std::int32_t &a_value) const
+			{
+				a_value = static_cast<std::int32_t>(_ini.GetLongValue(a_section, a_key, a_value));
+			}
+
+			void operator()(const char *a_section, const char *a_key, float &a_value) const
+			{
+				const auto value = static_cast<float>(_ini.GetDoubleValue(a_section, a_key, a_value));
+				if (std::isfinite(value))
+				{
+					a_value = value;
+				}
+			}
+
+			void operator()(const char *a_section, const char *a_key, bool &a_value) const
+			{
+				a_value = _ini.GetBoolValue(a_section, a_key, a_value);
+			}
+
+			void operator()(const char *a_section, const char *a_key, std::string &a_value) const
+			{
+				if (const char *text = _ini.GetValue(a_section, a_key))
+				{
+					a_value = text;
+				}
+			}
+
+			void operator()(const char *a_section, const char *a_key, Color a_color) const
+			{
+				if (const long value = _ini.GetLongValue(a_section, a_key, -1); value >= 0)
+				{
+					a_color.value = static_cast<std::uint32_t>(value);
+				}
+				else if (const char *text = _ini.GetValue(a_section, a_key))
+				{
+					logger::warn("{} = {} is not a colour, check for a typo", a_key, text);
+				}
+			}
+
+		private:
+			const CSimpleIniA &_ini;
+		};
+
+		class IniWriter
+		{
+		public:
+			explicit IniWriter(CSimpleIniA &a_ini) noexcept : _ini(a_ini) {}
+
+			void operator()(const char *a_section, const char *a_key, std::uint32_t &a_value) const
+			{
+				_ini.SetLongValue(a_section, a_key, static_cast<long>(a_value));
+			}
+
+			void operator()(const char *a_section, const char *a_key, std::int32_t &a_value) const
+			{
+				_ini.SetLongValue(a_section, a_key, a_value);
+			}
+
+			void operator()(const char *a_section, const char *a_key, float &a_value) const
+			{
+				_ini.SetValue(a_section, a_key, std::format("{:.3f}", a_value).c_str());
+			}
+
+			void operator()(const char *a_section, const char *a_key, bool &a_value) const
+			{
+				_ini.SetBoolValue(a_section, a_key, a_value);
+			}
+
+			void operator()(const char *a_section, const char *a_key, std::string &a_value) const
+			{
+				_ini.SetValue(a_section, a_key, a_value.c_str());
+			}
+
+			void operator()(const char *a_section, const char *a_key, Color a_color) const
+			{
+				_ini.SetValue(a_section, a_key, std::format("0x{:06X}", a_color.value).c_str());
+			}
+
+		private:
+			CSimpleIniA &_ini;
+		};
+
+		class SettingsFile
+		{
+		public:
+			SettingsFile() { _ini.SetUnicode(); }
+
+			[[nodiscard]] SI_Error Load(const std::filesystem::path &a_path) { return _ini.LoadFile(a_path.c_str()); }
+
+			void CopyDefaultsFile()
+			{
+				std::string defaults;
+				if (std::ifstream file{kDefaultsPath, std::ios::binary})
+				{
+					defaults.assign(std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{});
+				}
+				const auto firstSection = defaults.starts_with('[') ? 0 : defaults.find("\n[");
+				if (firstSection != std::string::npos)
+				{
+					_ini.LoadData(defaults.substr(firstSection == 0 ? 0 : firstSection + 1));
+				}
+			}
+
+			void RemoveOldKeys()
+			{
+				for (const auto &[section, key] : kRemovedKeys)
+				{
+					_ini.Delete(section, key);
+				}
+			}
+
+			void Read(Settings &a_settings) const { ForEachSetting(a_settings, IniReader{_ini}); }
+
+			void Write(Settings a_settings) { ForEachSetting(a_settings, IniWriter{_ini}); }
+
+			[[nodiscard]] bool SaveAs(const std::filesystem::path &a_path) const
+			{
+				const SI_Error result = _ini.SaveFile(a_path.c_str(), false);
+				if (result < 0)
+				{
+					logger::error("Could not write {} Ini error {}", a_path.string(), static_cast<int>(result));
+					return false;
+				}
+				return true;
+			}
+
+		private:
+			CSimpleIniA _ini;
+		};
+	}
+
+	void Settings::Clamp(const Settings &a_valueDefault)
+	{
+		const auto checkKey = [](std::uint32_t &a_key, std::uint32_t a_valueDefault, bool a_gamepad)
+		{
+			if (a_key != Input::kKeyBindNone && Input::IsGamepadBind(a_key) != a_gamepad)
+			{
+				a_key = a_valueDefault;
+			}
+		};
+		checkKey(activationKey, a_valueDefault.activationKey, false);
+		checkKey(leftHandKey, a_valueDefault.leftHandKey, false);
+		checkKey(rightHandKey, a_valueDefault.rightHandKey, false);
+		checkKey(swapHandsKey, a_valueDefault.swapHandsKey, false);
+		checkKey(gamepadActivationKey, a_valueDefault.gamepadActivationKey, true);
+		checkKey(gamepadLeftHandKey, a_valueDefault.gamepadLeftHandKey, true);
+		checkKey(gamepadRightHandKey, a_valueDefault.gamepadRightHandKey, true);
+		checkKey(gamepadSwapHandsKey, a_valueDefault.gamepadSwapHandsKey, true);
+		for (std::size_t i = 0; i < slotKeys.size(); ++i)
+		{
+			checkKey(slotKeys[i], a_valueDefault.slotKeys[i], false);
+		}
+		checkKey(nextPageKey, a_valueDefault.nextPageKey, false);
+		checkKey(previousPageKey, a_valueDefault.previousPageKey, false);
+		checkKey(gamepadNextPageKey, a_valueDefault.gamepadNextPageKey, true);
+		checkKey(gamepadPreviousPageKey, a_valueDefault.gamepadPreviousPageKey, true);
+		numberOfPages = std::clamp(numberOfPages, kMinNumberOfPages, kMaxNumberOfPages);
+		slowMotionTimeSpeed = std::clamp(slowMotionTimeSpeed, kMinSlowMotionTimeSpeed, kMaxSlowMotionTimeSpeed);
+		slowMotionFadeIn = std::clamp(slowMotionFadeIn, 0.0f, kMaxSlowMotionFade);
+		slowMotionFadeOut = std::clamp(slowMotionFadeOut, 0.0f, kMaxSlowMotionFade);
+
+		mouseSensitivity = std::clamp(mouseSensitivity, kMinSensitivity, kMaxSensitivity);
+		mouseDPI = std::clamp(mouseDPI, kMinMouseDPI, kMaxMouseDPI);
+		orbitMenuScale = std::clamp(orbitMenuScale, kMinOrbitMenuScale, kMaxOrbitMenuScale);
+		positionX = std::clamp(positionX, kMinPosition, kMaxPosition);
+		positionY = std::clamp(positionY, kMinPosition, kMaxPosition);
+		curve = std::clamp(curve, kMinCurve, kMaxCurve);
+		backgroundOpacity = std::clamp(backgroundOpacity, kMinOpacity, kMaxOpacity);
+		slotNameTextSize = std::clamp(slotNameTextSize, kMinTextSize, kMaxTextSize);
+		slotEmptyTextSize = std::clamp(slotEmptyTextSize, kMinTextSize, kMaxTextSize);
+		slotKeyTextSize = std::clamp(slotKeyTextSize, kMinTextSize, kMaxTextSize);
+		handTextSize = std::clamp(handTextSize, kMinTextSize, kMaxTextSize);
+		itemDescriptionTextSize = std::clamp(itemDescriptionTextSize, kMinTextSize, kMaxTextSize);
+		hintTextSize = std::clamp(hintTextSize, kMinTextSize, kMaxTextSize);
+		slotDistance = std::clamp(slotDistance, kMinSlotDistance, kMaxSlotDistance);
+		slotSize = std::clamp(slotSize, kMinSlotSize, kMaxSlotSize);
+		slotIconSize = std::clamp(slotIconSize, kMinSlotIconSize, kMaxSlotIconSize);
+		centerBackgroundSize = std::clamp(centerBackgroundSize, kMinCenterBackgroundSize, kMaxCenterBackgroundSize);
+		slotKeyPosition = std::clamp(slotKeyPosition, 0, kLastSlotKeyPosition);
+		handPosition = std::clamp(handPosition, 0, kLastHandPosition);
+		itemIconDescriptionSize = std::clamp(itemIconDescriptionSize, kMinItemIconDescriptionSize, kMaxItemIconDescriptionSize);
+		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
+		pointerDistance = std::clamp(pointerDistance, kMinPointerDistance, kMaxPointerDistance);
+		animationSpeed = std::clamp(animationSpeed, kMinAnimationSpeed, kMaxAnimationSpeed);
+
+		for (auto *color : {&backgroundColor, &slotColor, &highlightColor, &slotNameColor, &slotEmptyColor, &slotKeyColor, &handColor, &itemDescriptionColor, &hintColor})
+		{
+			*color &= 0xFFFFFF;
+		}
+	}
+
+	void Settings::CopyDisplay(const Settings &a_from)
+	{
+		orbitMenuScale = a_from.orbitMenuScale;
+		positionX = a_from.positionX;
+		positionY = a_from.positionY;
+		curve = a_from.curve;
+		backgroundOpacity = a_from.backgroundOpacity;
+		backgroundColor = a_from.backgroundColor;
+		slotColor = a_from.slotColor;
+		highlightColor = a_from.highlightColor;
+		slotNameColor = a_from.slotNameColor;
+		slotEmptyColor = a_from.slotEmptyColor;
+		slotKeyColor = a_from.slotKeyColor;
+		handColor = a_from.handColor;
+		itemDescriptionColor = a_from.itemDescriptionColor;
+		hintColor = a_from.hintColor;
+		slotNameTextSize = a_from.slotNameTextSize;
+		slotEmptyTextSize = a_from.slotEmptyTextSize;
+		slotKeyTextSize = a_from.slotKeyTextSize;
+		handTextSize = a_from.handTextSize;
+		itemDescriptionTextSize = a_from.itemDescriptionTextSize;
+		hintTextSize = a_from.hintTextSize;
+		showSlotKeys = a_from.showSlotKeys;
+		showSlotKeysOnController = a_from.showSlotKeysOnController;
+		slotDistance = a_from.slotDistance;
+		slotSize = a_from.slotSize;
+		slotIconSize = a_from.slotIconSize;
+		showSlotBackground = a_from.showSlotBackground;
+		showCenterBackground = a_from.showCenterBackground;
+		centerBackgroundSize = a_from.centerBackgroundSize;
+		slotKeyPosition = a_from.slotKeyPosition;
+		showHand = a_from.showHand;
+		handPosition = a_from.handPosition;
+		showSlotEmpty = a_from.showSlotEmpty;
+		showHint = a_from.showHint;
+		showItemDescription = a_from.showItemDescription;
+		showItemIconDescription = a_from.showItemIconDescription;
+		itemIconDescriptionSize = a_from.itemIconDescriptionSize;
+		showSlotGlow = a_from.showSlotGlow;
+		showPointer = a_from.showPointer;
+		pointerSize = a_from.pointerSize;
+		pointerDistance = a_from.pointerDistance;
+		animationSpeed = a_from.animationSpeed;
+		skinPath = a_from.skinPath;
+	}
+
+	void Settings::CopyPages(const Settings &a_from)
+	{
+		enablePages = a_from.enablePages;
+		numberOfPages = a_from.numberOfPages;
+		nextPageKey = a_from.nextPageKey;
+		previousPageKey = a_from.previousPageKey;
+		gamepadNextPageKey = a_from.gamepadNextPageKey;
+		gamepadPreviousPageKey = a_from.gamepadPreviousPageKey;
+	}
+
+	void Settings::CopySlowMotion(const Settings &a_from)
+	{
+		enableSlowMotion = a_from.enableSlowMotion;
+		slowMotionTimeSpeed = a_from.slowMotionTimeSpeed;
+		slowMotionFadeIn = a_from.slowMotionFadeIn;
+		slowMotionFadeOut = a_from.slowMotionFadeOut;
+	}
+
+	SettingsStore &SettingsStore::Get() noexcept
+	{
+		static SettingsStore singleton;
+		return singleton;
+	}
+
+	Settings SettingsStore::Snapshot() const
+	{
+		std::scoped_lock lock{_lock};
+		return _settings;
+	}
+
+	Settings SettingsStore::Defaults() const
+	{
+		std::scoped_lock lock{_lock};
+		return _defaults;
+	}
+
+	void SettingsStore::Set(Settings a_settings)
+	{
+		std::scoped_lock lock{_lock};
+		a_settings.Clamp(_defaults);
+		_settings = a_settings;
+		_changes.fetch_add(1, std::memory_order_relaxed);
+	}
+
+	void SettingsStore::Load()
+	{
+		Settings defaults;
+		bool haveDefaults = false;
+		{
+			SettingsFile file;
+			if (const SI_Error result = file.Load(kDefaultsPath); result >= 0)
+			{
+				file.Read(defaults);
+				haveDefaults = true;
+			}
+			else
+			{
+				logger::error("{} Could not be read! Ini error {}",
+							  kDefaultsPath.string(), static_cast<int>(result));
+			}
+			defaults.Clamp(Settings{});
+		}
+
+		Settings loaded = defaults;
+		if (std::error_code ec; std::filesystem::is_regular_file(kUserPath, ec))
+		{
+			SettingsFile file;
+			if (const SI_Error result = file.Load(kUserPath); result >= 0)
+			{
+				file.Read(loaded);
+			}
+			else
+			{
+				logger::warn("{} Could not be read! Ini error {}, using the defaults settings!",
+							 kUserPath.string(), static_cast<int>(result));
+			}
+		}
+		else if (haveDefaults)
+		{
+			SettingsFile file;
+			file.CopyDefaultsFile();
+			file.Write(defaults);
+			if (file.SaveAs(kUserPath))
+			{
+				logger::info("Created {} with the default settings", kUserPath.string());
+			}
+		}
+		loaded.Clamp(defaults);
+
+		{
+			std::scoped_lock lock{_lock};
+			_defaults = defaults;
+			_settings = loaded;
+			_changes.fetch_add(1, std::memory_order_relaxed);
+		}
+	}
+
+	bool SettingsStore::Save() const
+	{
+		SettingsFile file;
+		if (file.Load(kUserPath) < 0)
+		{
+			file.CopyDefaultsFile();
+		}
+		file.RemoveOldKeys();
+		file.Write(Snapshot());
+		return file.SaveAs(kUserPath);
+	}
+}

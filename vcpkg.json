@@ -1,0 +1,42 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "orbit-menu",
+  "version-semver": "0.1.0",
+  "description": "Orbit Menu, a Witcher 3 style radial menu for Skyrim SE/AE (SKSE plugin).",
+  "license": "GPL-3.0-or-later",
+  "supports": "windows & x64",
+  "builtin-baseline": "ee12231b20c95013c6638d845d04c91559a1d1ff",
+  "dependencies": [
+    {
+      "name": "directxtk",
+      "version>=": "2025-10-27"
+    },
+    {
+      "name": "imgui",
+      "version>=": "1.92.8",
+      "features": [
+        "dx11-binding"
+      ]
+    },
+    {
+      "name": "nanosvg",
+      "version>=": "2023-12-29"
+    },
+    {
+      "name": "nlohmann-json",
+      "version>=": "3.12.0"
+    },
+    {
+      "name": "rapidcsv",
+      "version>=": "8.90"
+    },
+    {
+      "name": "simpleini",
+      "version>=": "4.25"
+    },
+    {
+      "name": "spdlog",
+      "version>=": "1.16.0"
+    }
+  ]
+}

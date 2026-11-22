@@ -1,0 +1,497 @@
+#include "Items/EquipController.h"
+#include "Items/Inventory.h"
+#include "Items/ItemKind.h"
+#include "Items/SlotStore.h"
+
+#undef GetObject
+
+namespace RMS::Items
+{
+	namespace
+	{
+		using Input::Hand;
+
+		[[nodiscard]] const RE::BGSEquipSlot *HandSlot(bool a_left)
+		{
+			const auto *objects = RE::BGSDefaultObjectManager::GetSingleton();
+			return objects ? objects->GetObject<RE::BGSEquipSlot>(a_left ? RE::DEFAULT_OBJECT::kLeftHandEquip : RE::DEFAULT_OBJECT::kRightHandEquip) : nullptr;
+		}
+
+		// Stops player from holding ghost spells
+		void UnequipSpell(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::SpellItem &a_spell, const RE::BGSEquipSlot *a_slot)
+		{
+			if (!a_slot)
+			{
+				return;
+			}
+			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::SpellItem *, const RE::BGSEquipSlot *);
+			static REL::Relocation<func_t> func{RELOCATION_ID(37946, 38902)};
+			func(&a_manager, &a_actor, &a_spell, a_slot);
+		}
+
+		void UnequipShout(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::TESShout &a_shout)
+		{
+			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::TESShout *);
+			static REL::Relocation<func_t> func{RELOCATION_ID(37948, 38904)};
+			func(&a_manager, &a_actor, &a_shout);
+		}
+
+		constexpr std::uint32_t kVoiceSource = 2;
+
+		void UnequipPower(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::SpellItem &a_power)
+		{
+			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::SpellItem *, std::uint32_t);
+			static REL::Relocation<func_t> func{RELOCATION_ID(37947, 38903)};
+			func(&a_manager, &a_actor, &a_power, kVoiceSource);
+		}
+
+		[[nodiscard]] bool IsTwoHanded(const RE::TESForm &a_form)
+		{
+			if (const auto *weapon = a_form.As<RE::TESObjectWEAP>())
+			{
+				switch (weapon->GetWeaponType())
+				{
+				case RE::WEAPON_TYPE::kTwoHandSword:
+				case RE::WEAPON_TYPE::kTwoHandAxe:
+				case RE::WEAPON_TYPE::kBow:
+				case RE::WEAPON_TYPE::kCrossbow:
+					return true;
+				default:
+					return false;
+				}
+			}
+			const auto *magic = a_form.As<RE::MagicItem>();
+			return magic && magic->IsTwoHanded();
+		}
+
+		[[nodiscard]] bool CanChangeHands(const RE::TESForm &a_form)
+		{
+			return a_form.Is(RE::FormType::Weapon, RE::FormType::Spell, RE::FormType::Scroll) && !IsTwoHanded(a_form);
+		}
+
+		[[nodiscard]] bool IsHeldByPressedHand(Hand a_hand, bool a_inLeft, bool a_inRight)
+		{
+			switch (a_hand)
+			{
+			case Hand::kLeft:
+				return a_inLeft;
+			case Hand::kRight:
+				return a_inRight;
+			case Hand::kBoth:
+				return a_inLeft || a_inRight;
+			default:
+				return false;
+			}
+		}
+
+		// The player and the game's equip manager, everything equipped/unequipped or used goes through here.
+		class Equipper
+		{
+		public:
+			[[nodiscard]] static std::optional<Equipper> Create()
+			{
+				auto *player = RE::PlayerCharacter::GetSingleton();
+				auto *manager = RE::ActorEquipManager::GetSingleton();
+				if (!player || !manager)
+				{
+					return std::nullopt;
+				}
+				return Equipper{*player, *manager};
+			}
+
+			void Use(RE::TESForm &a_form, const AssignedItem &a_slot, Hand a_hand)
+			{
+				switch (KindOf(&a_form))
+				{
+				case ItemKind::kWeapon:
+				case ItemKind::kScroll:
+				case ItemKind::kShield:
+				case ItemKind::kTorch:
+					EquipHeld(*a_form.As<RE::TESBoundObject>(), a_slot, a_hand);
+					break;
+				case ItemKind::kArmor:
+					Wear(*a_form.As<RE::TESObjectARMO>(), a_slot, a_hand);
+					break;
+				case ItemKind::kSpell:
+					EquipSpell(*a_form.As<RE::SpellItem>(), a_slot, a_hand);
+					break;
+				case ItemKind::kPower:
+				case ItemKind::kShout:
+					EquipPowerOrShout(a_form, a_slot, a_hand);
+					break;
+				case ItemKind::kAmmo:
+					EquipAmmo(*a_form.As<RE::TESAmmo>(), a_slot, a_hand);
+					break;
+				case ItemKind::kConsumable:
+					Consume(*a_form.As<RE::TESBoundObject>(), a_slot);
+					break;
+				default:
+					break;
+				}
+			}
+
+			void SwapHands()
+			{
+				auto *right = _inventory.HeldItem(kRightHand);
+				auto *left = _inventory.HeldItem(kLeftHand);
+				if (right == left || (right && !CanChangeHands(*right)) || (left && !CanChangeHands(*left)))
+				{
+					return;
+				}
+
+				auto *rightList = right ? ListForMove(*right, kRightHand) : nullptr;
+				auto *leftList = left ? ListForMove(*left, kLeftHand) : nullptr;
+				if (!left)
+				{
+					TakeOutOfHand(*right, kRightHand);
+				}
+				if (!right)
+				{
+					TakeOutOfHand(*left, kLeftHand);
+				}
+				if (right)
+				{
+					PutInHand(*right, rightList, kLeftHand);
+				}
+				if (left)
+				{
+					PutInHand(*left, leftList, kRightHand);
+				}
+				logger::info("Equip Controller: Swapped the items in the left and right hands");
+			}
+
+		private:
+			Equipper(RE::PlayerCharacter &a_player, RE::ActorEquipManager &a_manager) : _player(a_player),
+																						_manager(a_manager),
+																						_inventory(a_player)
+			{
+			}
+
+			void EquipHeld(RE::TESBoundObject &a_object, const AssignedItem &a_slot, Hand a_hand)
+			{
+				const auto copy = _inventory.FindCarriedCopy(a_object, a_slot.name);
+				if (!copy)
+				{
+					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					return;
+				}
+
+				const bool inRight = _inventory.IsInHand(a_object, a_slot.name, kRightHand);
+				const bool inLeft = _inventory.IsInHand(a_object, a_slot.name, kLeftHand);
+				const auto put = [&](const RE::BGSEquipSlot *a_where)
+				{ _manager.EquipObject(&_player, &a_object, copy->extraList, 1, a_where); };
+
+				const bool leftOnly = a_object.Is(RE::FormType::Armor, RE::FormType::Light);
+				if (leftOnly || IsTwoHanded(a_object))
+				{
+					if (!(leftOnly ? inLeft : inRight))
+					{
+						put(nullptr);
+					}
+					else if (IsHeldByPressedHand(a_hand, inLeft, inRight))
+					{
+						_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
+					}
+					return;
+				}
+
+				if (a_hand == Hand::kDefault)
+				{
+					if (!inRight)
+					{
+						put(a_object.Is(RE::FormType::Scroll) ? HandSlot(kRightHand) : nullptr);
+					}
+					return;
+				}
+
+				if (a_hand == Hand::kBoth)
+				{
+					if (inRight && inLeft)
+					{
+						UnequipFromHand(a_object, kRightHand);
+						UnequipFromHand(a_object, kLeftHand);
+						return;
+					}
+					if (copy->total < 2)
+					{
+						if (!inRight)
+						{
+							put(HandSlot(kRightHand));
+						}
+						return;
+					}
+					const auto other = inRight ? copy : _inventory.FindCarriedCopy(a_object, a_slot.name, &*copy);
+					if (!inRight)
+					{
+						put(HandSlot(kRightHand));
+					}
+					if (!inLeft && other)
+					{
+						_manager.EquipObject(&_player, &a_object, other->extraList, 1, HandSlot(kLeftHand));
+					}
+					return;
+				}
+
+				const bool left = a_hand == Hand::kLeft;
+				if (left ? inLeft : inRight)
+				{
+					UnequipFromHand(a_object, left);
+				}
+				else
+				{
+					put(HandSlot(left));
+				}
+			}
+
+			void EquipSpell(RE::SpellItem &a_spell, const AssignedItem &a_slot, Hand a_hand)
+			{
+				if (!_inventory.Knows(a_spell))
+				{
+					logger::info("Equip Controller: You don't know {}", a_slot.name);
+					return;
+				}
+
+				const bool inLeft = _inventory.IsInHand(a_spell, a_slot.name, kLeftHand);
+				const bool inRight = _inventory.IsInHand(a_spell, a_slot.name, kRightHand);
+				const auto equip = [&](bool a_left)
+				{ _manager.EquipSpell(&_player, &a_spell, HandSlot(a_left)); };
+
+				if (a_spell.IsTwoHanded())
+				{
+					if (IsHeldByPressedHand(a_hand, inLeft, inRight))
+					{
+						if (inLeft)
+						{
+							TakeSpellOutOfHand(a_spell, Hand::kLeft);
+						}
+						if (inRight)
+						{
+							TakeSpellOutOfHand(a_spell, Hand::kRight);
+						}
+					}
+					else
+					{
+						_manager.EquipSpell(&_player, &a_spell, a_spell.GetEquipSlot());
+					}
+					return;
+				}
+
+				if (a_hand == Hand::kDefault)
+				{
+					if (!inRight)
+					{
+						equip(kRightHand);
+					}
+					return;
+				}
+
+				const bool useLeft = a_hand != Hand::kRight;
+				const bool useRight = a_hand != Hand::kLeft;
+				const bool takeOff = a_hand == Hand::kBoth ? inLeft && inRight : (useLeft ? inLeft : inRight);
+				if (takeOff)
+				{
+					TakeSpellOutOfHand(a_spell, a_hand);
+					return;
+				}
+				if (useLeft && !inLeft)
+				{
+					equip(kLeftHand);
+				}
+				if (useRight && !inRight)
+				{
+					equip(kRightHand);
+				}
+			}
+
+			void EquipPowerOrShout(RE::TESForm &a_form, const AssignedItem &a_slot, Hand a_hand)
+			{
+				if (!_inventory.Knows(a_form))
+				{
+					logger::info("Equip Controller: You don't know {}", a_slot.name);
+					return;
+				}
+				const bool takeOff = _inventory.IsEquipped(a_form, a_slot.name);
+				if (takeOff && a_hand == Hand::kDefault)
+				{
+					return;
+				}
+				if (auto *shout = a_form.As<RE::TESShout>())
+				{
+					if (takeOff)
+					{
+						UnequipShout(_manager, _player, *shout);
+					}
+					else
+					{
+						_manager.EquipShout(&_player, shout);
+					}
+				}
+				else if (auto *power = a_form.As<RE::SpellItem>())
+				{
+					if (takeOff)
+					{
+						UnequipPower(_manager, _player, *power);
+					}
+					else
+					{
+						_manager.EquipSpell(&_player, power, power->GetEquipSlot());
+					}
+				}
+			}
+
+			void Wear(RE::TESObjectARMO &a_armor, const AssignedItem &a_slot, Hand a_hand)
+			{
+				if (auto *worn = _inventory.WornExtraList(a_armor))
+				{
+					if (a_hand != Hand::kDefault)
+					{
+						_manager.UnequipObject(&_player, &a_armor, worn);
+					}
+					return;
+				}
+				const auto copy = _inventory.FindCarriedCopy(a_armor, a_slot.name);
+				if (!copy)
+				{
+					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					return;
+				}
+				_manager.EquipObject(&_player, &a_armor, copy->extraList);
+			}
+
+			void EquipAmmo(RE::TESAmmo &a_ammo, const AssignedItem &a_slot, Hand a_hand)
+			{
+				const auto copy = _inventory.FindCarriedCopy(a_ammo, a_slot.name);
+				if (!copy)
+				{
+					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					return;
+				}
+				if (_inventory.IsEquipped(a_ammo, a_slot.name))
+				{
+					if (a_hand != Hand::kDefault)
+					{
+						auto *worn = _inventory.WornExtraList(a_ammo);
+						const auto count = worn ? worn->GetCount() : copy->total;
+						_manager.UnequipObject(&_player, &a_ammo, worn, static_cast<std::uint32_t>(count));
+					}
+					return;
+				}
+				const auto count = copy->extraList ? copy->extraList->GetCount() : copy->total;
+				_manager.EquipObject(&_player, &a_ammo, copy->extraList, static_cast<std::uint32_t>(count));
+			}
+
+			void Consume(RE::TESBoundObject &a_item, const AssignedItem &a_slot)
+			{
+				const auto copy = _inventory.FindCarriedCopy(a_item, a_slot.name);
+				if (!copy)
+				{
+					logger::info("Equip Controller: You have no {} left", a_slot.name);
+					return;
+				}
+				_manager.EquipObject(&_player, &a_item, copy->extraList);
+			}
+
+			void UnequipFromHand(RE::TESBoundObject &a_object, bool a_leftHand)
+			{
+				_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(a_leftHand), 1, HandSlot(a_leftHand));
+			}
+
+			void TakeSpellOutOfHand(RE::SpellItem &a_spell, Hand a_hand)
+			{
+				if (a_hand == Hand::kLeft || a_hand == Hand::kBoth)
+				{
+					UnequipSpell(_manager, _player, a_spell, HandSlot(kLeftHand));
+				}
+				if (a_hand == Hand::kRight || a_hand == Hand::kBoth)
+				{
+					UnequipSpell(_manager, _player, a_spell, HandSlot(kRightHand));
+				}
+			}
+
+			[[nodiscard]] RE::ExtraDataList *ListForMove(const RE::TESForm &a_item, bool a_leftHand)
+			{
+				auto *entry = _player.GetEquippedEntryData(a_leftHand);
+				const char *name = entry ? entry->GetDisplayName() : nullptr;
+				if (!name || std::string_view{name} == a_item.GetName())
+				{
+					return nullptr;
+				}
+				return _inventory.HeldExtraList(a_leftHand);
+			}
+
+			void TakeOutOfHand(RE::TESForm &a_item, bool a_leftHand)
+			{
+				if (a_item.Is(RE::FormType::Spell))
+				{
+					TakeSpellOutOfHand(*a_item.As<RE::SpellItem>(), a_leftHand ? Hand::kLeft : Hand::kRight);
+				}
+				else if (auto *object = a_item.As<RE::TESBoundObject>())
+				{
+					UnequipFromHand(*object, a_leftHand);
+				}
+			}
+
+			void PutInHand(RE::TESForm &a_item, RE::ExtraDataList *a_extra, bool a_leftHand)
+			{
+				if (a_item.Is(RE::FormType::Spell))
+				{
+					_manager.EquipSpell(&_player, a_item.As<RE::SpellItem>(), HandSlot(a_leftHand));
+				}
+				else if (auto *object = a_item.As<RE::TESBoundObject>())
+				{
+					_manager.EquipObject(&_player, object, a_extra, 1, HandSlot(a_leftHand));
+				}
+			}
+
+			RE::PlayerCharacter &_player;
+			RE::ActorEquipManager &_manager;
+			Inventory _inventory;
+		};
+	}
+
+	EquipController &EquipController::Get() noexcept
+	{
+		static EquipController singleton;
+		return singleton;
+	}
+
+	void EquipController::Register()
+	{
+		if (auto *events = RE::ScriptEventSourceHolder::GetSingleton())
+		{
+			events->AddEventSink<RE::TESEquipEvent>(this);
+		}
+	}
+
+	void EquipController::EquipSlot(int a_slot, Hand a_hand)
+	{
+		const auto slot = SlotStore::Get().Slot(a_slot);
+		auto *form = slot.IsEmpty() ? nullptr : RE::TESForm::LookupByID(slot.formID);
+		auto equipper = Equipper::Create();
+		if (!form || !equipper)
+		{
+			return;
+		}
+		logger::info("Equip Controller: Slot {}: {}", a_slot + 1, slot.name);
+		equipper->Use(*form, slot, a_hand);
+		_changes.fetch_add(1, std::memory_order_relaxed);
+	}
+
+	void EquipController::SwapHands()
+	{
+		if (auto equipper = Equipper::Create())
+		{
+			equipper->SwapHands();
+			_changes.fetch_add(1, std::memory_order_relaxed);
+		}
+	}
+
+	RE::BSEventNotifyControl EquipController::ProcessEvent(const RE::TESEquipEvent *a_event, RE::BSTEventSource<RE::TESEquipEvent> *)
+	{
+		if (a_event && a_event->actor.get() == RE::PlayerCharacter::GetSingleton())
+		{
+			_changes.fetch_add(1, std::memory_order_relaxed);
+		}
+		return RE::BSEventNotifyControl::kContinue;
+	}
+}
