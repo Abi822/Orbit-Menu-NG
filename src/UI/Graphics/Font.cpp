@@ -1,4 +1,5 @@
 #include "UI/Graphics/Font.h"
+#include "JostMedium.h"
 #include <imgui.h>
 
 namespace RMS::UI::Graphics
@@ -57,17 +58,12 @@ namespace RMS::UI::Graphics
 			}
 		}
 
-		wchar_t windowsDir[MAX_PATH]{};
-		if (const UINT length = GetWindowsDirectoryW(windowsDir, MAX_PATH); length > 0 && length < MAX_PATH)
+		ImFontConfig config;
+		config.FontDataOwnedByAtlas = false;
+		if (ImFont *font = a_atlas.AddFontFromMemoryTTF(const_cast<unsigned char *>(kJostMedium), static_cast<int>(sizeof(kJostMedium)), kFontSize, &config))
 		{
-			const std::filesystem::path fonts = std::filesystem::path{windowsDir} / "Fonts";
-			for (const auto *file : {L"seguisb.ttf", L"segoeui.ttf"})
-			{
-				if (ImFont *font = AddFont(a_atlas, fonts / file))
-				{
-					return font;
-				}
-			}
+			logger::info("Font: Using Default font");
+			return font;
 		}
 
 		logger::warn("Font: No font found. Using ImGui built-in font.");

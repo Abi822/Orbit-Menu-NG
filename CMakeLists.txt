@@ -26,6 +26,15 @@ include(cmake/Dependencies.cmake)
 configure_file(cmake/Version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/Version.h" @ONLY)
 configure_file(cmake/version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc" @ONLY)
 
+set(JOST_FONT "${CMAKE_CURRENT_SOURCE_DIR}/fonts/Jost-Medium.ttf")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${JOST_FONT}")
+file(READ "${JOST_FONT}" JOST_BYTES HEX)
+string(REPEAT "[0-9a-f]" 64 JOST_LINE)
+string(REGEX REPLACE "(${JOST_LINE})" "\\1\n" JOST_BYTES "${JOST_BYTES}")
+string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," JOST_BYTES "${JOST_BYTES}")
+file(CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/JostMedium.h"
+	CONTENT "#pragma once\n\ninline constexpr unsigned char kJostMedium[]{\n@JOST_BYTES@};\n" @ONLY)
+
 set(SOURCES
 	src/PCH.h
 	src/main.cpp
@@ -179,3 +188,4 @@ endif()
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "SKSE/Plugins" COMPONENT OrbitMenu)
 install(FILES "$<TARGET_PDB_FILE:${PROJECT_NAME}>" DESTINATION "SKSE/Plugins" COMPONENT OrbitMenu OPTIONAL)
 install(FILES "dist/SKSE/Plugins/OrbitMenu_Default.ini" DESTINATION "SKSE/Plugins" COMPONENT OrbitMenu)
+install(FILES "fonts/Jost-OFL.txt" DESTINATION "SKSE/Plugins/Orbit Menu/fonts" COMPONENT OrbitMenu)
