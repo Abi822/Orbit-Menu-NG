@@ -22,3 +22,13 @@ cmake --preset vs2022
 cmake --build --preset release
 cmake --install build/vs2022 --config Release --component OrbitMenu --prefix "build/Orbit Menu"
 ```
+
+## Compatibility
+
+Built with CommonLibSSE-NG v16.1.0 for SE 1.5.97, AE 1.6.x (including GOG) and 1.7.x through the
+Address Library. Tested in game on AE 1.6.1170. VR isn't supported.
+
+## License
+
+GPL-3.0-or-later, because CommonLibSSE-NG is GPL-3.0. ImGui and nlohmann-json are MIT,
+nanosvg is zlib and the SKSE Menu Framework API header is LGPL-2.1.
