@@ -21,8 +21,8 @@ namespace Orbit::Config
 										  std::pair{kDisplay, "sSkinPath"}, std::pair{kDisplay, "iOctagonSize"}, std::pair{kDisplay, "sAccentColor"},
 										  std::pair{kDisplay, "bShowHands"}, std::pair{kDisplay, "bShowItemIcon"}, std::pair{kDisplay, "iItemIconSize"},
 										  std::pair{kSlowMotion, "fSlowMotionSpeed"}, std::pair{kPages, "iPageCount"}};
-		const std::filesystem::path kDefaultsPath{"Data/SKSE/Plugins/OrbitMenu_Default.ini"};
-		const std::filesystem::path kUserPath{"Data/SKSE/Plugins/OrbitMenu.ini"};
+		const std::filesystem::path kDefaultsPath{"Data/SKSE/Plugins/Orbit Menu/OrbitMenu_Default.ini"};
+		const std::filesystem::path kUserPath{"Data/SKSE/Plugins/Orbit Menu/OrbitMenu.ini"};
 
 		struct Color
 		{
@@ -242,6 +242,8 @@ namespace Orbit::Config
 
 			[[nodiscard]] bool SaveAs(const std::filesystem::path &a_path) const
 			{
+				std::error_code error;
+				std::filesystem::create_directories(a_path.parent_path(), error);
 				const SI_Error result = _ini.SaveFile(a_path.c_str(), false);
 				if (result < 0)
 				{
