@@ -8,7 +8,7 @@ namespace Orbit::UI::Skins
 	{
 		constexpr int kGap = 2;
 
-		[[nodiscard]] float BaseSize(Part a_part, float a_badgeSize, float a_pointerSize, float a_slotSize, float a_centerBackgroundSize) noexcept
+		float BaseSize(Part a_part, float a_badgeSize, float a_pointerSize, float a_slotSize, float a_centerBackgroundSize)
 		{
 			using Layout = OrbitMenu::MenuLayout;
 			const float largestSlot = Layout::LargestSlotRadius(a_slotSize * 0.5f) * 2.0f;
@@ -80,7 +80,7 @@ namespace Orbit::UI::Skins
 		{
 			return;
 		}
-		Graphics::GpuTexture::RenderTarget clear{_texture};
+		_texture.Clear();
 		for (std::size_t i = 0; i < kPartCount; ++i)
 		{
 			if (!pixels[i].empty())

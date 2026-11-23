@@ -7,7 +7,7 @@ namespace Orbit::Items
 	class EquipController final : public RE::BSTEventSink<RE::TESEquipEvent>
 	{
 	public:
-		[[nodiscard]] static EquipController &Get() noexcept;
+		static EquipController &Get();
 
 		void Register();
 
@@ -15,7 +15,7 @@ namespace Orbit::Items
 
 		void SwapHands();
 
-		[[nodiscard]] std::uint32_t ChangeCount() const noexcept { return _changes.load(std::memory_order_relaxed); }
+		std::uint32_t ChangeCount() const { return _changes; }
 
 		RE::BSEventNotifyControl ProcessEvent(const RE::TESEquipEvent *a_event, RE::BSTEventSource<RE::TESEquipEvent> *a_source) override;
 

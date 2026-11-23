@@ -118,7 +118,7 @@ namespace Orbit::Config
 		class IniReader
 		{
 		public:
-			explicit IniReader(const CSimpleIniA &a_ini) noexcept : _ini(a_ini) {}
+			explicit IniReader(const CSimpleIniA &a_ini) : _ini(a_ini) {}
 
 			void operator()(const char *a_section, const char *a_key, std::uint32_t &a_value) const
 			{
@@ -171,7 +171,7 @@ namespace Orbit::Config
 		class IniWriter
 		{
 		public:
-			explicit IniWriter(CSimpleIniA &a_ini) noexcept : _ini(a_ini) {}
+			explicit IniWriter(CSimpleIniA &a_ini) : _ini(a_ini) {}
 
 			void operator()(const char *a_section, const char *a_key, std::uint32_t &a_value) const
 			{
@@ -382,7 +382,7 @@ namespace Orbit::Config
 		slowMotionFadeOut = a_from.slowMotionFadeOut;
 	}
 
-	SettingsStore &SettingsStore::Get() noexcept
+	SettingsStore &SettingsStore::Get()
 	{
 		static SettingsStore singleton;
 		return singleton;
@@ -405,7 +405,7 @@ namespace Orbit::Config
 		std::scoped_lock lock{_lock};
 		a_settings.Clamp(_defaults);
 		_settings = a_settings;
-		_changes.fetch_add(1, std::memory_order_relaxed);
+		++_changes;
 	}
 
 	void SettingsStore::Load()
@@ -457,7 +457,7 @@ namespace Orbit::Config
 			std::scoped_lock lock{_lock};
 			_defaults = defaults;
 			_settings = loaded;
-			_changes.fetch_add(1, std::memory_order_relaxed);
+			++_changes;
 		}
 	}
 

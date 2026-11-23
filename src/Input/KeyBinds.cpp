@@ -1,5 +1,4 @@
 #include "Input/KeyBinds.h"
-#include "Config/Translation.h"
 
 namespace Orbit::Input
 {
@@ -20,24 +19,6 @@ namespace Orbit::Input
 		default:
 			return std::nullopt;
 		}
-	}
-
-	bool IsBindable(std::uint32_t a_keybind, std::string *a_reason)
-	{
-		const auto fail = [a_reason](std::string_view a_why)
-		{
-			if (a_reason)
-			{
-				*a_reason = a_why;
-			}
-			return false;
-		};
-
-		if (a_keybind == kKeyBindNone)
-		{
-			return fail(Config::Translate("No key selected."));
-		}
-		return true;
 	}
 
 	std::string KeyName(std::uint32_t a_keybind)

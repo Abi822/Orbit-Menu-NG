@@ -7,34 +7,34 @@
 
 namespace Orbit::Core
 {
-	struct SelectionTuning
+	struct PointerLimits
 	{
 		float deadzone = 0.0f;
-		float pointerRadius = std::numeric_limits<float>::max();
-		float hysteresis = 0.07f;
+		float maxDistance = std::numeric_limits<float>::max();
+		float stickiness = 0.07f;
 	};
 
 	class OrbitState
 	{
 	public:
-		void Open() noexcept;
+		void Open();
 
-		void AddPointerDelta(ImVec2 a_delta, const SelectionTuning &a_tuning) noexcept;
+		void AddPointerDelta(ImVec2 a_delta, const PointerLimits &a_limits);
 
-		void SetPointer(ImVec2 a_position, const SelectionTuning &a_tuning) noexcept;
+		void SetPointer(ImVec2 a_position, const PointerLimits &a_limits);
 
-		void Select(int a_slot) noexcept;
+		void Select(int a_slot);
 
-		[[nodiscard]] std::optional<int> Choose() noexcept;
+		[[nodiscard]] std::optional<int> Choose();
 
-		[[nodiscard]] std::optional<int> Close(bool a_commit) noexcept;
+		[[nodiscard]] std::optional<int> Close(bool a_commit);
 
-		[[nodiscard]] bool IsOpen() const noexcept { return _open; }
-		[[nodiscard]] int HoveredSlot() const noexcept { return _hovered; }
-		[[nodiscard]] std::uint32_t OpenCount() const noexcept { return _openCount; }
+		bool IsOpen() const { return _open; }
+		int HoveredSlot() const { return _hovered; }
+		std::uint32_t OpenCount() const { return _openCount; }
 
 	private:
-		void UpdateHover(const SelectionTuning &a_tuning) noexcept;
+		void UpdateHover(const PointerLimits &a_limits);
 
 		bool _open = false;
 		bool _chosen = false;

@@ -7,9 +7,9 @@ namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{
-		constexpr MenuInput kPreloadInput{true, true, false, false, false, -1};
+		constexpr MenuInput kPreloadInput{.open = true, .justOpened = true};
 
-		[[nodiscard]] int Pixels(float a_base, float a_pixelScale)
+		int Pixels(float a_base, float a_pixelScale)
 		{
 			return static_cast<int>(std::ceil(a_base * a_pixelScale));
 		}

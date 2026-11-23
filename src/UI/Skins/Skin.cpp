@@ -17,7 +17,7 @@ namespace Orbit::UI::Skins
 										PartName{"slot_active_background", Part::kSlotEquipped}, PartName{"orbit_slot_glow", Part::kSlotGlow},
 										PartName{"orbit_pointer", Part::kPointer}, PartName{"slot_key_background", Part::kSlotKeyBadge}};
 
-		[[nodiscard]] std::filesystem::path SkinFolder(std::string_view a_path)
+		std::filesystem::path SkinFolder(std::string_view a_path)
 		{
 			while (!a_path.empty() && (a_path.front() == '\\' || a_path.front() == '/'))
 			{
@@ -50,7 +50,7 @@ namespace Orbit::UI::Skins
 			}
 		}
 
-		[[nodiscard]] RE::FormID ItemFormID(RE::TESDataHandler &a_data, std::string_view a_name)
+		RE::FormID ItemFormID(RE::TESDataHandler &a_data, std::string_view a_name)
 		{
 			auto separator = a_name.rfind("_0x");
 			if (separator == std::string_view::npos)

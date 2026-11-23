@@ -7,7 +7,7 @@ namespace Orbit::UI::Skins
 	{
 		using Slot = RE::BGSBipedObjectForm::BipedObjectSlot;
 
-		[[nodiscard]] std::string_view WeaponName(const RE::TESObjectWEAP &a_weapon)
+		std::string_view WeaponName(const RE::TESObjectWEAP &a_weapon)
 		{
 			switch (a_weapon.GetWeaponType())
 			{
@@ -36,7 +36,7 @@ namespace Orbit::UI::Skins
 			}
 		}
 
-		[[nodiscard]] std::string_view ArmorName(const RE::TESObjectARMO &a_armor)
+		std::string_view ArmorName(const RE::TESObjectARMO &a_armor)
 		{
 			const auto byWeight = [&a_armor](std::string_view a_light, std::string_view a_heavy, std::string_view a_clothing)
 			{
@@ -81,7 +81,7 @@ namespace Orbit::UI::Skins
 			return "armor_default";
 		}
 
-		[[nodiscard]] std::string_view SpellName(const RE::SpellItem &a_spell)
+		std::string_view SpellName(const RE::SpellItem &a_spell)
 		{
 			const auto type = a_spell.GetSpellType();
 			if (type == RE::MagicSystem::SpellType::kPower || type == RE::MagicSystem::SpellType::kLesserPower)
@@ -116,7 +116,7 @@ namespace Orbit::UI::Skins
 			}
 		}
 
-		[[nodiscard]] std::string_view PotionName(const RE::AlchemyItem &a_potion)
+		std::string_view PotionName(const RE::AlchemyItem &a_potion)
 		{
 			if (a_potion.IsFood())
 			{

@@ -12,7 +12,7 @@ namespace Orbit::UI::OrbitMenu
 	class OrbitRenderer
 	{
 	public:
-		[[nodiscard]] static OrbitRenderer &Get();
+		static OrbitRenderer &Get();
 
 		void LoadSkin();
 
@@ -21,14 +21,14 @@ namespace Orbit::UI::OrbitMenu
 
 		void Draw(ImDrawList &a_drawList, ImFont &a_font, ImVec2 a_display);
 
-		[[nodiscard]] bool IsVisible() const noexcept { return _animation.IsVisible(); }
-		[[nodiscard]] bool IsPreviewing() const noexcept { return _animation.IsPreviewing(); }
-		void SetPreview(bool a_preview) noexcept { _animation.SetPreview(a_preview); }
+		bool IsVisible() const { return _animation.IsVisible(); }
+		bool IsPreviewing() const { return _animation.IsPreviewing(); }
+		void SetPreview(bool a_preview) { _animation.SetPreview(a_preview); }
 
 	private:
 		OrbitRenderer() = default;
 
-		[[nodiscard]] bool SyncSettings();
+		bool SyncSettings();
 		void UpdateContent(ImFont &a_font, const MenuInput &a_input);
 
 		MenuAnimation _animation;

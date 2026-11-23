@@ -76,17 +76,17 @@ namespace Orbit::UI::OrbitMenu
 		return true;
 	}
 
-	int IconCache::Pixels(IconSize a_size) const noexcept
+	int IconCache::Pixels(IconSize a_size) const
 	{
 		return a_size == IconSize::kSlot ? _slotPixels : _centrePixels;
 	}
 
-	int IconCache::CellX(int a_slot) const noexcept
+	int IconCache::CellX(int a_slot) const
 	{
 		return a_slot * _cell + kGap / 2;
 	}
 
-	int IconCache::CellY(IconSize a_size) const noexcept
+	int IconCache::CellY(IconSize a_size) const
 	{
 		return (a_size == IconSize::kSlot ? 0 : _cell) + kGap / 2;
 	}

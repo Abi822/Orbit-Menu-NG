@@ -17,7 +17,7 @@ namespace Orbit::Items
 		kConsumable
 	};
 
-	[[nodiscard]] inline ItemKind KindOf(const RE::TESForm *a_form)
+	inline ItemKind GetItemKind(const RE::TESForm *a_form)
 	{
 		if (!a_form)
 		{
@@ -57,13 +57,17 @@ namespace Orbit::Items
 		}
 	}
 
-	[[nodiscard]] inline bool IsTwoHanded(const RE::TESForm &a_form)
+	inline bool IsTwoHanded(const RE::TESForm &a_form)
 	{
-		const auto *weapon = a_form.As<RE::TESObjectWEAP>();
-		return weapon && (weapon->IsTwoHandedSword() || weapon->IsTwoHandedAxe() || weapon->IsBow() || weapon->IsCrossbow());
+		if (const auto *weapon = a_form.As<RE::TESObjectWEAP>())
+		{
+			return weapon->IsTwoHandedSword() || weapon->IsTwoHandedAxe() || weapon->IsBow() || weapon->IsCrossbow();
+		}
+		const auto *magic = a_form.As<RE::MagicItem>();
+		return magic && magic->IsTwoHanded();
 	}
 
-	[[nodiscard]] inline const RE::EffectSetting *CostliestEffect(const RE::MagicItem &a_item)
+	inline const RE::EffectSetting *CostliestEffect(const RE::MagicItem &a_item)
 	{
 		const auto *effect = a_item.GetCostliestEffectItem();
 		return effect ? effect->baseEffect : nullptr;

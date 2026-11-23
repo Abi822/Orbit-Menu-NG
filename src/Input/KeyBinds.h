@@ -9,26 +9,24 @@ namespace Orbit::Input
 	inline constexpr std::uint32_t kMouseWheelUp = InputMap::kMacro_MouseWheelOffset;
 	inline constexpr std::uint32_t kMouseWheelDown = kMouseWheelUp + 1;
 
-	[[nodiscard]] constexpr bool IsKeyboardBind(std::uint32_t a_keybind) noexcept
+	constexpr bool IsKeyboardBind(std::uint32_t a_keybind)
 	{
 		return a_keybind > kKeyBindNone && a_keybind < kMouseLeft;
 	}
 
-	[[nodiscard]] constexpr bool IsMouseBind(std::uint32_t a_keybind) noexcept
+	constexpr bool IsMouseBind(std::uint32_t a_keybind)
 	{
 		return a_keybind >= kMouseLeft && a_keybind <= kMouseWheelDown;
 	}
 
-	[[nodiscard]] constexpr bool IsGamepadBind(std::uint32_t a_keybind) noexcept
+	constexpr bool IsGamepadBind(std::uint32_t a_keybind)
 	{
 		return a_keybind >= InputMap::kMacro_GamepadOffset && a_keybind < InputMap::kMaxMacros;
 	}
 
-	[[nodiscard]] std::optional<std::uint32_t> ToKeyBind(const RE::ButtonEvent &a_event);
+	std::optional<std::uint32_t> ToKeyBind(const RE::ButtonEvent &a_event);
 
-	[[nodiscard]] bool IsBindable(std::uint32_t a_keybind, std::string *a_reason = nullptr);
-
-	[[nodiscard]] std::string KeyName(std::uint32_t a_keybind);
+	std::string KeyName(std::uint32_t a_keybind);
 
 	inline constexpr int kBindingActivation = -1;
 	inline constexpr int kBindingLeftHand = -2;

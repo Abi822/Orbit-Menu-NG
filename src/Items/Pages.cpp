@@ -4,7 +4,7 @@
 
 namespace Orbit::Items
 {
-	Pages &Pages::Get() noexcept
+	Pages &Pages::Get()
 	{
 		static Pages singleton;
 		return singleton;
@@ -137,7 +137,7 @@ namespace Orbit::Items
 	{
 		std::scoped_lock lock{_lock};
 		_pages = {};
-		_current.store(0, std::memory_order_relaxed);
+		_current = 0;
 	}
 
 	void Pages::ShowLocked(int a_page)
@@ -149,6 +149,6 @@ namespace Orbit::Items
 		}
 		auto &shown = _pages[static_cast<std::size_t>(a_page)];
 		_pages[static_cast<std::size_t>(current)] = SlotStore::Get().Exchange(std::exchange(shown, SlotArray{}));
-		_current.store(a_page, std::memory_order_relaxed);
+		_current = a_page;
 	}
 }

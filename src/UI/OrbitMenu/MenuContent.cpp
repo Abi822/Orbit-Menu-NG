@@ -10,8 +10,9 @@ namespace Orbit::UI::OrbitMenu
 	namespace
 	{
 		constexpr std::size_t kTitleLines = 2;
+		constexpr auto kSeparator = "   |   ";
 
-		[[nodiscard]] IconRequest IconFor(const Core::SlotView &a_view, const Skins::Skin &a_skin)
+		IconRequest IconFor(const Core::SlotView &a_view, const Skins::Skin &a_skin)
 		{
 			IconRequest request;
 			if (a_view.state == Core::SlotState::kEmpty)
@@ -31,7 +32,7 @@ namespace Orbit::UI::OrbitMenu
 			return request;
 		}
 
-		[[nodiscard]] std::string_view HandLabel(Core::HeldIn a_heldIn) noexcept
+		std::string_view HandLabel(Core::HeldIn a_heldIn)
 		{
 			switch (a_heldIn)
 			{
@@ -194,25 +195,25 @@ namespace Orbit::UI::OrbitMenu
 		{
 			if (left && right)
 			{
-				hint += "   |   " + Translate("Assign: {} or {}", KeyName(a_keys.left), KeyName(a_keys.right));
+				hint += kSeparator + Translate("Assign: {} or {}", KeyName(a_keys.left), KeyName(a_keys.right));
 			}
 			else if (left || right)
 			{
-				hint += "   |   " + Translate("Assign: {}", KeyName(left ? a_keys.left : a_keys.right));
+				hint += kSeparator + Translate("Assign: {}", KeyName(left ? a_keys.left : a_keys.right));
 			}
 			return hint;
 		}
 		if (left && right)
 		{
-			hint += "   |   " + Translate("Equip in hand: {}, {} or both", KeyName(a_keys.left), KeyName(a_keys.right));
+			hint += kSeparator + Translate("Equip in hand: {}, {} or both", KeyName(a_keys.left), KeyName(a_keys.right));
 		}
 		else if (left || right)
 		{
-			hint += "   |   " + Translate(left ? "Left hand: {}" : "Right hand: {}", KeyName(left ? a_keys.left : a_keys.right));
+			hint += kSeparator + Translate(left ? "Left hand: {}" : "Right hand: {}", KeyName(left ? a_keys.left : a_keys.right));
 		}
 		if (a_keys.swap != Input::kKeyBindNone && a_keys.swap != a_keys.open)
 		{
-			hint += "   |   " + Translate("Swap hands: {}", KeyName(a_keys.swap));
+			hint += kSeparator + Translate("Swap hands: {}", KeyName(a_keys.swap));
 		}
 		return hint;
 	}

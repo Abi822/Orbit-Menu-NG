@@ -14,21 +14,39 @@ namespace Orbit::Integration
 			std::optional<std::uint32_t> iconColor;
 		};
 
-		[[nodiscard]] static I4Addon &Get() noexcept;
+		struct Condition
+		{
+			enum class Type
+			{
+				kFormID,
+				kKeyword,
+				kWeaponType,
+				kAllOf,
+				kAnyOf
+			};
 
-		[[nodiscard]] static bool IsInstalled() noexcept;
+			Type type = Type::kAllOf;
+			RE::FormID formID = 0;
+			std::string keyword;
+			RE::WEAPON_TYPE weaponType{};
+			std::vector<Condition> parts;
+
+			bool Matches(const RE::TESForm &a_form) const;
+		};
+
+		static I4Addon &Get();
+
+		static bool IsInstalled();
 
 		void Load();
 
-		[[nodiscard]] Look Evaluate(const RE::TESForm &a_form) const;
+		Look Evaluate(const RE::TESForm &a_form) const;
 
 	private:
-		using Test = std::function<bool(const RE::TESForm &)>;
-
 		struct IconMapping
 		{
 			std::optional<RE::FormType> formType;
-			std::vector<Test> tests;
+			std::vector<Condition> conditions;
 			std::optional<std::string> iconSource;
 			std::optional<std::string> iconLabel;
 			std::optional<std::uint32_t> iconColor;
@@ -36,7 +54,7 @@ namespace Orbit::Integration
 
 		I4Addon() = default;
 
-		[[nodiscard]] static std::optional<IconMapping> ParseMapping(const nlohmann::json &a_rule);
+		static std::optional<IconMapping> ParseMapping(const nlohmann::json &a_rule);
 
 		std::vector<IconMapping> _mappings;
 	};

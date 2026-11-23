@@ -4,12 +4,12 @@ namespace Orbit::Config
 {
 	void LoadTranslation(std::string_view a_path);
 
-	[[nodiscard]] std::string_view Translate(std::string_view a_english);
+	std::string_view Translate(std::string_view a_english);
 
-	[[nodiscard]] const char *Translate(const char *a_english);
+	const char *Translate(const char *a_english);
 
 	template <class... Args>
-	[[nodiscard]] std::string Translate(std::string_view a_english, const Args &...a_values)
+	std::string Translate(std::string_view a_english, const Args &...a_values)
 	{
 		try
 		{

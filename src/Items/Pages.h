@@ -11,15 +11,15 @@ namespace Orbit::Items
 		static constexpr std::uint32_t kRecord = 'PAGS';
 		static constexpr std::uint32_t kVersion = 1;
 
-		[[nodiscard]] static Pages &Get() noexcept;
+		static Pages &Get();
 
-		[[nodiscard]] int Current() const noexcept { return _current.load(std::memory_order_relaxed); }
+		int Current() const { return _current; }
 		void Turn(int a_step);
 		void Fit(const Config::Settings &a_settings);
 		void ClearExtraPages();
-		[[nodiscard]] std::string Hint(const Config::Settings &a_settings, bool a_gamepad) const;
+		std::string Hint(const Config::Settings &a_settings, bool a_gamepad) const;
 
-		[[nodiscard]] SlotArray FirstPage() const;
+		SlotArray FirstPage() const;
 		void Save(SKSE::SerializationInterface &a_intfc) const;
 		void Load(SKSE::SerializationInterface &a_intfc);
 		void Revert();

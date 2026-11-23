@@ -26,16 +26,16 @@ namespace Orbit::Items
 		return views;
 	}
 
-	SlotViewBuilder::SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) noexcept : _player(a_player),
-																											   _inventory(a_player),
-																											   _settings(a_settings)
+	SlotViewBuilder::SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) : _player(a_player),
+																									  _inventory(a_player),
+																									  _settings(a_settings)
 	{
 	}
 
 	Core::SlotView SlotViewBuilder::Describe(const AssignedItem &a_slot) const
 	{
 		auto *form = RE::TESForm::LookupByID(a_slot.formID);
-		const auto kind = KindOf(form);
+		const auto kind = GetItemKind(form);
 		Core::SlotView view{a_slot.name, Config::Translate("Missing"), Core::SlotState::kMissing};
 		if (kind != ItemKind::kNone)
 		{

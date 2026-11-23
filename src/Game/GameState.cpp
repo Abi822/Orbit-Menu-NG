@@ -5,7 +5,7 @@ namespace Orbit::Game
 {
 	namespace
 	{
-		[[nodiscard]] bool IsGameWindowForeground()
+		bool IsGameWindowForeground()
 		{
 			HWND foreground = GetForegroundWindow();
 			if (!foreground)
@@ -18,7 +18,7 @@ namespace Orbit::Game
 		}
 
 		// Stop Orbit from opening in Beast Form and Vampire Lord
-		[[nodiscard]] bool IsInBeastForm()
+		bool IsInBeastForm()
 		{
 			const auto *menuControls = RE::MenuControls::GetSingleton();
 			return menuControls && menuControls->InBeastForm();

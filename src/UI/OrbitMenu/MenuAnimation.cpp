@@ -7,15 +7,16 @@ namespace Orbit::UI::OrbitMenu
 	{
 		constexpr float kOpenSeconds = 0.14f;
 		constexpr float kCloseSeconds = 0.18f;
+		constexpr float kHoverFollow = 16.0f;
 
-		[[nodiscard]] float EaseOutCubic(float a_t) noexcept
+		float EaseOutCubic(float a_t)
 		{
 			const float t = std::clamp(a_t, 0.0f, 1.0f);
 			const float inv = 1.0f - t;
 			return 1.0f - inv * inv * inv;
 		}
 
-		[[nodiscard]] float AngleDelta(float a_from, float a_to) noexcept
+		float AngleDelta(float a_from, float a_to)
 		{
 			float delta = std::fmod(a_to - a_from, Core::kTwoPi);
 			if (delta > Core::kPi)
@@ -30,7 +31,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	int Motion::StrongestSlot() const noexcept
+	int Motion::StrongestSlot() const
 	{
 		return static_cast<int>(std::ranges::max_element(hover) - hover.begin());
 	}
@@ -62,7 +63,12 @@ namespace Orbit::UI::OrbitMenu
 			_motion.pointerValid = false;
 		}
 		_snapshot = a_snapshot;
-		return {a_snapshot.open, opened, previewing, a_snapshot.gamepad, a_snapshot.assign, a_snapshot.hoveredSlot};
+		return {.open = a_snapshot.open,
+				.justOpened = opened,
+				.previewing = previewing,
+				.gamepad = a_snapshot.gamepad,
+				.assign = a_snapshot.assign,
+				.hoveredSlot = a_snapshot.hoveredSlot};
 	}
 
 	bool MenuAnimation::Animate(int a_hoveredSlot, float a_speed)
@@ -106,7 +112,7 @@ namespace Orbit::UI::OrbitMenu
 		_visible = true;
 
 		const int target = _snapshot.open ? a_hoveredSlot : (_closedWithChoice ? _closingSlot : -1);
-		const float ease = a_speed > 0.0f ? 1.0f - std::exp(-_dt * 16.0f * a_speed) : 1.0f;
+		const float ease = a_speed > 0.0f ? 1.0f - std::exp(-_dt * kHoverFollow * a_speed) : 1.0f;
 		for (std::size_t i = 0; i < _motion.hover.size(); ++i)
 		{
 			const float goal = static_cast<int>(i) == target ? 1.0f : 0.0f;

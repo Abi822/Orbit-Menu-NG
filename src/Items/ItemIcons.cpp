@@ -19,7 +19,7 @@ namespace Orbit::Items::Icons
 		constexpr std::uint32_t kLightArmorColor = 0x756000;
 		constexpr std::uint32_t kHeavyArmorColor = 0x6B7585;
 
-		constexpr std::array kPartPrecedence{Slot::kBody, Slot::kHair, Slot::kHands, Slot::kForearms, Slot::kFeet, Slot::kCalves, Slot::kShield,
+		constexpr std::array kPartOrder{Slot::kBody, Slot::kHair, Slot::kHands, Slot::kForearms, Slot::kFeet, Slot::kCalves, Slot::kShield,
 											 Slot::kAmulet, Slot::kRing, Slot::kLongHair, Slot::kEars, Slot::kHead, Slot::kCirclet, Slot::kTail};
 
 		enum class Weight
@@ -30,12 +30,12 @@ namespace Orbit::Items::Icons
 			kJewelry
 		};
 
-		[[nodiscard]] RE::FormID BaseId(const RE::TESForm &a_form)
+		RE::FormID BaseId(const RE::TESForm &a_form)
 		{
 			return a_form.GetFormID() & 0x00FFFFFF;
 		}
 
-		[[nodiscard]] std::string_view WeaponLabel(const RE::TESObjectWEAP &a_weapon)
+		std::string_view WeaponLabel(const RE::TESObjectWEAP &a_weapon)
 		{
 			const auto base = BaseId(a_weapon);
 			if (std::ranges::find(kPickaxes, base) != kPickaxes.end())
@@ -72,13 +72,13 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] Slot MainPart(const RE::TESObjectARMO &a_armor)
+		Slot MainPart(const RE::TESObjectARMO &a_armor)
 		{
 			if (BaseId(a_armor) == kVampireLordArmor)
 			{
 				return Slot::kBody;
 			}
-			for (const auto part : kPartPrecedence)
+			for (const auto part : kPartOrder)
 			{
 				if (a_armor.HasPartOf(part))
 				{
@@ -88,7 +88,7 @@ namespace Orbit::Items::Icons
 			return Slot::kNone;
 		}
 
-		[[nodiscard]] Weight WeightOf(const RE::TESObjectARMO &a_armor, Slot a_part)
+		Weight WeightOf(const RE::TESObjectARMO &a_armor, Slot a_part)
 		{
 			if (BaseId(a_armor) == kWeddingWreath)
 			{
@@ -122,7 +122,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] std::string_view JewelryLabel(Slot a_part)
+		std::string_view JewelryLabel(Slot a_part)
 		{
 			switch (a_part)
 			{
@@ -137,7 +137,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] std::string_view ArmorLabel(Weight a_weight, Slot a_part)
+		std::string_view ArmorLabel(Weight a_weight, Slot a_part)
 		{
 			if (a_weight == Weight::kJewelry)
 			{
@@ -179,7 +179,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] SkyUIIcon ArmorIcon(const RE::TESObjectARMO &a_armor)
+		SkyUIIcon ArmorIcon(const RE::TESObjectARMO &a_armor)
 		{
 			const auto part = MainPart(a_armor);
 			const auto weight = WeightOf(a_armor, part);
@@ -195,13 +195,13 @@ namespace Orbit::Items::Icons
 			return {ArmorLabel(weight, part), color};
 		}
 
-		[[nodiscard]] RE::ActorValue Resistance(const RE::MagicItem &a_item)
+		RE::ActorValue Resistance(const RE::MagicItem &a_item)
 		{
 			const auto *effect = CostliestEffect(a_item);
 			return effect ? effect->data.resistVariable : RE::ActorValue::kNone;
 		}
 
-		[[nodiscard]] SkyUIIcon ScrollIcon(const RE::ScrollItem &a_scroll)
+		SkyUIIcon ScrollIcon(const RE::ScrollItem &a_scroll)
 		{
 			switch (Resistance(a_scroll))
 			{
@@ -216,7 +216,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] SkyUIIcon PotionIcon(const RE::AlchemyItem &a_potion)
+		SkyUIIcon PotionIcon(const RE::AlchemyItem &a_potion)
 		{
 			const auto *effect = CostliestEffect(a_potion);
 			switch (effect ? effect->data.primaryAV : RE::ActorValue::kNone)
@@ -244,7 +244,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] SkyUIIcon DestructionIcon(const RE::SpellItem &a_spell)
+		SkyUIIcon DestructionIcon(const RE::SpellItem &a_spell)
 		{
 			switch (Resistance(a_spell))
 			{
@@ -259,7 +259,7 @@ namespace Orbit::Items::Icons
 			}
 		}
 
-		[[nodiscard]] SkyUIIcon SpellIcon(const RE::SpellItem &a_spell)
+		SkyUIIcon SpellIcon(const RE::SpellItem &a_spell)
 		{
 			const auto *effect = CostliestEffect(a_spell);
 			switch (effect ? effect->GetMagickSkill() : RE::ActorValue::kNone)

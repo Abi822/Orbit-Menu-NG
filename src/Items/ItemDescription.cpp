@@ -5,7 +5,7 @@ namespace Orbit::Items
 {
 	namespace
 	{
-		[[nodiscard]] std::string Upper(std::string_view a_text)
+		std::string Upper(std::string_view a_text)
 		{
 			std::string text{a_text};
 			std::ranges::transform(text, text.begin(), [](unsigned char a_char)
@@ -13,18 +13,18 @@ namespace Orbit::Items
 			return text;
 		}
 
-		[[nodiscard]] std::string Whole(float a_value)
+		std::string Whole(float a_value)
 		{
 			return std::to_string(std::lround(a_value));
 		}
 
-		[[nodiscard]] std::string Decimal(float a_value)
+		std::string Decimal(float a_value)
 		{
 			const float rounded = std::round(a_value * 10.0f) / 10.0f;
 			return rounded == std::floor(rounded) ? Whole(rounded) : std::format("{:.1f}", rounded);
 		}
 
-		[[nodiscard]] std::string MagicDescription(RE::MagicItem *a_magic)
+		std::string MagicDescription(RE::MagicItem *a_magic)
 		{
 			if (!a_magic)
 			{
@@ -35,7 +35,7 @@ namespace Orbit::Items
 			return text.c_str() ? text.c_str() : "";
 		}
 
-		[[nodiscard]] std::string FormDescription(RE::TESForm &a_form)
+		std::string FormDescription(RE::TESForm &a_form)
 		{
 			auto *description = a_form.As<RE::TESDescription>();
 			if (!description)
@@ -47,7 +47,7 @@ namespace Orbit::Items
 			return text.c_str() ? text.c_str() : "";
 		}
 
-		[[nodiscard]] std::string KnownEffects(RE::IngredientItem &a_ingredient)
+		std::string KnownEffects(RE::IngredientItem &a_ingredient)
 		{
 			std::string text;
 			for (std::uint32_t i = 0; i < a_ingredient.effects.size(); ++i)
@@ -66,7 +66,7 @@ namespace Orbit::Items
 			return text;
 		}
 
-		[[nodiscard]] std::string SpellLevel(const RE::MagicItem &a_spell)
+		std::string SpellLevel(const RE::MagicItem &a_spell)
 		{
 			const auto *base = CostliestEffect(a_spell);
 			if (!base)

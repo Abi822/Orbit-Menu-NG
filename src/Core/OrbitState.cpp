@@ -2,7 +2,7 @@
 
 namespace Orbit::Core
 {
-	void OrbitState::Open() noexcept
+	void OrbitState::Open()
 	{
 		_open = true;
 		_chosen = false;
@@ -11,7 +11,7 @@ namespace Orbit::Core
 		++_openCount;
 	}
 
-	void OrbitState::AddPointerDelta(ImVec2 a_delta, const SelectionTuning &a_tuning) noexcept
+	void OrbitState::AddPointerDelta(ImVec2 a_delta, const PointerLimits &a_limits)
 	{
 		if (!_open)
 		{
@@ -19,24 +19,24 @@ namespace Orbit::Core
 		}
 
 		_pointer += a_delta;
-		if (const float length = std::hypot(_pointer.x, _pointer.y); length > a_tuning.pointerRadius)
+		if (const float length = std::hypot(_pointer.x, _pointer.y); length > a_limits.maxDistance)
 		{
-			_pointer *= a_tuning.pointerRadius / length;
+			_pointer *= a_limits.maxDistance / length;
 		}
-		UpdateHover(a_tuning);
+		UpdateHover(a_limits);
 	}
 
-	void OrbitState::SetPointer(ImVec2 a_position, const SelectionTuning &a_tuning) noexcept
+	void OrbitState::SetPointer(ImVec2 a_position, const PointerLimits &a_limits)
 	{
 		if (!_open)
 		{
 			return;
 		}
 		_pointer = a_position;
-		UpdateHover(a_tuning);
+		UpdateHover(a_limits);
 	}
 
-	void OrbitState::Select(int a_slot) noexcept
+	void OrbitState::Select(int a_slot)
 	{
 		if (!_open || !IsValidSlot(a_slot))
 		{
@@ -46,9 +46,9 @@ namespace Orbit::Core
 		_pointer = {};
 	}
 
-	void OrbitState::UpdateHover(const SelectionTuning &a_tuning) noexcept
+	void OrbitState::UpdateHover(const PointerLimits &a_limits)
 	{
-		if (std::hypot(_pointer.x, _pointer.y) <= a_tuning.deadzone)
+		if (std::hypot(_pointer.x, _pointer.y) <= a_limits.deadzone)
 		{
 			return;
 		}
@@ -63,7 +63,7 @@ namespace Orbit::Core
 		if (_hovered >= 0)
 		{
 			const float fromCurrent = AngularDistance(angle, SlotCenterAngle(_hovered));
-			if (fromCurrent < kSliceAngle * 0.5f + a_tuning.hysteresis)
+			if (fromCurrent < kSliceAngle * 0.5f + a_limits.stickiness)
 			{
 				return;
 			}
@@ -72,7 +72,7 @@ namespace Orbit::Core
 		_hovered = candidate;
 	}
 
-	std::optional<int> OrbitState::Choose() noexcept
+	std::optional<int> OrbitState::Choose()
 	{
 		if (!_open || _hovered < 0)
 		{
@@ -82,7 +82,7 @@ namespace Orbit::Core
 		return _hovered;
 	}
 
-	std::optional<int> OrbitState::Close(bool a_commit) noexcept
+	std::optional<int> OrbitState::Close(bool a_commit)
 	{
 		if (!_open)
 		{

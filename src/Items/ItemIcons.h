@@ -8,5 +8,5 @@ namespace Orbit::Items::Icons
 		std::optional<std::uint32_t> color;
 	};
 
-	[[nodiscard]] SkyUIIcon SkyUIIconFor(const RE::TESForm &a_form);
+	SkyUIIcon SkyUIIconFor(const RE::TESForm &a_form);
 }

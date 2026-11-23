@@ -93,7 +93,6 @@ namespace Orbit::Config
 		static constexpr float kMaxSensitivity = 5.0f;
 		static constexpr std::int32_t kMinMouseDPI = 200;
 		static constexpr std::int32_t kMaxMouseDPI = 3200;
-		static constexpr float kDeadzoneAt800DPI = 30.0f;
 		static constexpr float kControllerDeadzone = 0.5f;
 		static constexpr float kMinOrbitMenuScale = 0.5f;
 		static constexpr float kMaxOrbitMenuScale = 1.5f;
@@ -137,7 +136,7 @@ namespace Orbit::Config
 
 		void CopySlowMotion(const Settings &a_from);
 
-		[[nodiscard]] float SelectionDeadzone() const noexcept { return kDeadzoneAt800DPI * 800.0f / static_cast<float>(mouseDPI); }
+		float SelectionDeadzone() const { return 24000.0f / static_cast<float>(mouseDPI); }
 
 		bool operator==(const Settings &) const = default;
 	};
@@ -145,11 +144,11 @@ namespace Orbit::Config
 	class SettingsStore
 	{
 	public:
-		[[nodiscard]] static SettingsStore &Get() noexcept;
+		static SettingsStore &Get();
 
-		[[nodiscard]] Settings Snapshot() const;
+		Settings Snapshot() const;
 
-		[[nodiscard]] Settings Defaults() const;
+		Settings Defaults() const;
 
 		void Set(Settings a_settings);
 
@@ -157,7 +156,7 @@ namespace Orbit::Config
 
 		bool Save() const;
 
-		[[nodiscard]] std::uint32_t ChangeCount() const noexcept { return _changes.load(std::memory_order_relaxed); }
+		std::uint32_t ChangeCount() const { return _changes; }
 
 	private:
 		SettingsStore() = default;

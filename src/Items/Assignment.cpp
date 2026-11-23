@@ -8,7 +8,7 @@ namespace Orbit::Items
 {
 	namespace
 	{
-		[[nodiscard]] std::optional<AssignedItem> ReadHighlightedRow(RE::IMenu &a_menu)
+		std::optional<AssignedItem> ReadHighlightedRow(RE::IMenu &a_menu)
 		{
 			if (!a_menu.uiMovie)
 			{
@@ -63,7 +63,7 @@ namespace Orbit::Items
 		}
 
 		auto *form = RE::TESForm::LookupByID(row->formID);
-		if (KindOf(form) == ItemKind::kNone)
+		if (GetItemKind(form) == ItemKind::kNone)
 		{
 			logger::info("Assignment: Slot {}: '{}' ({:08X}) can't go on the Orbit Menu", number, row->name, row->formID);
 			Game::ShowHudMessage(Config::Translate("{} can't go on the Orbit Menu", row->name));

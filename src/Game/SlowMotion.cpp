@@ -6,10 +6,10 @@ namespace Orbit::Game
 	namespace
 	{
 		constexpr float kChangeTolerance = 1e-4f;
-		constexpr float kLowestSpeed = 1e-6f;
+		constexpr float kMinSpeed = 1e-6f;
 	}
 
-	SlowMotion &SlowMotion::Get() noexcept
+	SlowMotion &SlowMotion::Get()
 	{
 		static SlowMotion singleton;
 		return singleton;
@@ -61,9 +61,9 @@ namespace Orbit::Game
 	{
 		if (!_active)
 		{
-			_others = RE::BSTimer::QGlobalTimeMultiplierTarget();
-			_written = _others;
-			_ceiling = std::max(1.0f, _others);
+			_baseSpeed = RE::BSTimer::QGlobalTimeMultiplierTarget();
+			_lastSpeed = _baseSpeed;
+			_maxBaseSpeed = std::max(1.0f, _baseSpeed);
 			_factor = 1.0f;
 			_active = true;
 		}
@@ -81,13 +81,13 @@ namespace Orbit::Game
 		{
 			return;
 		}
-		if (const float target = RE::BSTimer::QGlobalTimeMultiplierTarget(); std::abs(target - _written) > kChangeTolerance * _written)
+		if (const float current = RE::BSTimer::QGlobalTimeMultiplierTarget(); std::abs(current - _lastSpeed) > kChangeTolerance * _lastSpeed)
 		{
-			_others = std::min(target / _factor, _ceiling);
+			_baseSpeed = std::min(current / _factor, _maxBaseSpeed);
 		}
-		const float speed = std::max(_others * a_factor, kLowestSpeed);
+		const float speed = std::max(_baseSpeed * a_factor, kMinSpeed);
 		timer->SetGlobalTimeMultiplier(speed, true);
-		_written = speed;
+		_lastSpeed = speed;
 		_factor = a_factor;
 	}
 

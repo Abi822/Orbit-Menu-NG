@@ -6,9 +6,9 @@
 
 namespace Orbit::UI::Graphics
 {
-	[[nodiscard]] ID3D11Device *GameDevice();
+	ID3D11Device *GameDevice();
 
-	[[nodiscard]] ID3D11DeviceContext *GameContext();
+	ID3D11DeviceContext *GameContext();
 
 	struct CachedImage
 	{
@@ -29,7 +29,7 @@ namespace Orbit::UI::Graphics
 			RenderTarget(const RenderTarget &) = delete;
 			RenderTarget &operator=(const RenderTarget &) = delete;
 
-			[[nodiscard]] bool Bound() const noexcept { return _context != nullptr; }
+			bool Bound() const { return _context != nullptr; }
 
 		private:
 			ID3D11DeviceContext *_context = nullptr;
@@ -41,12 +41,13 @@ namespace Orbit::UI::Graphics
 
 		bool Create(int a_width, int a_height);
 		void Reset();
+		void Clear();
 		void Upload(int a_x, int a_y, int a_size, const std::vector<std::uint8_t> &a_rgba);
 
-		[[nodiscard]] bool Valid() const noexcept { return _view != nullptr; }
-		[[nodiscard]] int Width() const noexcept { return _width; }
-		[[nodiscard]] int Height() const noexcept { return _height; }
-		[[nodiscard]] CachedImage Image(int a_x, int a_y, int a_size) const;
+		bool Valid() const { return _view != nullptr; }
+		int Width() const { return _width; }
+		int Height() const { return _height; }
+		CachedImage Image(int a_x, int a_y, int a_size) const;
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> _texture;
@@ -69,5 +70,5 @@ namespace Orbit::UI::Graphics
 		ImDrawList &_drawList;
 	};
 
-	[[nodiscard]] ImU32 PremultipliedColor(float a_alpha, float a_brightness = 1.0f);
+	ImU32 PremultipliedColor(float a_alpha, float a_brightness = 1.0f);
 }

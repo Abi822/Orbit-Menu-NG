@@ -8,8 +8,8 @@ namespace Orbit::Integration
 	namespace
 	{
 		using Json = nlohmann::json;
-		using Test = std::function<bool(const RE::TESForm &)>;
-		using TestFactory = std::optional<Test> (*)(const std::string &);
+		using Condition = I4Addon::Condition;
+		using Type = Condition::Type;
 
 		std::optional<std::uint32_t> ParseHex(std::string_view a_text)
 		{
@@ -63,34 +63,7 @@ namespace Orbit::Integration
 			return a_value.is_string() ? ParseHex(a_value.get_ref<const std::string &>()) : std::nullopt;
 		}
 
-		std::optional<Test> FormIDTest(const std::string &a_value)
-		{
-			const auto separator = a_value.find('|');
-			if (separator == std::string::npos)
-			{
-				return std::nullopt;
-			}
-			const auto localID = ParseHex(std::string_view{a_value}.substr(separator + 1));
-			auto *data = RE::TESDataHandler::GetSingleton();
-			if (!localID || !data)
-			{
-				return std::nullopt;
-			}
-			const RE::FormID formID = data->LookupFormID(*localID, a_value.substr(0, separator));
-			return Test{[formID](const RE::TESForm &a_form)
-						{ return formID != 0 && a_form.GetFormID() == formID; }};
-		}
-
-		std::optional<Test> KeywordTest(const std::string &a_value)
-		{
-			return Test{[a_value](const RE::TESForm &a_form)
-						{
-							const auto *keywords = a_form.As<RE::BGSKeywordForm>();
-							return keywords && keywords->HasKeywordString(a_value);
-						}};
-		}
-
-		std::optional<Test> WeaponTypeTest(const std::string &a_value)
+		std::optional<RE::WEAPON_TYPE> ParseWeaponType(std::string_view a_name)
 		{
 			static constexpr std::array<std::pair<std::string_view, RE::WEAPON_TYPE>, 10> kTypes{{
 				{"HandToHandMelee", RE::WEAPON_TYPE::kHandToHandMelee},
@@ -106,23 +79,51 @@ namespace Orbit::Integration
 			}};
 			for (const auto &[name, type] : kTypes)
 			{
-				if (name == a_value)
+				if (name == a_name)
 				{
-					return Test{[type](const RE::TESForm &a_form)
-								{
-									const auto *weapon = a_form.As<RE::TESObjectWEAP>();
-									return weapon && weapon->GetWeaponType() == type;
-								}};
+					return type;
 				}
 			}
 			return std::nullopt;
 		}
 
-		std::optional<Test> ParseSpec(const Json &a_spec, TestFactory a_single)
+		std::optional<Condition> ParseValue(Type a_type, const std::string &a_value)
+		{
+			Condition condition{a_type};
+			switch (a_type)
+			{
+			case Type::kFormID:
+			{
+				const auto separator = a_value.find('|');
+				const auto localID = separator == std::string::npos ? std::nullopt : ParseHex(std::string_view{a_value}.substr(separator + 1));
+				auto *data = RE::TESDataHandler::GetSingleton();
+				if (!localID || !data)
+				{
+					return std::nullopt;
+				}
+				condition.formID = data->LookupFormID(*localID, a_value.substr(0, separator));
+				return condition;
+			}
+			case Type::kKeyword:
+				condition.keyword = a_value;
+				return condition;
+			case Type::kWeaponType:
+				if (const auto weaponType = ParseWeaponType(a_value))
+				{
+					condition.weaponType = *weaponType;
+					return condition;
+				}
+				return std::nullopt;
+			default:
+				return std::nullopt;
+			}
+		}
+
+		std::optional<Condition> ParseCondition(Type a_type, const Json &a_spec)
 		{
 			if (a_spec.is_string())
 			{
-				return a_single(a_spec.get<std::string>());
+				return ParseValue(a_type, a_spec.get<std::string>());
 			}
 
 			const bool anyOf = a_spec.is_object() && a_spec.contains("anyOf") && a_spec["anyOf"].is_array();
@@ -131,22 +132,42 @@ namespace Orbit::Integration
 				return std::nullopt;
 			}
 
-			std::vector<Test> parts;
+			Condition group{anyOf ? Type::kAnyOf : Type::kAllOf};
 			for (const auto &item : anyOf ? a_spec["anyOf"] : a_spec)
 			{
-				auto part = ParseSpec(item, a_single);
+				auto part = ParseCondition(a_type, item);
 				if (!part)
 				{
 					return std::nullopt;
 				}
-				parts.push_back(std::move(*part));
+				group.parts.push_back(std::move(*part));
 			}
-			return Test{[parts = std::move(parts), anyOf](const RE::TESForm &a_form)
-						{
-							const auto check = [&a_form](const Test &a_test)
-							{ return a_test(a_form); };
-							return anyOf ? std::ranges::any_of(parts, check) : std::ranges::all_of(parts, check);
-						}};
+			return group;
+		}
+	}
+
+	bool I4Addon::Condition::Matches(const RE::TESForm &a_form) const
+	{
+		const auto matches = [&a_form](const Condition &a_part)
+		{ return a_part.Matches(a_form); };
+		switch (type)
+		{
+		case Type::kFormID:
+			return formID != 0 && a_form.GetFormID() == formID;
+		case Type::kKeyword:
+		{
+			const auto *keywords = a_form.As<RE::BGSKeywordForm>();
+			return keywords && keywords->HasKeywordString(keyword);
+		}
+		case Type::kWeaponType:
+		{
+			const auto *weapon = a_form.As<RE::TESObjectWEAP>();
+			return weapon && weapon->GetWeaponType() == weaponType;
+		}
+		case Type::kAnyOf:
+			return std::ranges::any_of(parts, matches);
+		default:
+			return std::ranges::all_of(parts, matches);
 		}
 	}
 
@@ -179,24 +200,24 @@ namespace Orbit::Integration
 			{
 				continue;
 			}
-			std::optional<Test> test;
+			std::optional<Condition> condition;
 			if (key == "formId")
 			{
-				test = ParseSpec(spec, FormIDTest);
+				condition = ParseCondition(Type::kFormID, spec);
 			}
 			else if (key == "keywords")
 			{
-				test = ParseSpec(spec, KeywordTest);
+				condition = ParseCondition(Type::kKeyword, spec);
 			}
 			else if (key == "weaponType")
 			{
-				test = ParseSpec(spec, WeaponTypeTest);
+				condition = ParseCondition(Type::kWeaponType, spec);
 			}
-			if (!test)
+			if (!condition)
 			{
 				return std::nullopt;
 			}
-			mapping.tests.push_back(std::move(*test));
+			mapping.conditions.push_back(std::move(*condition));
 		}
 
 		if (const auto source = assign->find("iconSource"); source != assign->end() && source->is_string())
@@ -218,13 +239,13 @@ namespace Orbit::Integration
 		return mapping;
 	}
 
-	I4Addon &I4Addon::Get() noexcept
+	I4Addon &I4Addon::Get()
 	{
 		static I4Addon singleton;
 		return singleton;
 	}
 
-	bool I4Addon::IsInstalled() noexcept
+	bool I4Addon::IsInstalled()
 	{
 		return GetModuleHandleW(L"InventoryInjector.dll") != nullptr;
 	}
@@ -284,8 +305,8 @@ namespace Orbit::Integration
 			{
 				continue;
 			}
-			if (std::ranges::all_of(mapping.tests, [&a_form](const Test &a_test)
-									{ return a_test(a_form); }))
+			if (std::ranges::all_of(mapping.conditions, [&a_form](const Condition &a_condition)
+									{ return a_condition.Matches(a_form); }))
 			{
 				if (mapping.iconSource)
 				{

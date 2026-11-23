@@ -12,7 +12,7 @@ namespace Orbit::UI
 {
 	namespace
 	{
-		[[nodiscard]] ImVec2 ScreenSize()
+		ImVec2 ScreenSize()
 		{
 			const auto screen = RE::BSGraphics::Renderer::GetScreenSize();
 			return {static_cast<float>(screen.width), static_cast<float>(screen.height)};
@@ -120,7 +120,7 @@ namespace Orbit::UI
 
 	void ImGuiLayer::PreloadImages()
 	{
-		if (!_imagesPending.load(std::memory_order_relaxed) || !_imagesPending.exchange(false))
+		if (!_imagesPending || !_imagesPending.exchange(false))
 		{
 			return;
 		}

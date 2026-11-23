@@ -6,7 +6,7 @@
 
 namespace Orbit::UI::Skins
 {
-	void SvgImage::Delete::operator()(NSVGimage *a_image) const noexcept
+	void SvgImage::Delete::operator()(NSVGimage *a_image) const
 	{
 		nsvgDelete(a_image);
 	}

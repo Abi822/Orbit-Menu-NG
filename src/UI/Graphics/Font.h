@@ -5,5 +5,5 @@ struct ImFontAtlas;
 
 namespace Orbit::UI::Graphics
 {
-	[[nodiscard]] ImFont *LoadFont(ImFontAtlas &a_atlas, std::string_view a_fontPath);
+	ImFont *LoadFont(ImFontAtlas &a_atlas, std::string_view a_fontPath);
 }

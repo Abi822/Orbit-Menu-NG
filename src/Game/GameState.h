@@ -2,9 +2,9 @@
 
 namespace Orbit::Game
 {
-	[[nodiscard]] bool IsInGameplay();
+	bool IsInGameplay();
 
-	[[nodiscard]] bool IsInItemMenu();
+	bool IsInItemMenu();
 
 	void ShowHudMessage(std::string a_text);
 }

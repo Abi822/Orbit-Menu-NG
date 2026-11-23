@@ -6,9 +6,7 @@
 #include "Input/KeyBinds.h"
 #include "Integration/I4Addon.h"
 #include "Integration/MenuFrameworkBridge.h"
-#include "Items/Assignment.h"
 #include "Items/EquipController.h"
-#include "Items/Pages.h"
 #include "Items/SlotStore.h"
 #include "UI/ImGuiLayer.h"
 #include <spdlog/sinks/basic_file_sink.h>
@@ -92,16 +90,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 	Orbit::Config::SettingsStore::Get().Load();
 	Orbit::Config::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
 	Orbit::Items::SlotStore::RegisterSerialization();
-
-	auto &input = Orbit::Input::InputManager::Get();
-	input.SetUiBusyPredicate(Orbit::Integration::MenuFramework::IsBlockingWindowOpen);
-	input.SetAssignHandler(Orbit::Items::Assignment::AssignHighlighted);
-	input.SetCommitHandler([](int a_slot, Orbit::Input::Hand a_hand)
-						   { Orbit::Items::EquipController::Get().EquipSlot(a_slot, a_hand); });
-	input.SetSwapHandler([]
-						 { Orbit::Items::EquipController::Get().SwapHands(); });
-	input.SetPageHandler([](int a_step)
-						 { Orbit::Items::Pages::Get().Turn(a_step); });
 
 	const auto *messaging = SKSE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(OnSKSEMessage))

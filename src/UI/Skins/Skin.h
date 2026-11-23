@@ -23,9 +23,9 @@ namespace Orbit::UI::Skins
 	public:
 		void Load(const std::string &a_path);
 
-		[[nodiscard]] std::uint32_t Generation() const noexcept { return _generation; }
-		[[nodiscard]] const std::filesystem::path &PartFile(Part a_part) const;
-		[[nodiscard]] std::filesystem::path IconFile(const RE::TESForm &a_form) const;
+		std::uint32_t Generation() const { return _generation; }
+		const std::filesystem::path &PartFile(Part a_part) const;
+		std::filesystem::path IconFile(const RE::TESForm &a_form) const;
 
 	private:
 		void Index(const std::filesystem::path &a_folder);

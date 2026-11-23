@@ -17,8 +17,7 @@ namespace Orbit::Config
 		constexpr std::array kBadgePositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
 
 		// Holds the key for a binding.
-		template <class T>
-		auto *BoundKey(T &a_settings, Input::KeyBinding a_binding)
+		std::uint32_t *BoundKey(Settings &a_settings, Input::KeyBinding a_binding)
 		{
 			const bool pad = a_binding.gamepad;
 			switch (a_binding.id)
@@ -67,8 +66,8 @@ namespace Orbit::Config
 		{
 		}
 
-		[[nodiscard]] bool SaveRequested() const noexcept { return _save; }
-		void RequestSave() noexcept { _save = true; }
+		bool SaveRequested() const { return _save; }
+		void RequestSave() { _save = true; }
 
 		void DrawSettings()
 		{
@@ -80,11 +79,11 @@ namespace Orbit::Config
 			{
 				Text("%s", Translate("No key is bound, so Orbit Menu can not be opened."));
 			}
-			Check("Toggle Orbit Menu##wr", _settings.toggleOrbitMenu);
-			Check("Controller use right stick##wr", _settings.useRightStick);
-			Slider("Mouse sensitivity##wr", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
+			Check("Toggle Orbit Menu##orbit", _settings.toggleOrbitMenu);
+			Check("Controller use right stick##orbit", _settings.useRightStick);
+			Slider("Mouse sensitivity##orbit", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
 				   "The lower it is, the more you have to move the mouse sideways to swing over to the next slot.");
-			Slider("Mouse DPI##wr", _settings.mouseDPI, Settings::kMinMouseDPI, Settings::kMaxMouseDPI,
+			Slider("Mouse DPI##orbit", _settings.mouseDPI, Settings::kMinMouseDPI, Settings::kMaxMouseDPI,
 				   "Mouse DPI, also known as deadzone, is how far the mouse has to move from the middle before the first slot is highlighted.\n"
 				   "It protects a small bump when you press the key doesn't highlight anything.\n"
 				   "Works like mouse DPI - the lower it is, the more you have to move the mouse, so slots are less likely to be highlighted by accident.");
@@ -111,20 +110,16 @@ namespace Orbit::Config
 				if (!slot.IsEmpty())
 				{
 					SameLine();
-					if (Button(std::format("{}##wr_clear_{}", Translate("Clear"), i).c_str()))
+					if (Button(std::format("{}##orbit_clear_{}", Translate("Clear"), i).c_str()))
 					{
 						Items::SlotStore::Get().Clear(i);
 					}
 				}
 			}
-			if (const auto message = _input.CaptureMessage(); !message.empty())
-			{
-				Text("%s", message.c_str());
-			}
 
 			SeparatorText(Translate("Slot Controls"));
-			Check("Release to equip##wr", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip last highlighted slot.\n"
-																	"It's off by default because just by opening the menu to look could accidentally equip or use something.");
+			Check("Release to equip##orbit", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip last highlighted slot.\n"
+																	   "It's off by default because just by opening the menu to look could accidentally equip or use something.");
 			KeyRow("Equip in left hand:", Input::kBindingLeftHand);
 			KeyRow("Equip in right hand:", Input::kBindingRightHand);
 			KeyRow("Swap hands:", Input::kBindingSwapHands);
@@ -132,13 +127,13 @@ namespace Orbit::Config
 			SeparatorText("I4 (Inventory Interface Information Injector)");
 			if (Integration::I4Addon::IsInstalled())
 			{
-				Check("Use I4 icons##wr", _settings.useI4);
+				Check("Use I4 icons##orbit", _settings.useI4);
 			}
 			else
 			{
 				bool unavailable = false;
 				BeginDisabled();
-				Checkbox(Label("Use I4 icons##wr"), &unavailable);
+				Checkbox(Label("Use I4 icons##orbit"), &unavailable);
 				EndDisabled();
 				if (IsItemHovered(ImGuiMCP::ImGuiHoveredFlags_AllowWhenDisabled))
 				{
@@ -147,11 +142,11 @@ namespace Orbit::Config
 			}
 
 			SeparatorText(Translate("Messages"));
-			Check("Show HUD messages##wr", _settings.showHudMessages);
+			Check("Show HUD messages##orbit", _settings.showHudMessages);
 
 			SeparatorText(Translate("Settings"));
 			Spacing();
-			if (Button(Label("Reset settings to defaults##wr")))
+			if (Button(Label("Reset settings to defaults##orbit")))
 			{
 				_input.CancelKeyCapture();
 				Settings defaults = SettingsStore::Get().Defaults();
@@ -169,78 +164,78 @@ namespace Orbit::Config
 			auto &renderer = UI::OrbitMenu::OrbitRenderer::Get();
 
 			const bool preview = renderer.IsPreviewing();
-			if (RadioButton(Label("Show Orbit Menu in background##wr"), preview))
+			if (RadioButton(Label("Show Orbit Menu in background##orbit"), preview))
 			{
 				renderer.SetPreview(!preview);
 			}
 
 			SeparatorText(Translate("Display"));
-			Slider("Menu size##wr", _settings.orbitMenuScale, Settings::kMinOrbitMenuScale, Settings::kMaxOrbitMenuScale, "%.2f");
+			Slider("Menu size##orbit", _settings.orbitMenuScale, Settings::kMinOrbitMenuScale, Settings::kMaxOrbitMenuScale, "%.2f");
 			Text("%s", Translate("Position"));
-			Number("X##wr_position_x", _settings.positionX, Settings::kMinPosition, Settings::kMaxPosition, 10);
-			Number("Y##wr_position_y", _settings.positionY, Settings::kMinPosition, Settings::kMaxPosition, 10);
-			Number("Curve##wr_curve", _settings.curve, Settings::kMinCurve, Settings::kMaxCurve, 5);
-			Slider("Background Opacity##wr", _settings.backgroundOpacity, Settings::kMinOpacity, Settings::kMaxOpacity, "%.2f");
-			Color("Background colour##wr", _settings.backgroundColor);
-			Color("Slot colour##wr", _settings.slotColor);
-			Color("Highlight colour##wr", _settings.highlightColor);
-			Slider("Animation speed##wr", _settings.animationSpeed, Settings::kMinAnimationSpeed, Settings::kMaxAnimationSpeed, "%.2f",
+			Number("X##orbit_position_x", _settings.positionX, Settings::kMinPosition, Settings::kMaxPosition, 10);
+			Number("Y##orbit_position_y", _settings.positionY, Settings::kMinPosition, Settings::kMaxPosition, 10);
+			Number("Curve##orbit_curve", _settings.curve, Settings::kMinCurve, Settings::kMaxCurve, 5);
+			Slider("Background Opacity##orbit", _settings.backgroundOpacity, Settings::kMinOpacity, Settings::kMaxOpacity, "%.2f");
+			Color("Background colour##orbit", _settings.backgroundColor);
+			Color("Slot colour##orbit", _settings.slotColor);
+			Color("Highlight colour##orbit", _settings.highlightColor);
+			Slider("Animation speed##orbit", _settings.animationSpeed, Settings::kMinAnimationSpeed, Settings::kMaxAnimationSpeed, "%.2f",
 				   "0 turns the animations off.");
-			Check("Show the Controls Hint##wr", _settings.showHint);
+			Check("Show the Controls Hint##orbit", _settings.showHint);
 
 			SeparatorText(Translate("Slot"));
-			Check("Show Slot Keys##wr", _settings.showSlotKeys);
-			Check("Show Slot Keys if controller detected##wr", _settings.showSlotKeysOnController);
-			Check("Show Hand##wr", _settings.showHand);
-			Check("Show Slot Empty##wr", _settings.showSlotEmpty);
-			Check("Show Slot Glow##wr", _settings.showSlotGlow);
-			Check("Show Slot Background##wr", _settings.showSlotBackground);
-			Number("Slot Size##wr", _settings.slotSize, Settings::kMinSlotSize, Settings::kMaxSlotSize, 2);
-			Number("Slot Icon Size##wr", _settings.slotIconSize, Settings::kMinSlotIconSize, Settings::kMaxSlotIconSize, 2);
-			Number("Slot Distance##wr", _settings.slotDistance, Settings::kMinSlotDistance, Settings::kMaxSlotDistance, 5);
-			Choice("Slot Key Position##wr", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
-			Choice("Hand Position##wr", _settings.handPosition, Settings::kLastHandPosition);
+			Check("Show Slot Keys##orbit", _settings.showSlotKeys);
+			Check("Show Slot Keys if controller detected##orbit", _settings.showSlotKeysOnController);
+			Check("Show Hand##orbit", _settings.showHand);
+			Check("Show Slot Empty##orbit", _settings.showSlotEmpty);
+			Check("Show Slot Glow##orbit", _settings.showSlotGlow);
+			Check("Show Slot Background##orbit", _settings.showSlotBackground);
+			Number("Slot Size##orbit", _settings.slotSize, Settings::kMinSlotSize, Settings::kMaxSlotSize, 2);
+			Number("Slot Icon Size##orbit", _settings.slotIconSize, Settings::kMinSlotIconSize, Settings::kMaxSlotIconSize, 2);
+			Number("Slot Distance##orbit", _settings.slotDistance, Settings::kMinSlotDistance, Settings::kMaxSlotDistance, 5);
+			Choice("Slot Key Position##orbit", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
+			Choice("Hand Position##orbit", _settings.handPosition, Settings::kLastHandPosition);
 
 			SeparatorText(Translate("Item Description"));
-			Check("Show Item Description##wr", _settings.showItemDescription);
-			Check("Show Item Icon Description##wr", _settings.showItemIconDescription);
-			Check("Show Center Background##wr", _settings.showCenterBackground);
-			Number("Center Background Size##wr", _settings.centerBackgroundSize, Settings::kMinCenterBackgroundSize, Settings::kMaxCenterBackgroundSize, 2);
-			Number("Item Icon Description Size##wr", _settings.itemIconDescriptionSize, Settings::kMinItemIconDescriptionSize, Settings::kMaxItemIconDescriptionSize);
+			Check("Show Item Description##orbit", _settings.showItemDescription);
+			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
+			Check("Show Center Background##orbit", _settings.showCenterBackground);
+			Number("Center Background Size##orbit", _settings.centerBackgroundSize, Settings::kMinCenterBackgroundSize, Settings::kMaxCenterBackgroundSize, 2);
+			Number("Item Icon Description Size##orbit", _settings.itemIconDescriptionSize, Settings::kMinItemIconDescriptionSize, Settings::kMaxItemIconDescriptionSize);
 
 			SeparatorText(Translate("Pointer"));
-			Check("Show Pointer##wr", _settings.showPointer);
-			Number("Pointer Size##wr", _settings.pointerSize, Settings::kMinPointerSize, Settings::kMaxPointerSize);
-			Number("Pointer Distance##wr", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
+			Check("Show Pointer##orbit", _settings.showPointer);
+			Number("Pointer Size##orbit", _settings.pointerSize, Settings::kMinPointerSize, Settings::kMaxPointerSize);
+			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
 
 			SeparatorText(Translate("Text"));
 			Text("%s", Translate("Slot Name"));
-			Number("##wr_slot_name_size", _settings.slotNameTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_slot_name_colour", _settings.slotNameColor);
+			Number("##orbit_slot_name_size", _settings.slotNameTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_slot_name_colour", _settings.slotNameColor);
 			Spacing();
 			Text("%s", Translate("Slot Empty"));
-			Number("##wr_slot_empty_size", _settings.slotEmptyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_slot_empty_colour", _settings.slotEmptyColor);
+			Number("##orbit_slot_empty_size", _settings.slotEmptyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_slot_empty_colour", _settings.slotEmptyColor);
 			Spacing();
 			Text("%s", Translate("Slot keys"));
-			Number("##wr_slot_key_size", _settings.slotKeyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_slot_key_colour", _settings.slotKeyColor);
+			Number("##orbit_slot_key_size", _settings.slotKeyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_slot_key_colour", _settings.slotKeyColor);
 			Spacing();
 			Text("%s", Translate("Hand"));
-			Number("##wr_hand_size", _settings.handTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_hand_colour", _settings.handColor);
+			Number("##orbit_hand_size", _settings.handTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_hand_colour", _settings.handColor);
 			Spacing();
 			Text("%s", Translate("Item Description"));
-			Number("##wr_item_description_size", _settings.itemDescriptionTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_item_description_colour", _settings.itemDescriptionColor);
+			Number("##orbit_item_description_size", _settings.itemDescriptionTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_item_description_colour", _settings.itemDescriptionColor);
 			Spacing();
 			Text("%s", Translate("Controls Hint"));
-			Number("##wr_hint_size", _settings.hintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##wr_hint_colour", _settings.hintColor);
+			Number("##orbit_hint_size", _settings.hintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_hint_colour", _settings.hintColor);
 
 			Separator();
 			Spacing();
-			if (Button(Label("Reset display to defaults##wr")))
+			if (Button(Label("Reset display to defaults##orbit")))
 			{
 				_settings.CopyDisplay(SettingsStore::Get().Defaults());
 				RequestSave();
@@ -254,24 +249,20 @@ namespace Orbit::Config
 			const auto count = _settings.numberOfPages;
 
 			SeparatorText(Translate("Pages"));
-			Check("Enable Pages##wr", _settings.enablePages);
-			Number("Number of Pages##wr", _settings.numberOfPages, Settings::kMinNumberOfPages, Settings::kMaxNumberOfPages);
+			Check("Enable Pages##orbit", _settings.enablePages);
+			Number("Number of Pages##orbit", _settings.numberOfPages, Settings::kMinNumberOfPages, Settings::kMaxNumberOfPages);
 			KeyRow("Next Page:", Input::kBindingNextPage);
 			KeyRow("Previous Page:", Input::kBindingPreviousPage);
-			if (const auto message = _input.CaptureMessage(); !message.empty())
-			{
-				Text("%s", message.c_str());
-			}
 
 			Separator();
 			Spacing();
-			if (Button(Label("Clear All Pages##wr")))
+			if (Button(Label("Clear All Pages##orbit")))
 			{
 				Items::Pages::Get().ClearExtraPages();
 			}
 			Tooltip("Clears pages 2 and up. Page 1 is kept.");
 			Spacing();
-			if (Button(Label("Reset pages to defaults##wr")))
+			if (Button(Label("Reset pages to defaults##orbit")))
 			{
 				_input.CancelKeyCapture();
 				_settings.CopyPages(SettingsStore::Get().Defaults());
@@ -288,15 +279,15 @@ namespace Orbit::Config
 		{
 			using namespace ImGuiMCP;
 			SeparatorText(Translate("Slow Motion"));
-			Check("Enable Slow Motion##wr", _settings.enableSlowMotion);
-			Slider("Time Speed##wr", _settings.slowMotionTimeSpeed, Settings::kMinSlowMotionTimeSpeed, Settings::kMaxSlowMotionTimeSpeed, "%.2f",
+			Check("Enable Slow Motion##orbit", _settings.enableSlowMotion);
+			Slider("Time Speed##orbit", _settings.slowMotionTimeSpeed, Settings::kMinSlowMotionTimeSpeed, Settings::kMaxSlowMotionTimeSpeed, "%.2f",
 				   "1 is off, 0.30 and lower I do not recommend, can mess up physics, and mods like HDT-SMP");
-			Slider("Fade In##wr", _settings.slowMotionFadeIn, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
-			Slider("Fade Out##wr", _settings.slowMotionFadeOut, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
+			Slider("Fade In##orbit", _settings.slowMotionFadeIn, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
+			Slider("Fade Out##orbit", _settings.slowMotionFadeOut, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
 
 			Separator();
 			Spacing();
-			if (Button(Label("Reset slow motion to defaults##wr")))
+			if (Button(Label("Reset slow motion to defaults##orbit")))
 			{
 				_settings.CopySlowMotion(SettingsStore::Get().Defaults());
 				RequestSave();
@@ -396,7 +387,7 @@ namespace Orbit::Config
 			const int pad = a_binding.gamepad ? 1 : 0;
 			const auto name = Input::KeyName(a_key);
 			const auto label = a_binding.gamepad ? Translate("Controller: {}", name) : name;
-			if (Button(std::format("{}##wr_bind_{}_{}", label, a_binding.id, pad).c_str()))
+			if (Button(std::format("{}##orbit_bind_{}_{}", label, a_binding.id, pad).c_str()))
 			{
 				_input.BeginKeyCapture(a_binding);
 			}
@@ -404,7 +395,7 @@ namespace Orbit::Config
 			if (a_key != Input::kKeyBindNone)
 			{
 				SameLine();
-				if (Button(std::format("{}##wr_unbind_{}_{}", Translate("Unbind"), a_binding.id, pad).c_str()))
+				if (Button(std::format("{}##orbit_unbind_{}_{}", Translate("Unbind"), a_binding.id, pad).c_str()))
 				{
 					a_key = Input::kKeyBindNone;
 					_save = true;
@@ -426,7 +417,7 @@ namespace Orbit::Config
 		bool _save = false;
 	};
 
-	MenuFrameworkConfig &MenuFrameworkConfig::Get() noexcept
+	MenuFrameworkConfig &MenuFrameworkConfig::Get()
 	{
 		static MenuFrameworkConfig singleton;
 		return singleton;

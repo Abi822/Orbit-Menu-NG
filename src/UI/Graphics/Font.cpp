@@ -8,7 +8,7 @@ namespace Orbit::UI::Graphics
 	{
 		constexpr float kFontSize = 32.0f;
 
-		[[nodiscard]] std::filesystem::path FontFile(std::string_view a_fontPath)
+		std::filesystem::path FontFile(std::string_view a_fontPath)
 		{
 			const std::filesystem::path path{std::u8string{a_fontPath.begin(), a_fontPath.end()}};
 			std::filesystem::path font;
@@ -30,7 +30,7 @@ namespace Orbit::UI::Graphics
 			return font;
 		}
 
-		[[nodiscard]] ImFont *AddFont(ImFontAtlas &a_atlas, const std::filesystem::path &a_path)
+		ImFont *AddFont(ImFontAtlas &a_atlas, const std::filesystem::path &a_path)
 		{
 			std::error_code ec;
 			if (!std::filesystem::is_regular_file(a_path, ec))

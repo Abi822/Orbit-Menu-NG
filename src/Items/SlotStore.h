@@ -9,7 +9,7 @@ namespace Orbit::Items
 		RE::FormID formID = 0;
 		std::string name;
 
-		[[nodiscard]] bool IsEmpty() const noexcept { return formID == 0; }
+		bool IsEmpty() const { return formID == 0; }
 		bool operator==(const AssignedItem &) const = default;
 	};
 
@@ -18,12 +18,12 @@ namespace Orbit::Items
 	class SlotStore
 	{
 	public:
-		[[nodiscard]] static SlotStore &Get() noexcept;
+		static SlotStore &Get();
 
-		[[nodiscard]] AssignedItem Slot(int a_slot) const;
-		[[nodiscard]] SlotArray Snapshot() const;
-		[[nodiscard]] std::optional<int> Find(const AssignedItem &a_item) const;
-		[[nodiscard]] std::uint32_t ChangeCount() const;
+		AssignedItem Slot(int a_slot) const;
+		SlotArray Snapshot() const;
+		std::optional<int> Find(const AssignedItem &a_item) const;
+		std::uint32_t ChangeCount() const;
 
 		void Assign(int a_slot, AssignedItem a_item);
 		void Clear(int a_slot);

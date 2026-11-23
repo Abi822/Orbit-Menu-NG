@@ -25,24 +25,24 @@ namespace Orbit::UI::OrbitMenu
 		int flashSlot = -1;
 		float flash = 0.0f;
 
-		[[nodiscard]] int StrongestSlot() const noexcept;
+		int StrongestSlot() const;
 	};
 
 	class MenuAnimation
 	{
 	public:
-		[[nodiscard]] MenuInput Track(Input::OrbitSnapshot a_snapshot);
-		[[nodiscard]] bool Animate(int a_hoveredSlot, float a_speed);
+		MenuInput Track(Input::OrbitSnapshot a_snapshot);
+		bool Animate(int a_hoveredSlot, float a_speed);
 
-		[[nodiscard]] const Motion &GetMotion() const noexcept { return _motion; }
-		[[nodiscard]] bool IsVisible() const noexcept { return _visible; }
-		[[nodiscard]] bool IsPreviewing() const noexcept { return _preview.load(); }
-		void SetPreview(bool a_preview) noexcept { _preview.store(a_preview); }
+		const Motion &GetMotion() const { return _motion; }
+		bool IsVisible() const { return _visible; }
+		bool IsPreviewing() const { return _preview.load(); }
+		void SetPreview(bool a_preview) { _preview.store(a_preview); }
 
 	private:
 		using Clock = std::chrono::steady_clock;
 
-		[[nodiscard]] float Progress(Clock::time_point a_since, float a_seconds, float a_speed) const;
+		float Progress(Clock::time_point a_since, float a_seconds, float a_speed) const;
 
 		std::atomic<bool> _preview{false};
 		Input::OrbitSnapshot _snapshot{};

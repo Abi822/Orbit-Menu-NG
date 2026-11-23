@@ -26,6 +26,6 @@ namespace Orbit::UI::OrbitMenu
 		std::vector<TextPiece> pieces;
 		float iconTop = 0.0f;
 
-		[[nodiscard]] static ItemDescriptionLayout Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_textSize, float a_iconSize, float a_centerBackgroundRadius);
+		static ItemDescriptionLayout Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_textSize, float a_iconSize, float a_centerBackgroundRadius);
 	};
 }

@@ -12,7 +12,7 @@ namespace Orbit::UI::OrbitMenu
 		std::string label;
 		std::optional<std::uint32_t> tint;
 
-		[[nodiscard]] bool Empty() const noexcept { return skinFile.empty() && label.empty(); }
+		bool Empty() const { return skinFile.empty() && label.empty(); }
 
 		bool operator==(const IconRequest &) const = default;
 	};
@@ -28,13 +28,13 @@ namespace Orbit::UI::OrbitMenu
 	public:
 		void Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_centrePixels);
 
-		[[nodiscard]] std::optional<Graphics::CachedImage> Find(int a_slot, IconSize a_size) const;
+		std::optional<Graphics::CachedImage> Find(int a_slot, IconSize a_size) const;
 
 	private:
-		[[nodiscard]] bool Draw(const IconRequest &a_request, int a_slot);
-		[[nodiscard]] int Pixels(IconSize a_size) const noexcept;
-		[[nodiscard]] int CellX(int a_slot) const noexcept;
-		[[nodiscard]] int CellY(IconSize a_size) const noexcept;
+		bool Draw(const IconRequest &a_request, int a_slot);
+		int Pixels(IconSize a_size) const;
+		int CellX(int a_slot) const;
+		int CellY(IconSize a_size) const;
 
 		Graphics::GpuTexture _texture;
 		Core::PerSlot<bool> _drawn{};

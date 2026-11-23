@@ -17,13 +17,13 @@ namespace Orbit::UI::Graphics
 			return pointer;
 		}
 
-		[[nodiscard]] float NumberMember(const RE::GFxValue &a_object, const char *a_name)
+		float NumberMember(const RE::GFxValue &a_object, const char *a_name)
 		{
 			RE::GFxValue value;
 			return a_object.GetMember(a_name, &value) && value.IsNumber() ? static_cast<float>(value.GetNumber()) : 0.0f;
 		}
 
-		[[nodiscard]] RE::GRenderer::Cxform TintTransform(std::uint32_t a_tint)
+		RE::GRenderer::Cxform TintTransform(std::uint32_t a_tint)
 		{
 			using Cxform = RE::GRenderer::Cxform;
 			Cxform transform;
@@ -59,7 +59,7 @@ namespace Orbit::UI::Graphics
 		class SwfFiles
 		{
 		public:
-			[[nodiscard]] static SwfFiles &Get()
+			static SwfFiles &Get()
 			{
 				static auto *files = new SwfFiles;
 				return *files;

@@ -11,7 +11,7 @@ namespace Orbit::Items
 	{
 		using Input::Hand;
 
-		[[nodiscard]] const RE::BGSEquipSlot *HandSlot(bool a_left)
+		const RE::BGSEquipSlot *HandSlot(bool a_left)
 		{
 			const auto *objects = RE::BGSDefaultObjectManager::GetSingleton();
 			return objects ? objects->GetObject<RE::BGSEquipSlot>(a_left ? RE::DEFAULT_OBJECT::kLeftHandEquip : RE::DEFAULT_OBJECT::kRightHandEquip) : nullptr;
@@ -45,31 +45,12 @@ namespace Orbit::Items
 			func(&a_manager, &a_actor, &a_power, kVoiceSource);
 		}
 
-		[[nodiscard]] bool IsTwoHanded(const RE::TESForm &a_form)
-		{
-			if (const auto *weapon = a_form.As<RE::TESObjectWEAP>())
-			{
-				switch (weapon->GetWeaponType())
-				{
-				case RE::WEAPON_TYPE::kTwoHandSword:
-				case RE::WEAPON_TYPE::kTwoHandAxe:
-				case RE::WEAPON_TYPE::kBow:
-				case RE::WEAPON_TYPE::kCrossbow:
-					return true;
-				default:
-					return false;
-				}
-			}
-			const auto *magic = a_form.As<RE::MagicItem>();
-			return magic && magic->IsTwoHanded();
-		}
-
-		[[nodiscard]] bool CanChangeHands(const RE::TESForm &a_form)
+		bool CanChangeHands(const RE::TESForm &a_form)
 		{
 			return a_form.Is(RE::FormType::Weapon, RE::FormType::Spell, RE::FormType::Scroll) && !IsTwoHanded(a_form);
 		}
 
-		[[nodiscard]] bool IsHeldByPressedHand(Hand a_hand, bool a_inLeft, bool a_inRight)
+		bool IsHeldByPressedHand(Hand a_hand, bool a_inLeft, bool a_inRight)
 		{
 			switch (a_hand)
 			{
@@ -88,7 +69,7 @@ namespace Orbit::Items
 		class Equipper
 		{
 		public:
-			[[nodiscard]] static std::optional<Equipper> Create()
+			static std::optional<Equipper> Create()
 			{
 				auto *player = RE::PlayerCharacter::GetSingleton();
 				auto *manager = RE::ActorEquipManager::GetSingleton();
@@ -101,7 +82,7 @@ namespace Orbit::Items
 
 			void Use(RE::TESForm &a_form, const AssignedItem &a_slot, Hand a_hand)
 			{
-				switch (KindOf(&a_form))
+				switch (GetItemKind(&a_form))
 				{
 				case ItemKind::kWeapon:
 				case ItemKind::kScroll:
@@ -408,7 +389,7 @@ namespace Orbit::Items
 				}
 			}
 
-			[[nodiscard]] RE::ExtraDataList *ListForMove(const RE::TESForm &a_item, bool a_leftHand)
+			RE::ExtraDataList *ListForMove(const RE::TESForm &a_item, bool a_leftHand)
 			{
 				auto *entry = _player.GetEquippedEntryData(a_leftHand);
 				const char *name = entry ? entry->GetDisplayName() : nullptr;
@@ -449,7 +430,7 @@ namespace Orbit::Items
 		};
 	}
 
-	EquipController &EquipController::Get() noexcept
+	EquipController &EquipController::Get()
 	{
 		static EquipController singleton;
 		return singleton;
@@ -474,7 +455,7 @@ namespace Orbit::Items
 		}
 		logger::info("Equip Controller: Slot {}: {}", a_slot + 1, slot.name);
 		equipper->Use(*form, slot, a_hand);
-		_changes.fetch_add(1, std::memory_order_relaxed);
+		++_changes;
 	}
 
 	void EquipController::SwapHands()
@@ -482,7 +463,7 @@ namespace Orbit::Items
 		if (auto equipper = Equipper::Create())
 		{
 			equipper->SwapHands();
-			_changes.fetch_add(1, std::memory_order_relaxed);
+			++_changes;
 		}
 	}
 
@@ -490,7 +471,7 @@ namespace Orbit::Items
 	{
 		if (a_event && a_event->actor.get() == RE::PlayerCharacter::GetSingleton())
 		{
-			_changes.fetch_add(1, std::memory_order_relaxed);
+			++_changes;
 		}
 		return RE::BSEventNotifyControl::kContinue;
 	}

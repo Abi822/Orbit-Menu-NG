@@ -11,7 +11,7 @@ namespace Orbit::UI::Skins
 	public:
 		void Update(const Skin &a_skin, float a_pixelScale, const Config::Settings &a_settings);
 
-		[[nodiscard]] std::optional<Graphics::CachedImage> Find(Part a_part) const;
+		std::optional<Graphics::CachedImage> Find(Part a_part) const;
 
 	private:
 		Graphics::GpuTexture _texture;

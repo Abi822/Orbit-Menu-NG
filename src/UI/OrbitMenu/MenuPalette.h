@@ -28,12 +28,12 @@ namespace Orbit::UI::OrbitMenu
 		ImVec4 centreFill{0.02f, 0.02f, 0.025f, 0.55f};
 		ImVec4 textShadow{0.0f, 0.0f, 0.0f, 0.75f};
 
-		[[nodiscard]] static MenuPalette Make(const Config::Settings &a_settings) noexcept;
+		static MenuPalette Make(const Config::Settings &a_settings);
 	};
 
-	[[nodiscard]] ImU32 Color(ImVec4 a_color, float a_alpha);
+	ImU32 Color(ImVec4 a_color, float a_alpha);
 
-	[[nodiscard]] ImVec4 Mix(ImVec4 a_from, ImVec4 a_to, float a_t) noexcept;
+	ImVec4 Mix(ImVec4 a_from, ImVec4 a_to, float a_t);
 
-	[[nodiscard]] ImVec4 Fade(ImVec4 a_color, float a_factor) noexcept;
+	ImVec4 Fade(ImVec4 a_color, float a_factor);
 }

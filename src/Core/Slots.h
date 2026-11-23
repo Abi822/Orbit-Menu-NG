@@ -7,7 +7,7 @@ namespace Orbit::Core
 {
 	inline constexpr int kSlotCount = 8;
 
-	[[nodiscard]] constexpr bool IsValidSlot(int a_slot) noexcept
+	constexpr bool IsValidSlot(int a_slot)
 	{
 		return a_slot >= 0 && a_slot < kSlotCount;
 	}

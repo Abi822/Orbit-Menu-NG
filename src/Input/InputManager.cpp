@@ -1,5 +1,9 @@
 #include "Input/InputManager.h"
 #include "Game/GameState.h"
+#include "Integration/MenuFrameworkBridge.h"
+#include "Items/Assignment.h"
+#include "Items/EquipController.h"
+#include "Items/Pages.h"
 
 namespace Orbit::Input
 {
@@ -12,7 +16,7 @@ namespace Orbit::Input
 
 		constexpr float kSwitchDistance = 130.0f;
 
-		[[nodiscard]] std::optional<int> SlotOfKey(const Config::Settings &a_settings, std::uint32_t a_keybind)
+		std::optional<int> SlotOfKey(const Config::Settings &a_settings, std::uint32_t a_keybind)
 		{
 			const auto key = std::ranges::find(a_settings.slotKeys, a_keybind);
 			if (key == a_settings.slotKeys.end())
@@ -22,7 +26,7 @@ namespace Orbit::Input
 			return static_cast<int>(key - a_settings.slotKeys.begin());
 		}
 
-		[[nodiscard]] int PageStep(const Config::Settings &a_settings, std::uint32_t a_keybind) noexcept
+		int PageStep(const Config::Settings &a_settings, std::uint32_t a_keybind)
 		{
 			if (!a_settings.enablePages)
 			{
@@ -39,52 +43,22 @@ namespace Orbit::Input
 			return 0;
 		}
 
-		Core::SelectionTuning MakeTuning(float a_deadzone, float a_sensitivity)
+		Core::PointerLimits MouseLimits(float a_deadzone, float a_sensitivity)
 		{
-			Core::SelectionTuning tuning;
-			tuning.deadzone = a_deadzone;
+			Core::PointerLimits limits;
+			limits.deadzone = a_deadzone;
 			if (a_sensitivity > 0.0f)
 			{
-				tuning.pointerRadius = a_deadzone + kSwitchDistance / a_sensitivity;
+				limits.maxDistance = a_deadzone + kSwitchDistance / a_sensitivity;
 			}
-			return tuning;
+			return limits;
 		}
 	}
 
-	InputManager &InputManager::Get() noexcept
+	InputManager &InputManager::Get()
 	{
 		static InputManager singleton;
 		return singleton;
-	}
-
-	void InputManager::SetCommitHandler(CommitHandler a_handler)
-	{
-		std::scoped_lock lock{_lock};
-		_onCommit = std::move(a_handler);
-	}
-
-	void InputManager::SetAssignHandler(AssignHandler a_handler)
-	{
-		std::scoped_lock lock{_lock};
-		_onAssign = std::move(a_handler);
-	}
-
-	void InputManager::SetSwapHandler(SwapHandler a_handler)
-	{
-		std::scoped_lock lock{_lock};
-		_onSwap = std::move(a_handler);
-	}
-
-	void InputManager::SetPageHandler(PageHandler a_handler)
-	{
-		std::scoped_lock lock{_lock};
-		_onPage = std::move(a_handler);
-	}
-
-	void InputManager::SetUiBusyPredicate(BusyPredicate a_predicate)
-	{
-		std::scoped_lock lock{_lock};
-		_uiBusy = std::move(a_predicate);
 	}
 
 	void InputManager::Enable()
@@ -100,9 +74,7 @@ namespace Orbit::Input
 			return false;
 		}
 
-		Outcome outcome;
-		SwapHandler swap;
-		PageHandler page;
+		Result result;
 		{
 			std::scoped_lock lock{_lock};
 			if (!_enabled)
@@ -121,13 +93,13 @@ namespace Orbit::Input
 			case RE::INPUT_EVENT_TYPE::kButton:
 				if (auto *button = a_event->AsButtonEvent())
 				{
-					HandleButton(*button, settings, outcome);
+					HandleButton(*button, settings, result);
 				}
 				break;
 			case RE::INPUT_EVENT_TYPE::kMouseMove:
 				if (const auto *move = a_event->AsMouseMoveEvent())
 				{
-					outcome.block = HandleMouseMove(*move, settings.mouseSensitivity, settings.SelectionDeadzone());
+					result.block = HandleMouseMove(*move, settings.mouseSensitivity, settings.SelectionDeadzone());
 				}
 				break;
 			case RE::INPUT_EVENT_TYPE::kThumbstick:
@@ -139,18 +111,9 @@ namespace Orbit::Input
 			default:
 				break;
 			}
-
-			if (outcome.swapHands)
-			{
-				swap = _onSwap;
-			}
-			if (outcome.pageStep != 0)
-			{
-				page = _onPage;
-			}
 		}
 
-		if (outcome.committed && NotifyCommit(*outcome.committed))
+		if (result.committed && NotifyCommit(*result.committed))
 		{
 			if (const auto *button = a_event->AsButtonEvent(); button && button->IsDown())
 			{
@@ -160,17 +123,17 @@ namespace Orbit::Input
 					_swallow[*code] = true;
 				}
 			}
-			outcome.block = true;
+			result.block = true;
 		}
-		if (swap)
+		if (result.swapHands)
 		{
-			swap();
+			Items::EquipController::Get().SwapHands();
 		}
-		if (page)
+		if (result.pageStep != 0)
 		{
-			page(outcome.pageStep);
+			Items::Pages::Get().Turn(result.pageStep);
 		}
-		return outcome.block;
+		return result.block;
 	}
 
 	const Config::Settings &InputManager::CurrentSettingsLocked()
@@ -194,7 +157,7 @@ namespace Orbit::Input
 		return _capture.active && HandleCapture(*a_event);
 	}
 
-	void InputManager::HandleButton(RE::ButtonEvent &a_button, const Config::Settings &a_settings, Outcome &a_outcome)
+	void InputManager::HandleButton(RE::ButtonEvent &a_button, const Config::Settings &a_settings, Result &a_result)
 	{
 		const auto code = ToKeyBind(a_button);
 		if (!code)
@@ -211,7 +174,7 @@ namespace Orbit::Input
 			{
 				_capturedPress.reset();
 				swallowed = true;
-				a_outcome.block = true;
+				a_result.block = true;
 				return;
 			}
 			swallowed = false;
@@ -228,7 +191,7 @@ namespace Orbit::Input
 					{
 						OpenLocked(gamepad, assign);
 						swallowed = true;
-						a_outcome.block = true;
+						a_result.block = true;
 						return;
 					}
 				}
@@ -236,10 +199,10 @@ namespace Orbit::Input
 				{
 					if (a_settings.toggleOrbitMenu)
 					{
-						a_outcome.committed = ReleaseLocked(a_settings);
+						a_result.committed = ReleaseLocked(a_settings);
 					}
 					swallowed = true;
-					a_outcome.block = true;
+					a_result.block = true;
 					return;
 				}
 			}
@@ -248,18 +211,18 @@ namespace Orbit::Input
 				const bool wasSwallowed = std::exchange(swallowed, false);
 				if (_state.IsOpen() && !a_settings.toggleOrbitMenu)
 				{
-					a_outcome.committed = ReleaseLocked(a_settings);
-					a_outcome.block = true;
+					a_result.committed = ReleaseLocked(a_settings);
+					a_result.block = true;
 				}
 				else
 				{
-					a_outcome.block = wasSwallowed || _state.IsOpen();
+					a_result.block = wasSwallowed || _state.IsOpen();
 				}
 				return;
 			}
 			else
 			{
-				a_outcome.block = swallowed || _state.IsOpen();
+				a_result.block = swallowed || _state.IsOpen();
 				return;
 			}
 		}
@@ -272,7 +235,7 @@ namespace Orbit::Input
 			{
 				_clicks |= button;
 				swallowed = true;
-				a_outcome.block = true;
+				a_result.block = true;
 				return;
 			}
 			if (up && (_clicks & button) != 0)
@@ -280,10 +243,10 @@ namespace Orbit::Input
 				const Hand hand = _clicks == (kClickLeft | kClickRight) ? Hand::kBoth : (button == kClickLeft ? Hand::kRight : Hand::kLeft);
 				_clicks = 0;
 				swallowed = false;
-				a_outcome.block = true;
+				a_result.block = true;
 				if (const auto slot = _state.Choose())
 				{
-					a_outcome.committed = Commit{*slot, hand, _assignMode};
+					a_result.committed = Commit{*slot, hand, _assignMode};
 				}
 				return;
 			}
@@ -295,7 +258,7 @@ namespace Orbit::Input
 			{
 				swallowed = false;
 			}
-			a_outcome.block = true;
+			a_result.block = true;
 			return;
 		}
 
@@ -304,7 +267,7 @@ namespace Orbit::Input
 		{
 			if (down && !_capture.active && keySlot)
 			{
-				a_outcome.committed = Commit{*keySlot, Hand::kDefault, true};
+				a_result.committed = Commit{*keySlot, Hand::kDefault, true};
 			}
 			return;
 		}
@@ -315,7 +278,7 @@ namespace Orbit::Input
 			{
 				_state.Select(*keySlot);
 				swallowed = true;
-				a_outcome.block = true;
+				a_result.block = true;
 			}
 			return;
 		}
@@ -325,8 +288,8 @@ namespace Orbit::Input
 			if (down)
 			{
 				swallowed = true;
-				a_outcome.block = true;
-				a_outcome.pageStep = step;
+				a_result.block = true;
+				a_result.pageStep = step;
 			}
 			return;
 		}
@@ -334,8 +297,8 @@ namespace Orbit::Input
 		if (!_assignMode && (*code == a_settings.swapHandsKey || *code == a_settings.gamepadSwapHandsKey) && down)
 		{
 			swallowed = true;
-			a_outcome.block = true;
-			a_outcome.swapHands = true;
+			a_result.block = true;
+			a_result.swapHands = true;
 			return;
 		}
 
@@ -345,7 +308,7 @@ namespace Orbit::Input
 			if (down)
 			{
 				swallowed = true;
-				a_outcome.block = true;
+				a_result.block = true;
 			}
 			return;
 		}
@@ -359,7 +322,7 @@ namespace Orbit::Input
 		}
 
 		const ImVec2 delta{static_cast<float>(a_move.mouseInputX), static_cast<float>(a_move.mouseInputY)};
-		_state.AddPointerDelta(delta, MakeTuning(a_deadzone, a_sensitivity));
+		_state.AddPointerDelta(delta, MouseLimits(a_deadzone, a_sensitivity));
 		return true;
 	}
 
@@ -407,17 +370,8 @@ namespace Orbit::Input
 
 		_capturedPress = CapturedPress{*code, Clock::now()};
 		_swallow[*code] = true;
-
-		std::string reason;
-		if (!IsBindable(*code, &reason))
-		{
-			_capture.message = std::move(reason);
-			return true;
-		}
-
 		_capture.active = false;
 		_capture.result = CapturedKey{_capture.binding.id, *code};
-		_capture.message.clear();
 		logger::info("InputManager: Key captured: {} ({})", *code, KeyName(*code));
 		return true;
 	}
@@ -431,7 +385,13 @@ namespace Orbit::Input
 	OrbitSnapshot InputManager::GetSnapshot() const
 	{
 		std::scoped_lock lock{_lock};
-		return OrbitSnapshot{_state.IsOpen(), _state.HoveredSlot(), _state.OpenCount(), _closeCount, _lastCloseChoseSlot, _openedWithGamepad, _assignMode};
+		return {.open = _state.IsOpen(),
+				.hoveredSlot = _state.HoveredSlot(),
+				.openCount = _state.OpenCount(),
+				.closeCount = _closeCount,
+				.lastCloseChoseSlot = _lastCloseChoseSlot,
+				.gamepad = _openedWithGamepad,
+				.assign = _assignMode};
 	}
 
 	void InputManager::BeginKeyCapture(KeyBinding a_binding)
@@ -463,15 +423,9 @@ namespace Orbit::Input
 		return std::exchange(_capture.result, std::nullopt);
 	}
 
-	std::string InputManager::CaptureMessage() const
-	{
-		std::scoped_lock lock{_lock};
-		return _capture.message;
-	}
-
 	bool InputManager::IsBlockedLocked(bool a_assign) const
 	{
-		return !(a_assign ? Game::IsInItemMenu() : Game::IsInGameplay()) || (_uiBusy && _uiBusy());
+		return !(a_assign ? Game::IsInItemMenu() : Game::IsInGameplay()) || Integration::MenuFramework::IsBlockingWindowOpen();
 	}
 
 	void InputManager::OpenLocked(bool a_gamepad, bool a_assign)
@@ -480,8 +434,8 @@ namespace Orbit::Input
 		_stickCentred = std::hypot(_stick.x, _stick.y) <= Config::Settings::kControllerDeadzone;
 		_clicks = 0;
 		_openedWithGamepad = a_gamepad;
-		_assignMode.store(a_assign, std::memory_order_release);
-		_orbitMenuOpen.store(true, std::memory_order_release);
+		_assignMode = a_assign;
+		_orbitMenuOpen = true;
 	}
 
 	std::optional<int> InputManager::CloseLocked(bool a_commit)
@@ -494,7 +448,7 @@ namespace Orbit::Input
 		const auto slot = _state.Close(a_commit);
 		++_closeCount;
 		_lastCloseChoseSlot = slot.has_value();
-		_orbitMenuOpen.store(false, std::memory_order_release);
+		_orbitMenuOpen = false;
 		return slot;
 	}
 
@@ -509,21 +463,11 @@ namespace Orbit::Input
 
 	bool InputManager::NotifyCommit(const Commit &a_commit) const
 	{
-		CommitHandler use;
-		AssignHandler assign;
-		{
-			std::scoped_lock lock{_lock};
-			use = _onCommit;
-			assign = _onAssign;
-		}
 		if (a_commit.assign)
 		{
-			return assign && assign(a_commit.slot);
+			return Items::Assignment::AssignHighlighted(a_commit.slot);
 		}
-		if (use)
-		{
-			use(a_commit.slot, a_commit.hand);
-		}
+		Items::EquipController::Get().EquipSlot(a_commit.slot, a_commit.hand);
 		return true;
 	}
 }

@@ -77,20 +77,15 @@ namespace Orbit::UI::OrbitMenu
 			bool fits = true;
 		};
 
-		[[nodiscard]] float Apothem(float a_radius) noexcept
-		{
-			return a_radius * std::cos(Core::kSliceAngle * 0.5f);
-		}
-
-		[[nodiscard]] float HalfWidthAt(float a_radius, float a_y) noexcept
+		float HalfWidthAt(float a_radius, float a_y)
 		{
 			const float half = Core::kSliceAngle * 0.5f;
-			const float side = Apothem(a_radius) - kEdgeInset;
+			const float side = MenuLayout::InnerRadius(a_radius) - kEdgeInset;
 			const float diagonal = a_radius * (std::cos(half) + std::sin(half)) - kEdgeInset * std::numbers::sqrt2_v<float> - std::abs(a_y);
 			return std::max(0.0f, std::min(side, diagonal));
 		}
 
-		[[nodiscard]] float WidthAt(float a_radius, float a_top, float a_height) noexcept
+		float WidthAt(float a_radius, float a_top, float a_height)
 		{
 			return 2.0f * std::min(HalfWidthAt(a_radius, a_top), HalfWidthAt(a_radius, a_top + a_height));
 		}
@@ -98,9 +93,9 @@ namespace Orbit::UI::OrbitMenu
 		class Placer
 		{
 		public:
-			Placer(const Graphics::TextMeasure &a_text, float a_radius) noexcept : _text(a_text), _radius(a_radius) {}
+			Placer(const Graphics::TextMeasure &a_text, float a_radius) : _text(a_text), _radius(a_radius) {}
 
-			[[nodiscard]] Block Place(const Core::ItemDescription &a_description, const Sizes &a_sizes, float a_top, float a_bottom, bool a_even) const
+			Block Place(const Core::ItemDescription &a_description, const Sizes &a_sizes, float a_top, float a_bottom, bool a_even) const
 			{
 				Block block{.y = a_top, .bottom = a_bottom, .even = a_even};
 				const float gap = kGap * a_sizes.header;
@@ -119,7 +114,7 @@ namespace Orbit::UI::OrbitMenu
 			}
 
 		private:
-			[[nodiscard]] Words Measure(float a_size, std::string_view a_text) const
+			Words Measure(float a_size, std::string_view a_text) const
 			{
 				Words words;
 				for (const auto line : std::views::split(a_text, '\n'))
@@ -145,7 +140,7 @@ namespace Orbit::UI::OrbitMenu
 				return words;
 			}
 
-			[[nodiscard]] Lines Wrap(const Words &a_words, float a_size, float a_lineHeight, std::size_t a_maxLines, const Block &a_block, float a_maxWidth) const
+			Lines Wrap(const Words &a_words, float a_size, float a_lineHeight, std::size_t a_maxLines, const Block &a_block, float a_maxWidth) const
 			{
 				Lines lines;
 				const auto &words = a_words.text;
@@ -194,7 +189,7 @@ namespace Orbit::UI::OrbitMenu
 				return lines;
 			}
 
-			[[nodiscard]] Lines WrapEvenly(const Words &a_words, float a_size, float a_lineHeight, std::size_t a_maxLines, const Block &a_block) const
+			Lines WrapEvenly(const Words &a_words, float a_size, float a_lineHeight, std::size_t a_maxLines, const Block &a_block) const
 			{
 				Lines lines = Wrap(a_words, a_size, a_lineHeight, a_maxLines, a_block, FLT_MAX);
 				if (!lines.fits || lines.text.size() < 2)
@@ -250,7 +245,7 @@ namespace Orbit::UI::OrbitMenu
 				}
 			}
 
-			[[nodiscard]] float StatWidth(const Core::ItemStat &a_stat, float a_size) const
+			float StatWidth(const Core::ItemStat &a_stat, float a_size) const
 			{
 				const float labelSize = a_size * kLabelRatio;
 				float width = _text.Width(a_size, a_stat.value);
@@ -265,7 +260,7 @@ namespace Orbit::UI::OrbitMenu
 				return width;
 			}
 
-			[[nodiscard]] float RowWidth(std::span<const Core::ItemStat> a_row, float a_size) const
+			float RowWidth(std::span<const Core::ItemStat> a_row, float a_size) const
 			{
 				float width = a_size * kStatSpacingRatio * static_cast<float>(a_row.size() - 1);
 				for (const auto &stat : a_row)
@@ -351,10 +346,10 @@ namespace Orbit::UI::OrbitMenu
 		}
 
 		const bool withIcon = a_iconSize > 0.0f;
-		const float apothem = Apothem(a_centerBackgroundRadius);
+		const float innerRadius = MenuLayout::InnerRadius(a_centerBackgroundRadius);
 		const float lead = withIcon ? a_iconSize + kIconGap : 0.0f;
-		const float top = withIcon ? kIconInset + lead - apothem : kEdgeInset - apothem;
-		const float bottom = apothem - kEdgeInset;
+		const float top = withIcon ? kIconInset + lead - innerRadius : kEdgeInset - innerRadius;
+		const float bottom = innerRadius - kEdgeInset;
 
 		const float header = a_textSize / kTextSize;
 		const float smallestText = std::min(a_textSize, kMinTextSize);

@@ -10,7 +10,7 @@ namespace Orbit::Game::Hooks
 		constexpr std::uint8_t kCall = 0xE8;
 		constexpr std::uint8_t kJump = 0xE9;
 
-		[[nodiscard]] bool HasOpcode(std::uintptr_t a_address, std::uint8_t a_opcode)
+		bool HasOpcode(std::uintptr_t a_address, std::uint8_t a_opcode)
 		{
 			return *reinterpret_cast<const std::uint8_t *>(a_address) == a_opcode;
 		}

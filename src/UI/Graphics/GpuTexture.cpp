@@ -17,7 +17,7 @@ namespace Orbit::UI::Graphics
 
 	namespace
 	{
-		[[nodiscard]] ID3D11BlendState *PremultipliedBlend()
+		ID3D11BlendState *PremultipliedBlend()
 		{
 			static ID3D11BlendState *blend = nullptr;
 			if (!blend)
@@ -133,6 +133,17 @@ namespace Orbit::UI::Graphics
 		_texture.Reset();
 		_width = 0;
 		_height = 0;
+	}
+
+	void GpuTexture::Clear()
+	{
+		auto *context = GameContext();
+		if (!context || !_target)
+		{
+			return;
+		}
+		constexpr float kTransparent[4]{};
+		context->ClearRenderTargetView(_target.Get(), kTransparent);
 	}
 
 	void GpuTexture::Upload(int a_x, int a_y, int a_size, const std::vector<std::uint8_t> &a_rgba)

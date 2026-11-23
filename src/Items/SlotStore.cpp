@@ -74,7 +74,7 @@ namespace Orbit::Items
 		}
 	}
 
-	SlotStore &SlotStore::Get() noexcept
+	SlotStore &SlotStore::Get()
 	{
 		static SlotStore singleton;
 		return singleton;
@@ -193,7 +193,7 @@ namespace Orbit::Items
 
 			RE::FormID formID = 0;
 			const auto *form = a_intfc.ResolveFormID(savedID, formID) ? RE::TESForm::LookupByID(formID) : nullptr;
-			if (KindOf(form) == ItemKind::kNone)
+			if (GetItemKind(form) == ItemKind::kNone)
 			{
 				logger::warn("SKSE co-save: slot {} item {:08X} ({}) no longer exists the slot cleared!", i + 1, savedID, name);
 				continue;

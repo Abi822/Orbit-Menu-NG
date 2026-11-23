@@ -9,25 +9,27 @@ namespace Orbit::UI::OrbitMenu
 		constexpr std::size_t kEdgeSegments = 8;
 		constexpr int kImageGrid = 8;
 		constexpr int kBadgeSegments = 24;
-		constexpr float kPointerHalfWidth = 11.0f / 28.0f;
+		constexpr float kPointerHalfWidth = 0.393f;
 		constexpr float kHintLineSpacing = 1.3f;
 		constexpr float kInnerRingInset = 6.0f;
 		constexpr float kInsideRingMargin = 8.0f;
+		constexpr float kHidden = 0.01f;
+		constexpr float kMissingAlpha = 0.45f;
 
 		using Skins::Part;
 
-		[[nodiscard]] ImVec2 PositionSide(Config::BadgePosition a_position) noexcept
+		ImVec2 PositionSide(Config::BadgePosition a_position)
 		{
 			const auto index = static_cast<int>(a_position);
 			return {static_cast<float>(index % 3 - 1), index < 3 ? -1.0f : 1.0f};
 		}
 
-		[[nodiscard]] ImVec2 BadgeAt(ImVec2 a_center, float a_radius, Config::BadgePosition a_position) noexcept
+		ImVec2 BadgeAt(ImVec2 a_center, float a_radius, Config::BadgePosition a_position)
 		{
 			return a_center + PositionSide(a_position) * (a_radius * MenuLayout::kBadgeInset);
 		}
 
-		[[nodiscard]] ImVec2 TextInsideCircle(ImVec2 a_center, float a_radius, Config::BadgePosition a_position, ImVec2 a_box) noexcept
+		ImVec2 TextInsideCircle(ImVec2 a_center, float a_radius, Config::BadgePosition a_position, ImVec2 a_box)
 		{
 			const ImVec2 side = PositionSide(a_position);
 			const ImVec2 edge = side.x == 0.0f ? ImVec2{0.0f, side.y * std::sqrt(std::max(0.0f, a_radius * a_radius - a_box.x * a_box.x * 0.25f))}
@@ -37,6 +39,14 @@ namespace Orbit::UI::OrbitMenu
 			const float top = side.y < 0.0f ? edge.y : edge.y - a_box.y;
 			return a_center + ImVec2{left, top};
 		}
+
+		MenuLayout LayoutFor(ImVec2 a_display, const Scene &a_scene)
+		{
+			const auto &settings = a_scene.settings;
+			const ImVec2 offset{static_cast<float>(settings.positionX), static_cast<float>(settings.positionY)};
+			return MenuLayout::Compute(a_display, offset, settings.orbitMenuScale, a_scene.motion.scale, static_cast<float>(settings.slotDistance),
+									   static_cast<float>(settings.slotSize) * 0.5f, static_cast<float>(settings.centerBackgroundSize) * 0.5f);
+		}
 	}
 
 	MenuPainter::MenuPainter(ImDrawList &a_drawList, ImFont &a_font, ImVec2 a_display, const Scene &a_scene) : _drawList(a_drawList),
@@ -44,9 +54,7 @@ namespace Orbit::UI::OrbitMenu
 																											   _display(a_display),
 																											   _scene(a_scene),
 																											   _colors(a_scene.content.Colors()),
-																											   _layout(MenuLayout::Compute(a_display, {static_cast<float>(a_scene.settings.positionX), static_cast<float>(a_scene.settings.positionY)},
-																																		   a_scene.settings.orbitMenuScale, a_scene.motion.scale, static_cast<float>(a_scene.settings.slotDistance),
-																																		   static_cast<float>(a_scene.settings.slotSize) * 0.5f, static_cast<float>(a_scene.settings.centerBackgroundSize) * 0.5f)),
+																											   _layout(LayoutFor(a_display, a_scene)),
 																											   _curve(OrbitMenuCurved::Make(a_scene.settings, _layout, a_display)),
 																											   _alpha(a_scene.motion.alpha),
 																											   _strongestSlot(a_scene.motion.StrongestSlot()),
@@ -104,27 +112,27 @@ namespace Orbit::UI::OrbitMenu
 		Bend(firstVertex, hintVertex);
 	}
 
-	float MenuPainter::Px(float a_base) const noexcept
+	float MenuPainter::Px(float a_base) const
 	{
 		return a_base * _layout.scale;
 	}
 
-	float MenuPainter::TextPx(std::int32_t a_size) const noexcept
+	float MenuPainter::TextPx(std::int32_t a_size) const
 	{
 		return std::max(8.0f, Px(static_cast<float>(a_size)));
 	}
 
-	float MenuPainter::SlotRadius(int a_slot) const noexcept
+	float MenuPainter::SlotRadius(int a_slot) const
 	{
 		return _layout.slotRadius * (1.0f + MenuLayout::kSlotHoverGrowth * _scene.motion.hover[static_cast<std::size_t>(a_slot)]);
 	}
 
-	float MenuPainter::Presence(int a_slot) const noexcept
+	float MenuPainter::SlotAlpha(int a_slot) const
 	{
 		switch (_scene.content.View(a_slot).state)
 		{
 		case Core::SlotState::kMissing:
-			return 0.45f;
+			return kMissingAlpha;
 		case Core::SlotState::kEmpty:
 			return 0.7f;
 		default:
@@ -132,7 +140,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	ImVec2 MenuPainter::NameAt(int a_slot) const noexcept
+	ImVec2 MenuPainter::NameAt(int a_slot) const
 	{
 		const ImVec2 center = _layout.SlotCenter(a_slot);
 		return {center.x, center.y + SlotRadius(a_slot) + Px(8.0f)};
@@ -149,8 +157,8 @@ namespace Orbit::UI::OrbitMenu
 			const auto &key = _scene.content.Text(slot).key;
 			if (!key.text.empty())
 			{
-				const float presence = Presence(slot);
-				a_visit(Badge{BadgeAt(_layout.SlotCenter(slot), SlotRadius(slot), position), size, key, Fade(_colors.slotKey, presence), presence});
+				const float alpha = SlotAlpha(slot);
+				a_visit(Badge{BadgeAt(_layout.SlotCenter(slot), SlotRadius(slot), position), size, key, Fade(_colors.slotKey, alpha), alpha});
 			}
 		}
 	}
@@ -269,7 +277,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 
 		const auto &motion = _scene.motion;
-		if (skin || _strength <= 0.01f || !motion.pointerValid)
+		if (skin || _strength <= kHidden || !motion.pointerValid)
 		{
 			return;
 		}
@@ -277,7 +285,7 @@ namespace Orbit::UI::OrbitMenu
 		{
 			const float distance = Core::AngularDistance(Core::SlotCenterAngle(static_cast<int>(i)), motion.pointerAngle);
 			const float strength = std::clamp(1.0f - distance / Core::kSliceAngle, 0.0f, 1.0f) * _strength;
-			if (strength <= 0.01f)
+			if (strength <= kHidden)
 			{
 				continue;
 			}
@@ -289,13 +297,13 @@ namespace Orbit::UI::OrbitMenu
 	void MenuPainter::DrawPointer() const
 	{
 		const auto &motion = _scene.motion;
-		if (_strength <= 0.01f || !motion.pointerValid)
+		if (_strength <= kHidden || !motion.pointerValid)
 		{
 			return;
 		}
 		const float angle = motion.pointerAngle;
 		const float size = Px(static_cast<float>(_scene.settings.pointerSize));
-		const float baseDistance = _layout.CenterBackgroundApothem() + Px(static_cast<float>(_scene.settings.pointerDistance));
+		const float baseDistance = MenuLayout::InnerRadius(_layout.centerBackgroundRadius) + Px(static_cast<float>(_scene.settings.pointerDistance));
 		if (const auto image = _scene.skin.Find(Part::kPointer))
 		{
 			const ImVec2 center = _layout.PointAt(angle, baseDistance + size * 0.5f);
@@ -318,7 +326,7 @@ namespace Orbit::UI::OrbitMenu
 		const auto &motion = _scene.motion;
 		const float hover = motion.hover[static_cast<std::size_t>(a_slot)];
 		const float flash = a_slot == motion.flashSlot ? motion.flash : 0.0f;
-		if (hover <= 0.01f && flash <= 0.01f)
+		if (hover <= kHidden && flash <= kHidden)
 		{
 			return;
 		}
@@ -345,7 +353,7 @@ namespace Orbit::UI::OrbitMenu
 		_drawList.AddCircleFilled(center, radius, Color(_colors.slotFill, _alpha), kCircleSegments);
 		_drawList.AddCircle(center, radius - Px(kInnerRingInset), Color(equipped ? _colors.highlight : _colors.slotInnerRing, (equipped ? 0.5f : 1.0f) * _alpha),
 							kCircleSegments, std::max(1.0f, Px(1.0f)));
-		_drawList.AddCircle(center, radius, Color(Mix(_colors.slotBorder, _colors.highlight, hover), Presence(a_slot) * _alpha), kCircleSegments,
+		_drawList.AddCircle(center, radius, Color(Mix(_colors.slotBorder, _colors.highlight, hover), SlotAlpha(a_slot) * _alpha), kCircleSegments,
 							std::max(1.0f, Px(2.0f + hover)));
 	}
 
@@ -364,7 +372,7 @@ namespace Orbit::UI::OrbitMenu
 		{
 			Image(*base, center, size, Graphics::PremultipliedColor(_alpha * (hovered ? 1.0f - hover : 1.0f)));
 		}
-		if (hovered && hover > 0.01f)
+		if (hovered && hover > kHidden)
 		{
 			Image(*hovered, center, size, Graphics::PremultipliedColor(_alpha * hover));
 		}
@@ -377,7 +385,7 @@ namespace Orbit::UI::OrbitMenu
 		const auto &icons = _scene.icons;
 		Graphics::PremultipliedDraw premultiplied{_drawList};
 
-		if (settings.showItemIconDescription && _strength > 0.01f)
+		if (settings.showItemIconDescription && _strength > kHidden)
 		{
 			const auto &view = content.View(_strongestSlot);
 			if (const auto icon = icons.Find(_strongestSlot, IconSize::kCentre); icon && view.state != Core::SlotState::kEmpty)
@@ -386,7 +394,7 @@ namespace Orbit::UI::OrbitMenu
 				const float top = settings.showItemDescription ? content.Description(_strongestSlot).iconTop : -iconSize * 0.5f;
 				const float size = std::floor(Px(iconSize));
 				const ImVec2 center{_layout.center.x, _layout.center.y + Px(top) + size * 0.5f};
-				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? 0.45f : 1.0f) * _strength * _alpha));
+				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kMissingAlpha : 1.0f) * _strength * _alpha));
 			}
 		}
 
@@ -400,7 +408,7 @@ namespace Orbit::UI::OrbitMenu
 			{
 				const float hover = _scene.motion.hover[static_cast<std::size_t>(slot)];
 				const float size = std::floor(Px(static_cast<float>(settings.slotIconSize)) * (1.0f + MenuLayout::kSlotHoverGrowth * hover));
-				Image(*icon, _layout.SlotCenter(slot), size, Graphics::PremultipliedColor(Presence(slot) * _alpha, 0.8f + 0.2f * hover));
+				Image(*icon, _layout.SlotCenter(slot), size, Graphics::PremultipliedColor(SlotAlpha(slot) * _alpha, 0.8f + 0.2f * hover));
 			}
 		}
 	}
@@ -408,7 +416,7 @@ namespace Orbit::UI::OrbitMenu
 	void MenuPainter::DrawDescription() const
 	{
 		using TextRole = ItemDescriptionLayout::TextRole;
-		if (!_scene.settings.showItemDescription || _strength <= 0.01f)
+		if (!_scene.settings.showItemDescription || _strength <= kHidden)
 		{
 			return;
 		}
@@ -435,18 +443,18 @@ namespace Orbit::UI::OrbitMenu
 		const auto &text = content.Text(a_slot);
 		const float hover = _scene.motion.hover[static_cast<std::size_t>(a_slot)];
 		const bool missing = view.state == Core::SlotState::kMissing;
-		const float presence = Presence(a_slot);
+		const float alpha = SlotAlpha(a_slot);
 
 		if (view.state == Core::SlotState::kEmpty)
 		{
 			if (settings.showSlotEmpty)
 			{
-				TextCentered(TextPx(settings.slotEmptyTextSize), _layout.SlotCenter(a_slot), Fade(_colors.slotEmpty, presence), content.EmptyLabel());
+				TextCentered(TextPx(settings.slotEmptyTextSize), _layout.SlotCenter(a_slot), Fade(_colors.slotEmpty, alpha), content.EmptyLabel());
 			}
 			return;
 		}
 		const float nameSize = TextPx(settings.slotNameTextSize);
-		const ImVec4 textColor = Fade(Mix(_colors.slotName, _colors.slotNameHovered, hover), presence);
+		const ImVec4 textColor = Fade(Mix(_colors.slotName, _colors.slotNameHovered, hover), alpha);
 		ImVec2 textAt = NameAt(a_slot);
 		for (const auto &line : text.title)
 		{
@@ -465,14 +473,14 @@ namespace Orbit::UI::OrbitMenu
 		{
 			Graphics::PremultipliedDraw premultiplied{_drawList};
 			ForEachBadge([&](const Badge &a_badge)
-						 { Image(*image, a_badge.at, a_badge.size * 2.0f, Graphics::PremultipliedColor(a_badge.presence * _alpha)); });
+						 { Image(*image, a_badge.at, a_badge.size * 2.0f, Graphics::PremultipliedColor(a_badge.alpha * _alpha)); });
 		}
 		else
 		{
 			ForEachBadge([&](const Badge &a_badge)
 						 {
 				_drawList.AddCircleFilled(a_badge.at, a_badge.size, Color(_colors.keyBadge, _alpha), kBadgeSegments);
-				_drawList.AddCircle(a_badge.at, a_badge.size, Color(_colors.slotBorder, a_badge.presence * _alpha), kBadgeSegments, std::max(1.0f, Px(1.0f))); });
+				_drawList.AddCircle(a_badge.at, a_badge.size, Color(_colors.slotBorder, a_badge.alpha * _alpha), kBadgeSegments, std::max(1.0f, Px(1.0f))); });
 		}
 		ForEachBadge([&](const Badge &a_badge)
 					 { TextCentered(a_badge.size, a_badge.at, a_badge.color, a_badge.text); });
@@ -491,7 +499,7 @@ namespace Orbit::UI::OrbitMenu
 			{
 				continue;
 			}
-			const ImVec4 color = Fade(_colors.hand, Presence(slot));
+			const ImVec4 color = Fade(_colors.hand, SlotAlpha(slot));
 			const float width = text.hand.Width(size);
 			if (position == Config::BadgePosition::kNextToName)
 			{

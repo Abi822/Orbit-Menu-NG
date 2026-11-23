@@ -35,14 +35,14 @@ namespace Orbit::UI::OrbitMenu
 			float size;
 			const TextLine &text;
 			ImVec4 color;
-			float presence;
+			float alpha;
 		};
 
-		[[nodiscard]] float Px(float a_base) const noexcept;
-		[[nodiscard]] float TextPx(std::int32_t a_size) const noexcept;
-		[[nodiscard]] float SlotRadius(int a_slot) const noexcept;
-		[[nodiscard]] float Presence(int a_slot) const noexcept;
-		[[nodiscard]] ImVec2 NameAt(int a_slot) const noexcept;
+		float Px(float a_base) const;
+		float TextPx(std::int32_t a_size) const;
+		float SlotRadius(int a_slot) const;
+		float SlotAlpha(int a_slot) const;
+		ImVec2 NameAt(int a_slot) const;
 		template <class Visit>
 		void ForEachBadge(const Visit &a_visit) const;
 

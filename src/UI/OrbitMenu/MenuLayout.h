@@ -19,17 +19,17 @@ namespace Orbit::UI::OrbitMenu
 		float slotRadius = 0.0f;
 		float centerBackgroundRadius = 0.0f;
 
-		[[nodiscard]] static float ScreenScale(ImVec2 a_display) noexcept
+		static float ScreenScale(ImVec2 a_display)
 		{
 			return std::min(a_display.x, a_display.y) / kBaseScreenHeight;
 		}
 
-		[[nodiscard]] static constexpr float LargestSlotRadius(float a_slotRadius) noexcept
+		static constexpr float LargestSlotRadius(float a_slotRadius)
 		{
 			return a_slotRadius * (1.0f + kSlotHoverGrowth);
 		}
 
-		[[nodiscard]] static MenuLayout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_centerBackgroundRadius) noexcept
+		static MenuLayout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_centerBackgroundRadius)
 		{
 			MenuLayout layout;
 			const float screenScale = ScreenScale(a_display);
@@ -41,24 +41,24 @@ namespace Orbit::UI::OrbitMenu
 			return layout;
 		}
 
-		[[nodiscard]] ImVec2 PointAt(float a_angle, float a_distance) const noexcept
+		ImVec2 PointAt(float a_angle, float a_distance) const
 		{
 			return center + Core::DirectionFromAngle(a_angle) * a_distance;
 		}
 
-		[[nodiscard]] ImVec2 SlotCenter(int a_slot) const noexcept
+		ImVec2 SlotCenter(int a_slot) const
 		{
 			return PointAt(Core::SlotCenterAngle(a_slot), ringRadius);
 		}
 
-		[[nodiscard]] ImVec2 CenterBackgroundVertex(int a_index, float a_radius) const noexcept
+		ImVec2 CenterBackgroundVertex(int a_index, float a_radius) const
 		{
 			return PointAt(Core::SlotCenterAngle(a_index) - Core::kSliceAngle * 0.5f, a_radius);
 		}
 
-		[[nodiscard]] float CenterBackgroundApothem() const noexcept
+		static float InnerRadius(float a_radius)
 		{
-			return centerBackgroundRadius * std::cos(Core::kSliceAngle * 0.5f);
+			return a_radius * std::cos(Core::kSliceAngle * 0.5f);
 		}
 	};
 }

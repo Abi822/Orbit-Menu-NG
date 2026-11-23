@@ -5,7 +5,7 @@ namespace Orbit::Game
 	class SlowMotion
 	{
 	public:
-		[[nodiscard]] static SlowMotion &Get() noexcept;
+		static SlowMotion &Get();
 
 		void Update(bool a_menuOpen);
 		void Reset();
@@ -17,7 +17,7 @@ namespace Orbit::Game
 
 		void FadeTo(float a_factor, float a_seconds);
 		void Apply(float a_factor);
-		[[nodiscard]] float FadeProgress() const;
+		float FadeProgress() const;
 
 		bool _menuOpen = false;
 		bool _active = false;
@@ -27,8 +27,8 @@ namespace Orbit::Game
 		float _fadeTo = 1.0f;
 		float _fadeSeconds = 0.0f;
 		Clock::time_point _fadeStart{};
-		float _others = 1.0f;
-		float _written = 1.0f;
-		float _ceiling = 1.0f;
+		float _baseSpeed = 1.0f;
+		float _lastSpeed = 1.0f;
+		float _maxBaseSpeed = 1.0f;
 	};
 }
