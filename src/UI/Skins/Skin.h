@@ -3,7 +3,7 @@
 #include <map>
 #include <unordered_map>
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	enum class Part
 	{

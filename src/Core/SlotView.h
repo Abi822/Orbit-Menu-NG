@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace RMS::Core
+namespace Orbit::Core
 {
 	enum class SlotState
 	{

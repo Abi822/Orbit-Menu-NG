@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Input
+namespace Orbit::Input
 {
 	namespace InputMap = SKSE::InputMap;
 

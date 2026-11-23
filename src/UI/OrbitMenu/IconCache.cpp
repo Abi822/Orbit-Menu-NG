@@ -2,7 +2,7 @@
 #include "UI/Graphics/SwfIcon.h"
 #include "UI/Skins/SvgImage.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{

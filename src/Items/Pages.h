@@ -3,7 +3,7 @@
 #include "Config/Settings.h"
 #include "Items/SlotStore.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	class Pages
 	{

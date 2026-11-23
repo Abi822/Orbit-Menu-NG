@@ -8,7 +8,7 @@
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
 
-namespace RMS::UI
+namespace Orbit::UI
 {
 	namespace
 	{

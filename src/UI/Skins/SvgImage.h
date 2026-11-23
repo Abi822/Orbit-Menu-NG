@@ -2,7 +2,7 @@
 
 struct NSVGimage;
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	class SvgImage
 	{

@@ -1,7 +1,7 @@
 #include "Input/KeyBinds.h"
 #include "Config/Translation.h"
 
-namespace RMS::Input
+namespace Orbit::Input
 {
 	std::optional<std::uint32_t> ToKeyBind(const RE::ButtonEvent &a_event)
 	{

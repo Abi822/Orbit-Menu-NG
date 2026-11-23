@@ -2,7 +2,7 @@
 
 #include "Items/SlotStore.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	class Assignment
 	{

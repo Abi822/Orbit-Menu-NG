@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Core/RadialMath.h"
+#include "Core/OrbitMath.h"
 #include <algorithm>
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct MenuLayout
 	{

@@ -1,7 +1,7 @@
 #include "Game/GameState.h"
 #include "Config/Settings.h"
 
-namespace RMS::Game
+namespace Orbit::Game
 {
 	namespace
 	{

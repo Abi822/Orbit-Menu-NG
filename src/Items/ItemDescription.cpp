@@ -1,7 +1,7 @@
 #include "Items/ItemDescription.h"
 #include "Config/Translation.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	namespace
 	{

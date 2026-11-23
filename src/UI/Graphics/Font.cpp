@@ -2,7 +2,7 @@
 #include "JostMedium.h"
 #include <imgui.h>
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	namespace
 	{

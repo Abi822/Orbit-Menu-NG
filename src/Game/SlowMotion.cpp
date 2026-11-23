@@ -1,7 +1,7 @@
 #include "Game/SlowMotion.h"
 #include "Config/Settings.h"
 
-namespace RMS::Game
+namespace Orbit::Game
 {
 	namespace
 	{

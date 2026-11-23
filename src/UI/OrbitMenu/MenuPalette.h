@@ -3,7 +3,7 @@
 #include "Config/Settings.h"
 #include <imgui.h>
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct MenuPalette
 	{

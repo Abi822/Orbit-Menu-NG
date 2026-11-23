@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	class MenuFrameworkConfig
 	{

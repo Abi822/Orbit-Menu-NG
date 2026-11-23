@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iterator>
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	namespace
 	{

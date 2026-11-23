@@ -7,15 +7,15 @@
 #include "Items/ItemKind.h"
 #include "Items/SlotStore.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
-	class SlotDescriber
+	class SlotViewBuilder
 	{
 	public:
 		[[nodiscard]] static Core::PerSlot<Core::SlotView> DescribeAll(const Config::Settings &a_settings);
 
 	private:
-		SlotDescriber(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) noexcept;
+		SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) noexcept;
 
 		[[nodiscard]] Core::SlotView Describe(const AssignedItem &a_slot) const;
 		[[nodiscard]] Core::SlotView DescribeForm(RE::TESForm &a_form, const std::string &a_name, ItemKind a_kind) const;

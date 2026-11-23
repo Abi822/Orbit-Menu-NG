@@ -1,7 +1,7 @@
 #include "Items/Inventory.h"
 #include "Items/ItemKind.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	RE::TESForm *Inventory::HeldItem(bool a_leftHand) const
 	{

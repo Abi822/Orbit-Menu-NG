@@ -1,6 +1,6 @@
 #include "UI/Graphics/SwfIcon.h"
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	namespace
 	{

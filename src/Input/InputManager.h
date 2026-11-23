@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Config/Settings.h"
-#include "Core/RadialState.h"
+#include "Core/OrbitState.h"
 #include "Input/KeyBinds.h"
 
-namespace RMS::Input
+namespace Orbit::Input
 {
 	enum class Hand
 	{
@@ -113,7 +113,7 @@ namespace RMS::Input
 		mutable std::mutex _lock;
 		Config::Settings _settings;
 		std::optional<std::uint32_t> _settingsVersion;
-		Core::RadialState _state;
+		Core::OrbitState _state;
 		Capture _capture;
 		bool _enabled = false;
 		CommitHandler _onCommit;

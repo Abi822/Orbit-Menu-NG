@@ -7,11 +7,11 @@
 #include "UI/Graphics/TextMeasure.h"
 #include "UI/OrbitMenu/IconCache.h"
 #include "UI/OrbitMenu/ItemDescriptionLayout.h"
+#include "UI/OrbitMenu/MenuAnimation.h"
 #include "UI/OrbitMenu/MenuPalette.h"
-#include "UI/OrbitMenu/MenuState.h"
 #include "UI/Skins/Skin.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct TextLine
 	{

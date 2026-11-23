@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Items::Icons
+namespace Orbit::Items::Icons
 {
 	struct SkyUIIcon
 	{

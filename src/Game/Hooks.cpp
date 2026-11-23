@@ -3,7 +3,7 @@
 #include "Items/Assignment.h"
 #include "UI/ImGuiLayer.h"
 
-namespace RMS::Game::Hooks
+namespace Orbit::Game::Hooks
 {
 	namespace
 	{

@@ -2,12 +2,12 @@
 
 #include "Config/Settings.h"
 #include "UI/OrbitMenu/IconCache.h"
+#include "UI/OrbitMenu/MenuAnimation.h"
 #include "UI/OrbitMenu/MenuContent.h"
-#include "UI/OrbitMenu/MenuState.h"
 #include "UI/Skins/Skin.h"
 #include "UI/Skins/SkinImages.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	class OrbitRenderer
 	{
@@ -21,9 +21,9 @@ namespace RMS::UI::OrbitMenu
 
 		void Draw(ImDrawList &a_drawList, ImFont &a_font, ImVec2 a_display);
 
-		[[nodiscard]] bool IsVisible() const noexcept { return _state.IsVisible(); }
-		[[nodiscard]] bool IsPreviewing() const noexcept { return _state.IsPreviewing(); }
-		void SetPreview(bool a_preview) noexcept { _state.SetPreview(a_preview); }
+		[[nodiscard]] bool IsVisible() const noexcept { return _animation.IsVisible(); }
+		[[nodiscard]] bool IsPreviewing() const noexcept { return _animation.IsPreviewing(); }
+		void SetPreview(bool a_preview) noexcept { _animation.SetPreview(a_preview); }
 
 	private:
 		OrbitRenderer() = default;
@@ -31,7 +31,7 @@ namespace RMS::UI::OrbitMenu
 		[[nodiscard]] bool SyncSettings();
 		void UpdateContent(ImFont &a_font, const MenuInput &a_input);
 
-		MenuState _state;
+		MenuAnimation _animation;
 		Config::Settings _settings;
 		std::optional<std::uint32_t> _settingsVersion;
 		Skins::Skin _skin;

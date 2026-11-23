@@ -36,43 +36,43 @@ namespace
 
 	void OnSKSEMessage(SKSE::MessagingInterface::Message *a_message)
 	{
-		auto &input = RMS::Input::InputManager::Get();
+		auto &input = Orbit::Input::InputManager::Get();
 
 		switch (a_message->type)
 		{
 		case SKSE::MessagingInterface::kPostLoad:
-			RMS::Integration::MenuFramework::Install();
+			Orbit::Integration::MenuFramework::Install();
 			break;
 
 		case SKSE::MessagingInterface::kDataLoaded:
 		{
-			RMS::Integration::I4Addon::Get().Load();
-			RMS::Items::EquipController::Get().Register();
-			RMS::UI::ImGuiLayer::Setup();
+			Orbit::Integration::I4Addon::Get().Load();
+			Orbit::Items::EquipController::Get().Register();
+			Orbit::UI::ImGuiLayer::Setup();
 			input.Enable();
-			const auto settings = RMS::Config::SettingsStore::Get().Snapshot();
-			const auto key = settings.activationKey != RMS::Input::kKeyBindNone ? settings.activationKey : settings.gamepadActivationKey;
-			if (key == RMS::Input::kKeyBindNone)
+			const auto settings = Orbit::Config::SettingsStore::Get().Snapshot();
+			const auto key = settings.activationKey != Orbit::Input::kKeyBindNone ? settings.activationKey : settings.gamepadActivationKey;
+			if (key == Orbit::Input::kKeyBindNone)
 			{
 				logger::warn("ImGui: Ready: but no key or controller button is bound to open the Orbit Menu");
 			}
 			else
 			{
-				logger::info("ImGui: Ready: hold {} in game to open the Orbit Menu", RMS::Input::KeyName(key));
+				logger::info("ImGui: Ready: hold {} in game to open the Orbit Menu", Orbit::Input::KeyName(key));
 			}
 		}
 		break;
 
 		case SKSE::MessagingInterface::kPreLoadGame:
 			input.ForceClose();
-			RMS::Game::SlowMotion::Get().Reset();
+			Orbit::Game::SlowMotion::Get().Reset();
 			break;
 
 		case SKSE::MessagingInterface::kPostLoadGame:
 		case SKSE::MessagingInterface::kNewGame:
 			input.ForceClose();
-			RMS::Game::SlowMotion::Get().Reset();
-			RMS::UI::ImGuiLayer::Preload();
+			Orbit::Game::SlowMotion::Get().Reset();
+			Orbit::UI::ImGuiLayer::Preload();
 			break;
 
 		default:
@@ -83,25 +83,25 @@ namespace
 
 SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 {
-	SKSE::Init(a_skse, {.log = false, .trampoline = true, .trampolineSize = RMS::Game::Hooks::kTrampolineSize});
+	SKSE::Init(a_skse, {.log = false, .trampoline = true, .trampolineSize = Orbit::Game::Hooks::kTrampolineSize});
 	OpenLog();
 
 	logger::info("Orbit Menu Starting");
 	logger::info("ImGui: Orbit Menu loading on Skyrim {}", REL::Module::get().version().string("."));
 
-	RMS::Config::SettingsStore::Get().Load();
-	RMS::Config::LoadTranslation(RMS::Config::SettingsStore::Get().Snapshot().languagePath);
-	RMS::Items::SlotStore::RegisterSerialization();
+	Orbit::Config::SettingsStore::Get().Load();
+	Orbit::Config::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
+	Orbit::Items::SlotStore::RegisterSerialization();
 
-	auto &input = RMS::Input::InputManager::Get();
-	input.SetUiBusyPredicate(RMS::Integration::MenuFramework::IsBlockingWindowOpen);
-	input.SetAssignHandler(RMS::Items::Assignment::AssignHighlighted);
-	input.SetCommitHandler([](int a_slot, RMS::Input::Hand a_hand)
-						   { RMS::Items::EquipController::Get().EquipSlot(a_slot, a_hand); });
+	auto &input = Orbit::Input::InputManager::Get();
+	input.SetUiBusyPredicate(Orbit::Integration::MenuFramework::IsBlockingWindowOpen);
+	input.SetAssignHandler(Orbit::Items::Assignment::AssignHighlighted);
+	input.SetCommitHandler([](int a_slot, Orbit::Input::Hand a_hand)
+						   { Orbit::Items::EquipController::Get().EquipSlot(a_slot, a_hand); });
 	input.SetSwapHandler([]
-						 { RMS::Items::EquipController::Get().SwapHands(); });
+						 { Orbit::Items::EquipController::Get().SwapHands(); });
 	input.SetPageHandler([](int a_step)
-						 { RMS::Items::Pages::Get().Turn(a_step); });
+						 { Orbit::Items::Pages::Get().Turn(a_step); });
 
 	const auto *messaging = SKSE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(OnSKSEMessage))
@@ -110,6 +110,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 		return false;
 	}
 
-	RMS::Game::Hooks::Install();
+	Orbit::Game::Hooks::Install();
 	return true;
 }

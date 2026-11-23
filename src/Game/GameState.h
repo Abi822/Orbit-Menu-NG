@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Game
+namespace Orbit::Game
 {
 	[[nodiscard]] bool IsInGameplay();
 

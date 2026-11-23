@@ -3,7 +3,7 @@
 #include <map>
 #include <nlohmann/json.hpp>
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	namespace
 	{

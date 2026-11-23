@@ -2,7 +2,7 @@
 
 #include "Core/Slots.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	struct AssignedItem
 	{

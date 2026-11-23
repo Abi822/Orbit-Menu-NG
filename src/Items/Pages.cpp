@@ -2,7 +2,7 @@
 #include "Config/Translation.h"
 #include "Input/KeyBinds.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	Pages &Pages::Get() noexcept
 	{

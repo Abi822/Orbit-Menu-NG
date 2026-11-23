@@ -3,13 +3,13 @@
 #include "Config/Settings.h"
 #include "UI/Graphics/GpuTexture.h"
 #include "UI/OrbitMenu/IconCache.h"
+#include "UI/OrbitMenu/MenuAnimation.h"
 #include "UI/OrbitMenu/MenuContent.h"
 #include "UI/OrbitMenu/MenuLayout.h"
-#include "UI/OrbitMenu/MenuState.h"
 #include "UI/OrbitMenu/OrbitMenuCurved.h"
 #include "UI/Skins/SkinImages.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct Scene
 	{

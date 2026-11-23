@@ -1,7 +1,7 @@
 #include "UI/Graphics/GpuTexture.h"
 #include <imgui_impl_dx11.h>
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	ID3D11Device *GameDevice()
 	{

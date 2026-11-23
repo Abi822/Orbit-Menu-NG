@@ -1,6 +1,6 @@
 #include "UI/OrbitMenu/MenuPainter.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{

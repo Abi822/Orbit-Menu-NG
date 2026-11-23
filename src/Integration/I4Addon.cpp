@@ -3,7 +3,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-namespace RMS::Integration
+namespace Orbit::Integration
 {
 	namespace
 	{

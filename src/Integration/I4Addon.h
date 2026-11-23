@@ -2,7 +2,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-namespace RMS::Integration
+namespace Orbit::Integration
 {
 	class I4Addon
 	{

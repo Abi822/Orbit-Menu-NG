@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	void LoadTranslation(std::string_view a_path);
 

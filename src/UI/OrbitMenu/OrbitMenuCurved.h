@@ -3,7 +3,7 @@
 #include "Config/Settings.h"
 #include "UI/OrbitMenu/MenuLayout.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct OrbitMenuCurved
 	{

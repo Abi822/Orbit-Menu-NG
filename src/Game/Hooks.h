@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Game::Hooks
+namespace Orbit::Game::Hooks
 {
 	inline constexpr std::size_t kTrampolineSize = 14 * 5;
 

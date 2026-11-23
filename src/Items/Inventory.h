@@ -2,7 +2,7 @@
 
 #include "Core/SlotView.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	inline constexpr bool kLeftHand = true;
 	inline constexpr bool kRightHand = false;

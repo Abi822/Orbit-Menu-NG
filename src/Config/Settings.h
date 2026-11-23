@@ -2,7 +2,7 @@
 
 #include "Core/Slots.h"
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	enum class BadgePosition : std::int32_t
 	{

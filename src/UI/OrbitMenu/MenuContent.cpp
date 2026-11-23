@@ -2,10 +2,10 @@
 #include "Config/Translation.h"
 #include "Items/EquipController.h"
 #include "Items/Pages.h"
-#include "Items/SlotDescriber.h"
 #include "Items/SlotStore.h"
+#include "Items/SlotViewBuilder.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{
@@ -100,7 +100,7 @@ namespace RMS::UI::OrbitMenu
 		_seenSlotChanges = slotChanges;
 		_seenEquipChanges = equipChanges;
 
-		auto views = Items::SlotDescriber::DescribeAll(a_settings);
+		auto views = Items::SlotViewBuilder::DescribeAll(a_settings);
 		if (views == _views)
 		{
 			return false;

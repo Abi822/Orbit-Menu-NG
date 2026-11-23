@@ -1,7 +1,7 @@
 #include "UI/Skins/SkinIconNames.h"
 #include "Items/ItemKind.h"
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	namespace
 	{

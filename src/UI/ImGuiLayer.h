@@ -2,7 +2,7 @@
 
 struct ImFont;
 
-namespace RMS::UI
+namespace Orbit::UI
 {
 	class ImGuiLayer
 	{

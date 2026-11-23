@@ -3,7 +3,7 @@
 #include "Core/SlotView.h"
 #include "UI/Graphics/TextMeasure.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct ItemDescriptionLayout
 	{

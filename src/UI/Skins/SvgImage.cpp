@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iterator>
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	void SvgImage::Delete::operator()(NSVGimage *a_image) const noexcept
 	{

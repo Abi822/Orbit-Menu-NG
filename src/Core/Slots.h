@@ -3,7 +3,7 @@
 #include <array>
 #include <cstddef>
 
-namespace RMS::Core
+namespace Orbit::Core
 {
 	inline constexpr int kSlotCount = 8;
 

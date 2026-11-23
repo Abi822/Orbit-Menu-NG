@@ -4,7 +4,7 @@
 #include "Config/Translation.h"
 #include "Input/InputManager.h"
 
-namespace RMS::Integration::MenuFramework
+namespace Orbit::Integration::MenuFramework
 {
 	namespace
 	{

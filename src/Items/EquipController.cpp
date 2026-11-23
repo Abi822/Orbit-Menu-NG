@@ -5,7 +5,7 @@
 
 #undef GetObject
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	namespace
 	{

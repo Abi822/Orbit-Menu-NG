@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	enum class ItemKind
 	{

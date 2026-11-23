@@ -40,9 +40,9 @@ set(SOURCES
 	src/main.cpp
 
 	src/Core/Slots.h
-	src/Core/RadialMath.h
-	src/Core/RadialState.h
-	src/Core/RadialState.cpp
+	src/Core/OrbitMath.h
+	src/Core/OrbitState.h
+	src/Core/OrbitState.cpp
 	src/Core/SlotView.h
 
 	src/Config/Settings.h
@@ -76,8 +76,8 @@ set(SOURCES
 	src/UI/Graphics/TextMeasure.cpp
 	src/UI/OrbitMenu/OrbitRenderer.h
 	src/UI/OrbitMenu/OrbitRenderer.cpp
-	src/UI/OrbitMenu/MenuState.h
-	src/UI/OrbitMenu/MenuState.cpp
+	src/UI/OrbitMenu/MenuAnimation.h
+	src/UI/OrbitMenu/MenuAnimation.cpp
 	src/UI/OrbitMenu/MenuLayout.h
 	src/UI/OrbitMenu/MenuPalette.h
 	src/UI/OrbitMenu/MenuPalette.cpp
@@ -108,8 +108,8 @@ set(SOURCES
 	src/Items/Inventory.cpp
 	src/Items/Assignment.h
 	src/Items/Assignment.cpp
-	src/Items/SlotDescriber.h
-	src/Items/SlotDescriber.cpp
+	src/Items/SlotViewBuilder.h
+	src/Items/SlotViewBuilder.cpp
 	src/Items/EquipController.h
 	src/Items/EquipController.cpp
 	src/Items/ItemIcons.h

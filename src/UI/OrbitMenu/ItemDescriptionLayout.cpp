@@ -4,7 +4,7 @@
 #include <ranges>
 #include <span>
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{

@@ -1,6 +1,6 @@
 #include "UI/OrbitMenu/MenuPalette.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{

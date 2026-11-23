@@ -3,7 +3,7 @@
 #include "Core/Slots.h"
 #include "Input/InputManager.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct MenuInput
 	{
@@ -28,7 +28,7 @@ namespace RMS::UI::OrbitMenu
 		[[nodiscard]] int StrongestSlot() const noexcept;
 	};
 
-	class MenuState
+	class MenuAnimation
 	{
 	public:
 		[[nodiscard]] MenuInput Track(Input::OrbitSnapshot a_snapshot);

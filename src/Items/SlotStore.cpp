@@ -2,11 +2,11 @@
 #include "Items/ItemKind.h"
 #include "Items/Pages.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	namespace
 	{
-		constexpr std::uint32_t kCoSaveID = 'RMSK';
+		constexpr std::uint32_t kCoSaveID = 'ORBM';
 		constexpr std::uint32_t kSlotsRecord = 'SLTS';
 		constexpr std::uint32_t kSlotsVersion = 1;
 		constexpr std::size_t kMaxNameLength = 512;

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Core/RadialMath.h"
+#include "Core/OrbitMath.h"
 #include <cstdint>
 #include <limits>
 #include <optional>
 
-namespace RMS::Core
+namespace Orbit::Core
 {
 	struct SelectionTuning
 	{
@@ -14,7 +14,7 @@ namespace RMS::Core
 		float hysteresis = 0.07f;
 	};
 
-	class RadialState
+	class OrbitState
 	{
 	public:
 		void Open() noexcept;

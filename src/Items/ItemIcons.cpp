@@ -1,7 +1,7 @@
 #include "Items/ItemIcons.h"
 #include "Items/ItemKind.h"
 
-namespace RMS::Items::Icons
+namespace Orbit::Items::Icons
 {
 	namespace
 	{

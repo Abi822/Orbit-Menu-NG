@@ -3,7 +3,7 @@
 #include "Core/SlotView.h"
 #include "Items/ItemKind.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	[[nodiscard]] Core::ItemDescription DescribeItem(RE::PlayerCharacter &a_player, RE::TESForm &a_form, std::string_view a_title, ItemKind a_kind, RE::ExtraDataList *a_extraList);
 

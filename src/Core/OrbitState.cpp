@@ -1,8 +1,8 @@
-#include "Core/RadialState.h"
+#include "Core/OrbitState.h"
 
-namespace RMS::Core
+namespace Orbit::Core
 {
-	void RadialState::Open() noexcept
+	void OrbitState::Open() noexcept
 	{
 		_open = true;
 		_chosen = false;
@@ -11,7 +11,7 @@ namespace RMS::Core
 		++_openCount;
 	}
 
-	void RadialState::AddPointerDelta(ImVec2 a_delta, const SelectionTuning &a_tuning) noexcept
+	void OrbitState::AddPointerDelta(ImVec2 a_delta, const SelectionTuning &a_tuning) noexcept
 	{
 		if (!_open)
 		{
@@ -26,7 +26,7 @@ namespace RMS::Core
 		UpdateHover(a_tuning);
 	}
 
-	void RadialState::SetPointer(ImVec2 a_position, const SelectionTuning &a_tuning) noexcept
+	void OrbitState::SetPointer(ImVec2 a_position, const SelectionTuning &a_tuning) noexcept
 	{
 		if (!_open)
 		{
@@ -36,7 +36,7 @@ namespace RMS::Core
 		UpdateHover(a_tuning);
 	}
 
-	void RadialState::Select(int a_slot) noexcept
+	void OrbitState::Select(int a_slot) noexcept
 	{
 		if (!_open || !IsValidSlot(a_slot))
 		{
@@ -46,7 +46,7 @@ namespace RMS::Core
 		_pointer = {};
 	}
 
-	void RadialState::UpdateHover(const SelectionTuning &a_tuning) noexcept
+	void OrbitState::UpdateHover(const SelectionTuning &a_tuning) noexcept
 	{
 		if (std::hypot(_pointer.x, _pointer.y) <= a_tuning.deadzone)
 		{
@@ -72,7 +72,7 @@ namespace RMS::Core
 		_hovered = candidate;
 	}
 
-	std::optional<int> RadialState::Choose() noexcept
+	std::optional<int> OrbitState::Choose() noexcept
 	{
 		if (!_open || _hovered < 0)
 		{
@@ -82,7 +82,7 @@ namespace RMS::Core
 		return _hovered;
 	}
 
-	std::optional<int> RadialState::Close(bool a_commit) noexcept
+	std::optional<int> OrbitState::Close(bool a_commit) noexcept
 	{
 		if (!_open)
 		{

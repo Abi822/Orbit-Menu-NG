@@ -10,7 +10,7 @@
 #include "Items/SlotStore.h"
 #include "UI/OrbitMenu/OrbitRenderer.h"
 
-namespace RMS::Config
+namespace Orbit::Config
 {
 	namespace
 	{

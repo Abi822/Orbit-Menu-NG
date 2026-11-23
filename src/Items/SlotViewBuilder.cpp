@@ -1,12 +1,12 @@
-#include "Items/SlotDescriber.h"
+#include "Items/SlotViewBuilder.h"
 #include "Config/Translation.h"
 #include "Integration/I4Addon.h"
 #include "Items/ItemDescription.h"
 #include "Items/ItemIcons.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
-	Core::PerSlot<Core::SlotView> SlotDescriber::DescribeAll(const Config::Settings &a_settings)
+	Core::PerSlot<Core::SlotView> SlotViewBuilder::DescribeAll(const Config::Settings &a_settings)
 	{
 		Core::PerSlot<Core::SlotView> views{};
 		auto *player = RE::PlayerCharacter::GetSingleton();
@@ -14,7 +14,7 @@ namespace RMS::Items
 		{
 			return views;
 		}
-		const SlotDescriber describer{*player, a_settings};
+		const SlotViewBuilder describer{*player, a_settings};
 		const auto slots = SlotStore::Get().Snapshot();
 		for (std::size_t i = 0; i < views.size(); ++i)
 		{
@@ -26,13 +26,13 @@ namespace RMS::Items
 		return views;
 	}
 
-	SlotDescriber::SlotDescriber(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) noexcept : _player(a_player),
+	SlotViewBuilder::SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) noexcept : _player(a_player),
 																											   _inventory(a_player),
 																											   _settings(a_settings)
 	{
 	}
 
-	Core::SlotView SlotDescriber::Describe(const AssignedItem &a_slot) const
+	Core::SlotView SlotViewBuilder::Describe(const AssignedItem &a_slot) const
 	{
 		auto *form = RE::TESForm::LookupByID(a_slot.formID);
 		const auto kind = KindOf(form);
@@ -46,7 +46,7 @@ namespace RMS::Items
 		return view;
 	}
 
-	Core::SlotView SlotDescriber::DescribeForm(RE::TESForm &a_form, const std::string &a_name, ItemKind a_kind) const
+	Core::SlotView SlotViewBuilder::DescribeForm(RE::TESForm &a_form, const std::string &a_name, ItemKind a_kind) const
 	{
 		std::int32_t count = 0;
 		RE::ExtraDataList *extraList = nullptr;
@@ -83,7 +83,7 @@ namespace RMS::Items
 		return view;
 	}
 
-	Core::SlotView SlotDescriber::Missing(const std::string &a_name, std::string a_status) const
+	Core::SlotView SlotViewBuilder::Missing(const std::string &a_name, std::string a_status) const
 	{
 		Core::SlotView view{a_name, std::move(a_status), Core::SlotState::kMissing};
 		if (_settings.showItemDescription)
@@ -93,7 +93,7 @@ namespace RMS::Items
 		return view;
 	}
 
-	void SlotDescriber::AddIcon(Core::SlotView &a_view, const RE::TESForm &a_form) const
+	void SlotViewBuilder::AddIcon(Core::SlotView &a_view, const RE::TESForm &a_form) const
 	{
 		const auto skyui = Icons::SkyUIIconFor(a_form);
 		a_view.iconLabel = skyui.label;

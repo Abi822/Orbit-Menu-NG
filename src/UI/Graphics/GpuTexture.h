@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include <wrl/client.h>
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	[[nodiscard]] ID3D11Device *GameDevice();
 

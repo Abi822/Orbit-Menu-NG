@@ -2,7 +2,7 @@
 
 #include "Input/InputManager.h"
 
-namespace RMS::Items
+namespace Orbit::Items
 {
 	class EquipController final : public RE::BSTEventSink<RE::TESEquipEvent>
 	{

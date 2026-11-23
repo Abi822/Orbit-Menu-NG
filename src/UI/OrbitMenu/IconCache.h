@@ -3,7 +3,7 @@
 #include "Core/Slots.h"
 #include "UI/Graphics/GpuTexture.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	struct IconRequest
 	{

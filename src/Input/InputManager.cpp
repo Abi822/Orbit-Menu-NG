@@ -1,7 +1,7 @@
 #include "Input/InputManager.h"
 #include "Game/GameState.h"
 
-namespace RMS::Input
+namespace Orbit::Input
 {
 	namespace
 	{

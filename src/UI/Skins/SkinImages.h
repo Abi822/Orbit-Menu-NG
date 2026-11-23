@@ -4,7 +4,7 @@
 #include "UI/Graphics/GpuTexture.h"
 #include "UI/Skins/Skin.h"
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	class SkinImages
 	{

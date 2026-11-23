@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::Integration::MenuFramework
+namespace Orbit::Integration::MenuFramework
 {
 	void Install();
 

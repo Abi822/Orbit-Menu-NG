@@ -3,7 +3,7 @@
 #include "UI/OrbitMenu/MenuLayout.h"
 #include "UI/OrbitMenu/MenuPainter.h"
 
-namespace RMS::UI::OrbitMenu
+namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{
@@ -41,15 +41,15 @@ namespace RMS::UI::OrbitMenu
 
 	void OrbitRenderer::Draw(ImDrawList &a_drawList, ImFont &a_font, ImVec2 a_display)
 	{
-		const auto input = _state.Track(Input::InputManager::Get().GetSnapshot());
+		const auto input = _animation.Track(Input::InputManager::Get().GetSnapshot());
 		UpdateContent(a_font, input);
 		UpdateImages(a_display);
 		const int hovered = input.previewing ? _content.FirstFilledSlot() : input.hoveredSlot;
-		if (!_state.Animate(hovered, _settings.animationSpeed))
+		if (!_animation.Animate(hovered, _settings.animationSpeed))
 		{
 			return;
 		}
-		const Scene scene{_settings, input, _state.GetMotion(), _content, _icons, _skinImages};
+		const Scene scene{_settings, input, _animation.GetMotion(), _content, _icons, _skinImages};
 		MenuPainter{a_drawList, a_font, a_display, scene}.Paint();
 	}
 

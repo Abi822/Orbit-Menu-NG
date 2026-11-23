@@ -1,7 +1,7 @@
 #include "UI/Graphics/TextMeasure.h"
 #include <cfloat>
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	namespace
 	{

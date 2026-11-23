@@ -5,7 +5,7 @@
 #include <cmath>
 #include <numbers>
 
-namespace RMS::Core
+namespace Orbit::Core
 {
 	inline constexpr float kPi = std::numbers::pi_v<float>;
 	inline constexpr float kTwoPi = 2.0f * kPi;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace RMS::UI::Graphics
+namespace Orbit::UI::Graphics
 {
 	class SwfIcon
 	{

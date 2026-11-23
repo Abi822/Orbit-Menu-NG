@@ -2,7 +2,7 @@
 #include "UI/Skins/SkinIconNames.h"
 #include <charconv>
 
-namespace RMS::UI::Skins
+namespace Orbit::UI::Skins
 {
 	namespace
 	{
