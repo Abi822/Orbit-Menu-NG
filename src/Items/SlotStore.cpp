@@ -8,7 +8,6 @@ namespace Orbit::Items
 	{
 		constexpr std::uint32_t kCoSaveID = 'ORBM';
 		constexpr std::uint32_t kSlotsRecord = 'SLTS';
-		constexpr std::uint32_t kSlotsVersion = 1;
 		constexpr std::size_t kMaxNameLength = 512;
 
 		void SaveFirstPage(SKSE::SerializationInterface &a_intfc, const SlotArray &a_slots)
@@ -18,7 +17,7 @@ namespace Orbit::Items
 			{
 				return;
 			}
-			if (!a_intfc.OpenRecord(kSlotsRecord, kSlotsVersion))
+			if (!a_intfc.OpenRecord(kSlotsRecord, SlotStore::kSlotsVersion))
 			{
 				logger::error("Slot Store: SKSE co-save could not open the slot record!");
 				return;
@@ -44,17 +43,17 @@ namespace Orbit::Items
 			std::uint32_t length = 0;
 			while (a_intfc->GetNextRecordInfo(type, version, length))
 			{
-				if (type == kSlotsRecord && version == kSlotsVersion)
+				if (type == kSlotsRecord && version >= 1 && version <= SlotStore::kSlotsVersion)
 				{
-					if (!SlotStore::ReadSlots(*a_intfc, slots))
+					if (!SlotStore::ReadSlots(*a_intfc, slots, version))
 					{
 						logger::error("Slot Store: SKSE co-save slot record is damaged the slots are left empty!");
 						slots = {};
 					}
 				}
-				else if (type == Pages::kRecord && version == Pages::kVersion)
+				else if (type == Pages::kRecord && version >= 1 && version <= Pages::kVersion)
 				{
-					Pages::Get().Load(*a_intfc);
+					Pages::Get().Load(*a_intfc, version);
 				}
 				else
 				{
@@ -158,12 +157,12 @@ namespace Orbit::Items
 		{
 			const auto length = static_cast<std::uint16_t>(std::min(slot.name.size(), kMaxNameLength));
 			written = written && a_intfc.WriteRecordData(slot.formID) && a_intfc.WriteRecordData(length) &&
-					  (length == 0 || a_intfc.WriteRecordData(slot.name.data(), length));
+					  (length == 0 || a_intfc.WriteRecordData(slot.name.data(), length)) && a_intfc.WriteRecordData(slot.key);
 		}
 		return written;
 	}
 
-	bool SlotStore::ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots)
+	bool SlotStore::ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots, std::uint32_t a_version)
 	{
 		std::uint32_t count = 0;
 		if (a_intfc.ReadRecordData(count) != sizeof(count))
@@ -186,8 +185,22 @@ namespace Orbit::Items
 				return false;
 			}
 
-			if (i >= a_slots.size() || savedID == 0)
+			std::uint32_t key = 0;
+			if (a_version >= 2 && a_intfc.ReadRecordData(key) != sizeof(key))
 			{
+				return false;
+			}
+
+			if (i >= a_slots.size())
+			{
+				continue;
+			}
+			if (savedID == 0)
+			{
+				if (key != 0)
+				{
+					a_slots[i] = AssignedItem{0, std::move(name), key};
+				}
 				continue;
 			}
 

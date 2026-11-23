@@ -5,6 +5,7 @@
 #include <map>
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
+#include "Input/VirtualKeys.h"
 #include "Integration/I4Addon.h"
 #include "Items/Pages.h"
 #include "Items/SlotStore.h"
@@ -275,6 +276,96 @@ namespace Orbit::Config
 			}
 		}
 
+		// Command slots: a slot that taps a virtual key another mod's hotkey is bound to (Input/VirtualKeys.h).
+		void DrawCommands()
+		{
+			using namespace ImGuiMCP;
+			static char name[64] = "";
+			static std::int32_t slotNumber = 1;
+			auto &pages = Items::Pages::Get();
+			auto &store = Items::SlotStore::Get();
+
+			SeparatorText(Translate("Commands"));
+			TextDisabled("%s", Translate("A command slot runs another mod's hotkey without using a key of your keyboard."));
+			TextDisabled("%s", Translate("1. Name the command and put it on a slot.  2. Open that mod's MCM and click its hotkey option."));
+			TextDisabled("%s", Translate("3. While the MCM waits for a key, press the Orbit Menu key: the command's virtual key is bound."));
+			Spacing();
+
+			if (_settings.enablePages)
+			{
+				if (Button("<##orbit_cmd_prev"))
+				{
+					pages.Turn(-1);
+				}
+				SameLine();
+				Text("%s", Translate("Page {} of {}", pages.Current() + 1, _settings.numberOfPages).c_str());
+				SameLine();
+				if (Button(">##orbit_cmd_next"))
+				{
+					pages.Turn(1);
+				}
+			}
+
+			InputText(Label("Command name##orbit_cmd"), name, sizeof(name));
+			SliderInt(Label("Slot##orbit_cmd"), &slotNumber, 1, Core::kSlotCount, "%d", ImGuiMCP::ImGuiSliderFlags_AlwaysClamp);
+			if (Button(Label("Put the command on this slot##orbit_cmd")) && name[0] != '\0')
+			{
+				if (const auto key = Input::VirtualKeys::NextFree(pages.CommandKeys()); key != 0)
+				{
+					store.Assign(slotNumber - 1, Items::AssignedItem{0, name, key});
+					Input::VirtualKeys::Arm(key);
+					name[0] = '\0';
+				}
+				else
+				{
+					Get().SetStatus(Translate("No virtual key is left: remove a command first."));
+				}
+			}
+
+			Separator();
+			const float em = GetFontSize();
+			const auto slots = store.Snapshot();
+			for (int i = 0; i < Core::kSlotCount; ++i)
+			{
+				const auto &slot = slots[static_cast<std::size_t>(i)];
+				if (!slot.IsCommand())
+				{
+					continue;
+				}
+				Text("%s %d", Translate("Slot"), i + 1);
+				SameLine(em * 4.0f);
+				Text("%s", slot.name.c_str());
+				SameLine(em * 18.0f);
+				TextDisabled("%s", Translate("virtual key {}", slot.key).c_str());
+				SameLine(em * 25.0f);
+				if (Button(std::format("{}##orbit_cmd_bind_{}", Translate("Bind in MCM"), i).c_str()))
+				{
+					Input::VirtualKeys::Arm(slot.key);
+				}
+				SameLine();
+				if (Button(std::format("{}##orbit_cmd_remove_{}", Translate("Remove"), i).c_str()))
+				{
+					if (Input::VirtualKeys::Armed() == slot.key)
+					{
+						Input::VirtualKeys::Arm(0);
+					}
+					store.Clear(i);
+				}
+			}
+
+			if (const auto armed = Input::VirtualKeys::Armed(); armed != 0)
+			{
+				Spacing();
+				Text("%s", Translate("Waiting to bind virtual key {}: open the other mod's MCM, click its hotkey option, then press {}.", armed,
+								   Input::KeyName(_settings.activationKey != Input::kKeyBindNone ? _settings.activationKey : _settings.gamepadActivationKey))
+							   .c_str());
+				if (Button(Label("Cancel##orbit_cmd_cancel")))
+				{
+					Input::VirtualKeys::Arm(0);
+				}
+			}
+		}
+
 		void DrawSlowMotion()
 		{
 			using namespace ImGuiMCP;
@@ -436,6 +527,11 @@ namespace Orbit::Config
 	void __stdcall MenuFrameworkConfig::RenderPages()
 	{
 		Get().Render(&Page::DrawPages);
+	}
+
+	void __stdcall MenuFrameworkConfig::RenderCommands()
+	{
+		Get().Render(&Page::DrawCommands);
 	}
 
 	void __stdcall MenuFrameworkConfig::RenderSlowMotion()

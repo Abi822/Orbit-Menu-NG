@@ -8,8 +8,11 @@ namespace Orbit::Items
 	{
 		RE::FormID formID = 0;
 		std::string name;
+		// A command slot: no form, choosing it taps this virtual key (see Input/VirtualKeys.h).
+		std::uint32_t key = 0;
 
-		bool IsEmpty() const { return formID == 0; }
+		bool IsEmpty() const { return formID == 0 && key == 0; }
+		bool IsCommand() const { return formID == 0 && key != 0; }
 		bool operator==(const AssignedItem &) const = default;
 	};
 
@@ -32,7 +35,9 @@ namespace Orbit::Items
 
 		static void RegisterSerialization();
 		[[nodiscard]] static bool WriteSlots(SKSE::SerializationInterface &a_intfc, const SlotArray &a_slots);
-		[[nodiscard]] static bool ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots);
+		// Version 1: form and name. Version 2: the command key as well.
+		static constexpr std::uint32_t kSlotsVersion = 2;
+		[[nodiscard]] static bool ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots, std::uint32_t a_version);
 
 	private:
 		SlotStore() = default;

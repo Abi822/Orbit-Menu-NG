@@ -1,5 +1,6 @@
 #include "Game/Hooks.h"
 #include "Input/InputManager.h"
+#include "Input/VirtualKeys.h"
 #include "Items/Assignment.h"
 #include "UI/ImGuiLayer.h"
 
@@ -19,19 +20,13 @@ namespace Orbit::Game::Hooks
 		{
 			static void thunk(RE::BSTEventSource<RE::InputEvent *> *a_dispatcher, RE::InputEvent *const *a_events)
 			{
-				if (!a_events || !*a_events)
-				{
-					func(a_dispatcher, a_events);
-					return;
-				}
-
 				auto &input = Input::InputManager::Get();
-				RE::InputEvent *head = *a_events;
+				RE::InputEvent *head = a_events ? *a_events : nullptr;
 				RE::InputEvent *previous = nullptr;
 				for (RE::InputEvent *event = head; event;)
 				{
 					RE::InputEvent *next = event->next;
-					if (input.ProcessEvent(event))
+					if (Input::VirtualKeys::TakeArmedPress(*event) || input.ProcessEvent(event))
 					{
 						if (previous)
 						{
@@ -49,8 +44,10 @@ namespace Orbit::Game::Hooks
 					event = next;
 				}
 
-				RE::InputEvent *const filtered[] = {head};
+				// the command slots' virtual keys of this frame go first, as if they were pressed on the keyboard
+				RE::InputEvent *const filtered[] = {Input::VirtualKeys::Prepend(head)};
 				func(a_dispatcher, filtered);
+				Input::VirtualKeys::Release();
 			}
 
 			static inline REL::Relocation<decltype(thunk)> func;

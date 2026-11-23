@@ -53,6 +53,8 @@ set(SOURCES
 	src/Config/MenuFrameworkConfig.cpp
 
 	src/Input/KeyBinds.h
+	src/Input/VirtualKeys.h
+	src/Input/VirtualKeys.cpp
 	src/Input/KeyBinds.cpp
 	src/Input/InputManager.h
 	src/Input/InputManager.cpp

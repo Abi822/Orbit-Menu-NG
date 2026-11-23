@@ -104,7 +104,7 @@ namespace Orbit::Items
 		}
 	}
 
-	void Pages::Load(SKSE::SerializationInterface &a_intfc)
+	void Pages::Load(SKSE::SerializationInterface &a_intfc, std::uint32_t a_version)
 	{
 		if (!Config::SettingsStore::Get().Snapshot().enablePages)
 		{
@@ -117,7 +117,7 @@ namespace Orbit::Items
 		for (std::uint32_t i = 0; read && i < count; ++i)
 		{
 			SlotArray slots{};
-			read = SlotStore::ReadSlots(a_intfc, slots);
+			read = SlotStore::ReadSlots(a_intfc, slots, a_version);
 			if (read && i + 1 < pages.size())
 			{
 				pages[i + 1] = std::move(slots);
@@ -131,6 +131,28 @@ namespace Orbit::Items
 		std::scoped_lock lock{_lock};
 		_pages = std::move(pages);
 		logger::info("Pages: SKSE co-save {} more page(s) loaded", count);
+	}
+
+	std::vector<std::uint32_t> Pages::CommandKeys() const
+	{
+		std::vector<std::uint32_t> keys;
+		const auto collect = [&](const SlotArray &a_slots)
+		{
+			for (const auto &slot : a_slots)
+			{
+				if (slot.IsCommand())
+				{
+					keys.push_back(slot.key);
+				}
+			}
+		};
+		std::scoped_lock lock{_lock};
+		collect(SlotStore::Get().Snapshot());
+		for (const auto &page : _pages)
+		{
+			collect(page);
+		}
+		return keys;
 	}
 
 	void Pages::Revert()

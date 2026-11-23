@@ -18,7 +18,18 @@ namespace Orbit::Items
 		const auto slots = SlotStore::Get().Snapshot();
 		for (std::size_t i = 0; i < views.size(); ++i)
 		{
-			if (!slots[i].IsEmpty())
+			if (slots[i].IsCommand())
+			{
+				// A command: always ready, drawn with the power icon.
+				views[i] = Core::SlotView{slots[i].name, {}, Core::SlotState::kReady};
+				views[i].iconLabel = "default_power";
+				if (a_settings.showItemDescription)
+				{
+					views[i].description.name = slots[i].name;
+					views[i].description.text = Config::Translate("Command of another mod (virtual key {})", slots[i].key);
+				}
+			}
+			else if (!slots[i].IsEmpty())
 			{
 				views[i] = describer.Describe(slots[i]);
 			}

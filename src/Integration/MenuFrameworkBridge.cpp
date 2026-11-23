@@ -36,6 +36,7 @@ namespace Orbit::Integration::MenuFramework
 		SKSEMenuFramework::AddSectionItem(Config::Translate("Settings"), Config::MenuFrameworkConfig::RenderSettings);
 		SKSEMenuFramework::AddSectionItem(Config::Translate("Display"), Config::MenuFrameworkConfig::RenderDisplay);
 		SKSEMenuFramework::AddSectionItem(Config::Translate("Pages"), Config::MenuFrameworkConfig::RenderPages);
+		SKSEMenuFramework::AddSectionItem(Config::Translate("Commands"), Config::MenuFrameworkConfig::RenderCommands);
 		SKSEMenuFramework::AddSectionItem(Config::Translate("Slow Motion"), Config::MenuFrameworkConfig::RenderSlowMotion);
 
 		SKSEMenuFramework::AddInputEvent(OnInputEvent);

@@ -11,6 +11,8 @@ namespace Orbit::Config
 
 		static void __stdcall RenderPages();
 
+		static void __stdcall RenderCommands();
+
 		static void __stdcall RenderSlowMotion();
 
 		static void OnMenuClosed();

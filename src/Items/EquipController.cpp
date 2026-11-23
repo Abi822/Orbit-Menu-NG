@@ -1,4 +1,5 @@
 #include "Items/EquipController.h"
+#include "Input/VirtualKeys.h"
 #include "Items/Inventory.h"
 #include "Items/ItemKind.h"
 #include "Items/SlotStore.h"
@@ -447,6 +448,12 @@ namespace Orbit::Items
 	void EquipController::EquipSlot(int a_slot, Hand a_hand)
 	{
 		const auto slot = SlotStore::Get().Slot(a_slot);
+		if (slot.IsCommand())
+		{
+			logger::info("Equip Controller: Slot {}: command {} (virtual key {})", a_slot + 1, slot.name, slot.key);
+			Input::VirtualKeys::Tap(slot.key);
+			return;
+		}
 		auto *form = slot.IsEmpty() ? nullptr : RE::TESForm::LookupByID(slot.formID);
 		auto equipper = Equipper::Create();
 		if (!form || !equipper)

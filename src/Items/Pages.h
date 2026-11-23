@@ -9,7 +9,7 @@ namespace Orbit::Items
 	{
 	public:
 		static constexpr std::uint32_t kRecord = 'PAGS';
-		static constexpr std::uint32_t kVersion = 1;
+		static constexpr std::uint32_t kVersion = SlotStore::kSlotsVersion;
 
 		static Pages &Get();
 
@@ -21,7 +21,9 @@ namespace Orbit::Items
 
 		SlotArray FirstPage() const;
 		void Save(SKSE::SerializationInterface &a_intfc) const;
-		void Load(SKSE::SerializationInterface &a_intfc);
+		void Load(SKSE::SerializationInterface &a_intfc, std::uint32_t a_version);
+		// The virtual keys of the command slots on every page.
+		std::vector<std::uint32_t> CommandKeys() const;
 		void Revert();
 
 	private:
