@@ -6,8 +6,8 @@ namespace Orbit::Items
 {
 	Pages &Pages::Get()
 	{
-		static Pages singleton;
-		return singleton;
+		static Pages instance;
+		return instance;
 	}
 
 	void Pages::Turn(int a_step)

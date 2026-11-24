@@ -4,8 +4,8 @@
 #include "Game/SlowMotion.h"
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
-#include "Integration/I4Addon.h"
-#include "Integration/MenuFrameworkBridge.h"
+#include "Integration/I4/I4Icons.h"
+#include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include "Items/EquipController.h"
 #include "Items/SlotStore.h"
 #include "UI/ImGuiLayer.h"
@@ -44,7 +44,7 @@ namespace
 
 		case SKSE::MessagingInterface::kDataLoaded:
 		{
-			Orbit::Integration::I4Addon::Get().Load();
+			Orbit::Integration::I4Icons::Get().Load();
 			Orbit::Items::EquipController::Get().Register();
 			Orbit::UI::ImGuiLayer::Setup();
 			input.Enable();
@@ -52,11 +52,11 @@ namespace
 			const auto key = settings.activationKey != Orbit::Input::kKeyBindNone ? settings.activationKey : settings.gamepadActivationKey;
 			if (key == Orbit::Input::kKeyBindNone)
 			{
-				logger::warn("ImGui: Ready: but no key or controller button is bound to open the Orbit Menu");
+				logger::warn("No key or controller button is bound to open the Orbit Menu");
 			}
 			else
 			{
-				logger::info("ImGui: Ready: hold {} in game to open the Orbit Menu", Orbit::Input::KeyName(key));
+				logger::info("Hold {} in game to open the Orbit Menu", Orbit::Input::KeyName(key));
 			}
 		}
 		break;
@@ -84,8 +84,8 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 	SKSE::Init(a_skse, {.log = false, .trampoline = true, .trampolineSize = Orbit::Game::Hooks::kTrampolineSize});
 	OpenLog();
 
-	logger::info("Orbit Menu Starting");
-	logger::info("ImGui: Orbit Menu loading on Skyrim {}", REL::Module::get().version().string("."));
+	logger::info("Orbit Menu Starting...");
+	logger::info("Orbit Menu loading on Skyrim {}", REL::Module::get().version().string("."));
 
 	Orbit::Config::SettingsStore::Get().Load();
 	Orbit::Config::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
@@ -94,7 +94,7 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 	const auto *messaging = SKSE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(OnSKSEMessage))
 	{
-		logger::critical("ImGui: Could not register for SKSE messages! Orbit Menu will not run!");
+		logger::critical("Could not register for SKSE messages! Orbit Menu will not run!");
 		return false;
 	}
 

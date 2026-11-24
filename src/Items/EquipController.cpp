@@ -104,6 +104,7 @@ namespace Orbit::Items
 					EquipAmmo(*a_form.As<RE::TESAmmo>(), a_slot, a_hand);
 					break;
 				case ItemKind::kConsumable:
+				case ItemKind::kMisc:
 					Consume(*a_form.As<RE::TESBoundObject>(), a_slot);
 					break;
 				default:
@@ -171,7 +172,14 @@ namespace Orbit::Items
 					}
 					else if (IsHeldByPressedHand(a_hand, inLeft, inRight))
 					{
-						_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
+						if (a_object.Is(RE::FormType::Light))
+						{
+							UnequipFromHand(a_object, kLeftHand);
+						}
+						else
+						{
+							_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
+						}
 					}
 					return;
 				}
@@ -432,8 +440,8 @@ namespace Orbit::Items
 
 	EquipController &EquipController::Get()
 	{
-		static EquipController singleton;
-		return singleton;
+		static EquipController instance;
+		return instance;
 	}
 
 	void EquipController::Register()

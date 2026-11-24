@@ -1,6 +1,6 @@
 #include "Items/SlotViewBuilder.h"
 #include "Config/Translation.h"
-#include "Integration/I4Addon.h"
+#include "Integration/I4/I4Icons.h"
 #include "Items/ItemDescription.h"
 #include "Items/ItemIcons.h"
 
@@ -27,8 +27,8 @@ namespace Orbit::Items
 	}
 
 	SlotViewBuilder::SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings) : _player(a_player),
-																									  _inventory(a_player),
-																									  _settings(a_settings)
+																										  _inventory(a_player),
+																										  _settings(a_settings)
 	{
 	}
 
@@ -62,10 +62,10 @@ namespace Orbit::Items
 			const auto copy = _inventory.FindCarriedCopy(*a_form.As<RE::TESBoundObject>(), a_name);
 			if (!copy)
 			{
-				return Missing(a_name, Config::Translate(a_kind == ItemKind::kConsumable ? "None left" : "Not carried"));
+				return Missing(a_name, Config::Translate("None left"));
 			}
 			extraList = copy->extraList;
-			if (a_kind == ItemKind::kConsumable || a_kind == ItemKind::kAmmo || a_kind == ItemKind::kScroll)
+			if (a_kind == ItemKind::kConsumable || a_kind == ItemKind::kAmmo || a_kind == ItemKind::kScroll || a_kind == ItemKind::kMisc)
 			{
 				count = copy->total;
 			}
@@ -102,15 +102,10 @@ namespace Orbit::Items
 		{
 			return;
 		}
-		auto look = Integration::I4Addon::Get().Evaluate(a_form);
-		if (!look.iconLabel.empty())
-		{
-			a_view.iconLabel = std::move(look.iconLabel);
-		}
+		const bool equipped = a_view.state == Core::SlotState::kEquipped;
+		auto look = Integration::I4Icons::Get().Evaluate(a_form, equipped, {{}, a_view.iconLabel, a_view.iconColor});
 		a_view.iconSource = std::move(look.iconSource);
-		if (look.iconColor)
-		{
-			a_view.iconColor = look.iconColor;
-		}
+		a_view.iconLabel = std::move(look.iconLabel);
+		a_view.iconColor = look.iconColor;
 	}
 }

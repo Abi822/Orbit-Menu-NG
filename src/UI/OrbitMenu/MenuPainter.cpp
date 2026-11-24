@@ -393,7 +393,11 @@ namespace Orbit::UI::OrbitMenu
 				const float iconSize = static_cast<float>(settings.itemIconDescriptionSize);
 				const float top = settings.showItemDescription ? content.Description(_strongestSlot).iconTop : -iconSize * 0.5f;
 				const float size = std::floor(Px(iconSize));
-				const ImVec2 center{_layout.center.x, _layout.center.y + Px(top) + size * 0.5f};
+				ImVec2 center{_layout.center.x, _layout.center.y + Px(top) + size * 0.5f};
+				if (settings.staticItemDescription)
+				{
+					center = _layout.center + ImVec2{Px(static_cast<float>(settings.itemIconDescriptionX)), Px(static_cast<float>(settings.itemIconDescriptionY))};
+				}
 				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kMissingAlpha : 1.0f) * _strength * _alpha));
 			}
 		}

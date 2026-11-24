@@ -1,4 +1,4 @@
-#include "Integration/MenuFrameworkBridge.h"
+#include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include <SKSEMenuFramework.h>
 #include "Config/MenuFrameworkConfig.h"
 #include "Config/Translation.h"

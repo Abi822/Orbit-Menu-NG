@@ -76,8 +76,8 @@ namespace Orbit::Items
 
 	SlotStore &SlotStore::Get()
 	{
-		static SlotStore singleton;
-		return singleton;
+		static SlotStore instance;
+		return instance;
 	}
 
 	AssignedItem SlotStore::Slot(int a_slot) const

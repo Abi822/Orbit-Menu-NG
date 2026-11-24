@@ -16,7 +16,6 @@
     "Missing": "Missing",
     "Not known": "Not known",
     "None left": "None left",
-    "Not carried": "Not carried",
     "Page {} of {}": "Page {} of {}",
     "Select Page: {}": "Select Page: {}",
     "Master": "Master",
@@ -96,6 +95,11 @@
     "Show Center Background": "Show Center Background",
     "Center Background Size": "Center Background Size",
     "Item Icon Description Size": "Item Icon Description Size",
+    "Static Item Description": "Static Item Description",
+    "Icon": "Icon",
+    "Title": "Title",
+    "Description": "Description",
+    "Width": "Width",
     "Pointer": "Pointer",
     "Show Pointer": "Show Pointer",
     "Pointer Size": "Pointer Size",
@@ -127,6 +131,5 @@
     "Click, then press the new controller button.": "Click, then press the new controller button.",
     "Click, then press the new keyboard or mouse button.": "Click, then press the new keyboard or mouse button.",
     "Unbind": "Unbind",
-    "Could not write the settings file - see OrbitMenu.log.": "Could not write the settings file - see OrbitMenu.log.",
-    "No key selected.": "No key selected."
+    "Could not write the settings file - see OrbitMenu.log.": "Could not write the settings file - see OrbitMenu.log."
 }

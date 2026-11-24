@@ -14,7 +14,8 @@ namespace Orbit::Items
 		kSpell,
 		kPower,
 		kShout,
-		kConsumable
+		kConsumable,
+		kMisc
 	};
 
 	inline ItemKind GetItemKind(const RE::TESForm *a_form)
@@ -52,6 +53,8 @@ namespace Orbit::Items
 			return a_form->As<RE::AlchemyItem>()->IsPoison() ? ItemKind::kNone : ItemKind::kConsumable;
 		case RE::FormType::Ingredient:
 			return ItemKind::kConsumable;
+		case RE::FormType::Misc:
+			return ItemKind::kMisc;
 		default:
 			return ItemKind::kNone;
 		}

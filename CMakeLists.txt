@@ -117,11 +117,19 @@ set(SOURCES
 	src/Items/ItemDescription.h
 	src/Items/ItemDescription.cpp
 
-	src/Integration/MenuFrameworkBridge.h
-	src/Integration/MenuFrameworkBridge.cpp
+	src/Integration/MenuFramework/MenuFrameworkBridge.h
+	src/Integration/MenuFramework/MenuFrameworkBridge.cpp
 
-	src/Integration/I4Addon.h
-	src/Integration/I4Addon.cpp
+	src/Integration/I4/I4Icons.h
+	src/Integration/I4/I4Icons.cpp
+	src/Integration/I4/ItemData.h
+	src/Integration/I4/ItemData.cpp
+	src/Integration/I4/RuleParser.h
+	src/Integration/I4/RuleParser.cpp
+	src/Integration/I4/Rules.h
+	src/Integration/I4/Rules.cpp
+	src/Integration/I4/ValueNames.h
+	src/Integration/I4/ValueNames.cpp
 )
 
 add_commonlibsse_plugin(

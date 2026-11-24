@@ -131,11 +131,21 @@ namespace Orbit::UI::OrbitMenu
 			const auto hand = a_settings.showHand ? HandLabel(view.heldIn) : std::string_view{};
 			text.hand = hand.empty() ? TextLine{} : Measure(a_text, std::string{hand});
 
-			_descriptions[i] = a_settings.showItemDescription
-								   ? ItemDescriptionLayout::Compute(a_text, view.description, static_cast<float>(a_settings.itemDescriptionTextSize),
-																	a_settings.showItemIconDescription && !icons[i].Empty() ? static_cast<float>(a_settings.itemIconDescriptionSize) : 0.0f,
-																	static_cast<float>(a_settings.centerBackgroundSize) * 0.5f)
-								   : ItemDescriptionLayout{};
+			if (!a_settings.showItemDescription)
+			{
+				_descriptions[i] = {};
+			}
+			else if (a_settings.staticItemDescription)
+			{
+				_descriptions[i] = ItemDescriptionLayout::ComputeStatic(a_text, view.description, a_settings);
+			}
+			else
+			{
+				_descriptions[i] = ItemDescriptionLayout::Compute(a_text, view.description, static_cast<float>(a_settings.itemDescriptionTitleTextSize),
+																  static_cast<float>(a_settings.itemDescriptionTextSize),
+																  a_settings.showItemIconDescription && !icons[i].Empty() ? static_cast<float>(a_settings.itemIconDescriptionSize) : 0.0f,
+																  static_cast<float>(a_settings.centerBackgroundSize) * 0.5f);
+			}
 		}
 		if (icons != _icons)
 		{

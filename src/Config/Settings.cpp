@@ -81,6 +81,7 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iSlotEmptyTextSize", a_settings.slotEmptyTextSize);
 			a_visit(kDisplay, "iSlotKeyTextSize", a_settings.slotKeyTextSize);
 			a_visit(kDisplay, "iHandTextSize", a_settings.handTextSize);
+			a_visit(kDisplay, "iItemDescriptionTitleTextSize", a_settings.itemDescriptionTitleTextSize);
 			a_visit(kDisplay, "iItemDescriptionTextSize", a_settings.itemDescriptionTextSize);
 			a_visit(kDisplay, "iHintTextSize", a_settings.hintTextSize);
 			a_visit(kDisplay, "bShowSlotKeys", a_settings.showSlotKeys);
@@ -99,6 +100,14 @@ namespace Orbit::Config
 			a_visit(kDisplay, "bShowItemDescription", a_settings.showItemDescription);
 			a_visit(kDisplay, "bShowItemIconDescription", a_settings.showItemIconDescription);
 			a_visit(kDisplay, "iItemIconDescriptionSize", a_settings.itemIconDescriptionSize);
+			a_visit(kDisplay, "bStaticItemDescription", a_settings.staticItemDescription);
+			a_visit(kDisplay, "iItemIconDescriptionX", a_settings.itemIconDescriptionX);
+			a_visit(kDisplay, "iItemIconDescriptionY", a_settings.itemIconDescriptionY);
+			a_visit(kDisplay, "iItemDescriptionTitleX", a_settings.itemDescriptionTitleX);
+			a_visit(kDisplay, "iItemDescriptionTitleY", a_settings.itemDescriptionTitleY);
+			a_visit(kDisplay, "iItemDescriptionTextX", a_settings.itemDescriptionTextX);
+			a_visit(kDisplay, "iItemDescriptionTextY", a_settings.itemDescriptionTextY);
+			a_visit(kDisplay, "iItemDescriptionWidth", a_settings.itemDescriptionWidth);
 			a_visit(kDisplay, "bShowSlotGlow", a_settings.showSlotGlow);
 			a_visit(kDisplay, "bShowPointer", a_settings.showPointer);
 			a_visit(kDisplay, "iPointerSize", a_settings.pointerSize);
@@ -160,7 +169,7 @@ namespace Orbit::Config
 				}
 				else if (const char *text = _ini.GetValue(a_section, a_key))
 				{
-					logger::warn("{} = {} is not a colour, check for a typo", a_key, text);
+					logger::warn("Settings: {} = {} is not a colour", a_key, text);
 				}
 			}
 
@@ -247,7 +256,7 @@ namespace Orbit::Config
 				const SI_Error result = _ini.SaveFile(a_path.c_str(), false);
 				if (result < 0)
 				{
-					logger::error("Could not write {} Ini error {}", a_path.string(), static_cast<int>(result));
+					logger::error("Settings: Could not write {} Ini error {}", a_path.string(), static_cast<int>(result));
 					return false;
 				}
 				return true;
@@ -299,6 +308,7 @@ namespace Orbit::Config
 		slotEmptyTextSize = std::clamp(slotEmptyTextSize, kMinTextSize, kMaxTextSize);
 		slotKeyTextSize = std::clamp(slotKeyTextSize, kMinTextSize, kMaxTextSize);
 		handTextSize = std::clamp(handTextSize, kMinTextSize, kMaxTextSize);
+		itemDescriptionTitleTextSize = std::clamp(itemDescriptionTitleTextSize, kMinTextSize, kMaxTextSize);
 		itemDescriptionTextSize = std::clamp(itemDescriptionTextSize, kMinTextSize, kMaxTextSize);
 		hintTextSize = std::clamp(hintTextSize, kMinTextSize, kMaxTextSize);
 		slotDistance = std::clamp(slotDistance, kMinSlotDistance, kMaxSlotDistance);
@@ -308,6 +318,11 @@ namespace Orbit::Config
 		slotKeyPosition = std::clamp(slotKeyPosition, 0, kLastSlotKeyPosition);
 		handPosition = std::clamp(handPosition, 0, kLastHandPosition);
 		itemIconDescriptionSize = std::clamp(itemIconDescriptionSize, kMinItemIconDescriptionSize, kMaxItemIconDescriptionSize);
+		for (auto *position : {&itemIconDescriptionX, &itemIconDescriptionY, &itemDescriptionTitleX, &itemDescriptionTitleY, &itemDescriptionTextX, &itemDescriptionTextY})
+		{
+			*position = std::clamp(*position, kMinItemDescriptionPosition, kMaxItemDescriptionPosition);
+		}
+		itemDescriptionWidth = std::clamp(itemDescriptionWidth, kMinItemDescriptionWidth, kMaxItemDescriptionWidth);
 		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
 		pointerDistance = std::clamp(pointerDistance, kMinPointerDistance, kMaxPointerDistance);
 		animationSpeed = std::clamp(animationSpeed, kMinAnimationSpeed, kMaxAnimationSpeed);
@@ -338,6 +353,7 @@ namespace Orbit::Config
 		slotEmptyTextSize = a_from.slotEmptyTextSize;
 		slotKeyTextSize = a_from.slotKeyTextSize;
 		handTextSize = a_from.handTextSize;
+		itemDescriptionTitleTextSize = a_from.itemDescriptionTitleTextSize;
 		itemDescriptionTextSize = a_from.itemDescriptionTextSize;
 		hintTextSize = a_from.hintTextSize;
 		showSlotKeys = a_from.showSlotKeys;
@@ -356,6 +372,14 @@ namespace Orbit::Config
 		showItemDescription = a_from.showItemDescription;
 		showItemIconDescription = a_from.showItemIconDescription;
 		itemIconDescriptionSize = a_from.itemIconDescriptionSize;
+		staticItemDescription = a_from.staticItemDescription;
+		itemIconDescriptionX = a_from.itemIconDescriptionX;
+		itemIconDescriptionY = a_from.itemIconDescriptionY;
+		itemDescriptionTitleX = a_from.itemDescriptionTitleX;
+		itemDescriptionTitleY = a_from.itemDescriptionTitleY;
+		itemDescriptionTextX = a_from.itemDescriptionTextX;
+		itemDescriptionTextY = a_from.itemDescriptionTextY;
+		itemDescriptionWidth = a_from.itemDescriptionWidth;
 		showSlotGlow = a_from.showSlotGlow;
 		showPointer = a_from.showPointer;
 		pointerSize = a_from.pointerSize;
@@ -384,8 +408,8 @@ namespace Orbit::Config
 
 	SettingsStore &SettingsStore::Get()
 	{
-		static SettingsStore singleton;
-		return singleton;
+		static SettingsStore instance;
+		return instance;
 	}
 
 	Settings SettingsStore::Snapshot() const
@@ -421,7 +445,7 @@ namespace Orbit::Config
 			}
 			else
 			{
-				logger::error("{} Could not be read! Ini error {}",
+				logger::error("Settings: {} Could not be read! Ini error {}",
 							  kDefaultsPath.string(), static_cast<int>(result));
 			}
 			defaults.Clamp(Settings{});
@@ -437,7 +461,7 @@ namespace Orbit::Config
 			}
 			else
 			{
-				logger::warn("{} Could not be read! Ini error {}, using the defaults settings!",
+				logger::warn("Settings: {} Could not be read! Ini error {}, using the defaults settings!",
 							 kUserPath.string(), static_cast<int>(result));
 			}
 		}
@@ -448,7 +472,7 @@ namespace Orbit::Config
 			file.Write(defaults);
 			if (file.SaveAs(kUserPath))
 			{
-				logger::info("Created {} with the default settings", kUserPath.string());
+				logger::info("Settings: Created {} with the default settings", kUserPath.string());
 			}
 		}
 		loaded.Clamp(defaults);

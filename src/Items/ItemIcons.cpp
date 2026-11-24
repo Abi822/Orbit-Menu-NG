@@ -1,5 +1,6 @@
 #include "Items/ItemIcons.h"
 #include "Items/ItemKind.h"
+#include <bit>
 
 namespace Orbit::Items::Icons
 {
@@ -20,7 +21,7 @@ namespace Orbit::Items::Icons
 		constexpr std::uint32_t kHeavyArmorColor = 0x6B7585;
 
 		constexpr std::array kPartOrder{Slot::kBody, Slot::kHair, Slot::kHands, Slot::kForearms, Slot::kFeet, Slot::kCalves, Slot::kShield,
-											 Slot::kAmulet, Slot::kRing, Slot::kLongHair, Slot::kEars, Slot::kHead, Slot::kCirclet, Slot::kTail};
+										Slot::kAmulet, Slot::kRing, Slot::kLongHair, Slot::kEars, Slot::kHead, Slot::kCirclet, Slot::kTail};
 
 		enum class Weight
 		{
@@ -72,20 +73,87 @@ namespace Orbit::Items::Icons
 			}
 		}
 
+		std::string_view WeaponSubType(const RE::TESObjectWEAP &a_weapon)
+		{
+			const auto base = BaseId(a_weapon);
+			if (std::ranges::find(kPickaxes, base) != kPickaxes.end())
+			{
+				return "Pickaxe";
+			}
+			if (std::ranges::find(kWoodAxes, base) != kWoodAxes.end())
+			{
+				return "WoodAxe";
+			}
+
+			switch (a_weapon.GetWeaponType())
+			{
+			case RE::WEAPON_TYPE::kOneHandSword:
+				return "Sword";
+			case RE::WEAPON_TYPE::kOneHandDagger:
+				return "Dagger";
+			case RE::WEAPON_TYPE::kOneHandAxe:
+				return "WarAxe";
+			case RE::WEAPON_TYPE::kOneHandMace:
+				return "Mace";
+			case RE::WEAPON_TYPE::kTwoHandSword:
+				return "Greatsword";
+			case RE::WEAPON_TYPE::kTwoHandAxe:
+				return a_weapon.HasKeywordString("WeapTypeWarhammer") ? "Warhammer" : "Battleaxe";
+			case RE::WEAPON_TYPE::kBow:
+				return "Bow";
+			case RE::WEAPON_TYPE::kStaff:
+				return "Staff";
+			case RE::WEAPON_TYPE::kCrossbow:
+				return "Crossbow";
+			default:
+				return "Melee";
+			}
+		}
+
 		Slot MainPart(const RE::TESObjectARMO &a_armor)
 		{
 			if (BaseId(a_armor) == kVampireLordArmor)
 			{
 				return Slot::kBody;
 			}
-			for (const auto part : kPartOrder)
+			return static_cast<Slot>(MainPartOf(a_armor.GetSlotMask().underlying()));
+		}
+
+		std::string_view ArmorSubType(Slot a_part)
+		{
+			switch (a_part)
 			{
-				if (a_armor.HasPartOf(part))
-				{
-					return part;
-				}
+			case Slot::kHead:
+				return "Head";
+			case Slot::kHair:
+				return "Hair";
+			case Slot::kLongHair:
+				return "LongHair";
+			case Slot::kBody:
+				return "Body";
+			case Slot::kForearms:
+				return "Forearms";
+			case Slot::kHands:
+				return "Hands";
+			case Slot::kShield:
+				return "Shield";
+			case Slot::kCalves:
+				return "Calves";
+			case Slot::kFeet:
+				return "Feet";
+			case Slot::kCirclet:
+				return "Circlet";
+			case Slot::kAmulet:
+				return "Amulet";
+			case Slot::kEars:
+				return "Ears";
+			case Slot::kRing:
+				return "Ring";
+			case Slot::kTail:
+				return "Tail";
+			default:
+				return {};
 			}
-			return Slot::kNone;
 		}
 
 		Weight WeightOf(const RE::TESObjectARMO &a_armor, Slot a_part)
@@ -244,6 +312,49 @@ namespace Orbit::Items::Icons
 			}
 		}
 
+		std::string_view PotionSubType(const RE::AlchemyItem &a_potion)
+		{
+			if (a_potion.data.flags.any(RE::AlchemyItem::AlchemyFlag::kFoodItem))
+			{
+				const auto *sound = a_potion.data.consumptionSound;
+				return sound && sound->GetFormID() == kPotionUseSound ? "Drink" : "Food";
+			}
+			if (a_potion.data.flags.any(RE::AlchemyItem::AlchemyFlag::kPoison))
+			{
+				return "Poison";
+			}
+			const auto *effect = CostliestEffect(a_potion);
+			switch (effect ? effect->data.primaryAV : RE::ActorValue::kNone)
+			{
+			case RE::ActorValue::kHealth:
+				return "Health";
+			case RE::ActorValue::kHealRate:
+				return "HealRate";
+			case RE::ActorValue::kHealRateMult:
+				return "HealRateMult";
+			case RE::ActorValue::kMagicka:
+				return "Magicka";
+			case RE::ActorValue::kMagickaRate:
+				return "MagickaRate";
+			case RE::ActorValue::kMagickaRateMult:
+				return "MagickaRateMult";
+			case RE::ActorValue::kStamina:
+				return "Stamina";
+			case RE::ActorValue::kStaminaRate:
+				return "StaminaRate";
+			case RE::ActorValue::kStaminaRateMult:
+				return "StaminaRateMult";
+			case RE::ActorValue::kResistFire:
+				return "FireResist";
+			case RE::ActorValue::kResistShock:
+				return "ElectricResist";
+			case RE::ActorValue::kResistFrost:
+				return "FrostResist";
+			default:
+				return "Potion";
+			}
+		}
+
 		SkyUIIcon DestructionIcon(const RE::SpellItem &a_spell)
 		{
 			switch (Resistance(a_spell))
@@ -310,8 +421,40 @@ namespace Orbit::Items::Icons
 		}
 		case RE::FormType::Ingredient:
 			return {"default_ingredient", std::nullopt};
+		case RE::FormType::Misc:
+			return {"default_misc", std::nullopt};
 		default:
 			return {};
 		}
+	}
+
+	std::string_view SkyUISubType(const RE::TESForm &a_form)
+	{
+		switch (a_form.GetFormType())
+		{
+		case RE::FormType::Weapon:
+			return WeaponSubType(*a_form.As<RE::TESObjectWEAP>());
+		case RE::FormType::Armor:
+			return ArmorSubType(MainPart(*a_form.As<RE::TESObjectARMO>()));
+		case RE::FormType::Ammo:
+			return a_form.As<RE::TESAmmo>()->GetRuntimeData().data.flags.none(RE::AMMO_DATA::Flag::kNonBolt) ? "Bolt" : "Arrow";
+		case RE::FormType::AlchemyItem:
+			return PotionSubType(*a_form.As<RE::AlchemyItem>());
+		default:
+			return {};
+		}
+	}
+
+	std::uint32_t MainPartOf(std::uint32_t a_slotMask)
+	{
+		for (const auto part : kPartOrder)
+		{
+			const auto bit = static_cast<std::uint32_t>(part);
+			if ((a_slotMask & bit) != 0)
+			{
+				return bit;
+			}
+		}
+		return a_slotMask == 0 ? 0 : 1u << std::countr_zero(a_slotMask);
 	}
 }

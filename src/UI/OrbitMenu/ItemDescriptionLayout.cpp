@@ -16,7 +16,6 @@ namespace Orbit::UI::OrbitMenu
 		constexpr float kIconGap = 10.0f;
 		constexpr float kGap = 8.0f;
 
-		constexpr float kNameSize = 22.0f;
 		constexpr float kNameLineHeight = 1.1f;
 		constexpr std::size_t kNameLines = 2;
 		constexpr float kMinNameRatio = 0.7f;
@@ -42,6 +41,7 @@ namespace Orbit::UI::OrbitMenu
 
 		struct Sizes
 		{
+			float title = 0.0f;
 			float header = 1.0f;
 			float text = 0.0f;
 		};
@@ -93,13 +93,13 @@ namespace Orbit::UI::OrbitMenu
 		class Placer
 		{
 		public:
-			Placer(const Graphics::TextMeasure &a_text, float a_radius) : _text(a_text), _radius(a_radius) {}
+			Placer(const Graphics::TextMeasure &a_text, float a_radius, float a_fixedWidth = 0.0f) : _text(a_text), _radius(a_radius), _fixedWidth(a_fixedWidth) {}
 
 			Block Place(const Core::ItemDescription &a_description, const Sizes &a_sizes, float a_top, float a_bottom, bool a_even) const
 			{
 				Block block{.y = a_top, .bottom = a_bottom, .even = a_even};
 				const float gap = kGap * a_sizes.header;
-				AddName(block, a_description.name, kNameSize * a_sizes.header);
+				AddName(block, a_description.name, a_sizes.title);
 				if (!a_description.footer.empty())
 				{
 					block.Gap(gap);
@@ -113,7 +113,34 @@ namespace Orbit::UI::OrbitMenu
 				return block;
 			}
 
+			Block PlaceTitle(std::string_view a_name, float a_size, float a_top) const
+			{
+				Block block{.y = a_top, .bottom = FLT_MAX, .even = true};
+				AddLines(block, a_name, a_size, a_size * kNameLineHeight, kNameLines, TextRole::kName);
+				return block;
+			}
+
+			Block PlaceText(const Core::ItemDescription &a_description, float a_header, float a_textSize, float a_top) const
+			{
+				Block block{.y = a_top, .bottom = FLT_MAX, .even = true};
+				if (!a_description.footer.empty())
+				{
+					AddStats(block, a_description.footer, kValueSize * a_header);
+				}
+				if (!a_description.text.empty())
+				{
+					block.Gap(kGap * a_header);
+					AddLines(block, a_description.text, a_textSize, a_textSize * kTextLineHeight, kNoLineLimit, TextRole::kText);
+				}
+				return block;
+			}
+
 		private:
+			float LineWidth(float a_top, float a_size) const
+			{
+				return _fixedWidth > 0.0f ? _fixedWidth : WidthAt(_radius, a_top, a_size);
+			}
+
 			Words Measure(float a_size, std::string_view a_text) const
 			{
 				Words words;
@@ -153,7 +180,7 @@ namespace Orbit::UI::OrbitMenu
 						lines.fits = false;
 						break;
 					}
-					const float width = std::min(WidthAt(_radius, top, a_size), a_maxWidth);
+					const float width = std::min(LineWidth(top, a_size), a_maxWidth);
 					const bool last = lines.text.size() + 1 == a_maxLines || top + a_lineHeight + a_size > a_block.bottom;
 					std::string text{words[next]};
 					float textWidth = a_words.widths[next];
@@ -280,14 +307,18 @@ namespace Orbit::UI::OrbitMenu
 				float top = a_block.y;
 				for (std::size_t next = 0; next < stats.size(); top += a_size + rowGap)
 				{
-					const float available = WidthAt(_radius, top, a_size);
+					const float available = LineWidth(top, a_size);
+					const float rowScale = _fixedWidth > 0.0f ? 1.0f : kMinRowScale;
 					std::size_t count = 1;
-					while (next + count < stats.size() && RowWidth(stats.subspan(next, count + 1), a_size) * kMinRowScale <= available)
+					while (next + count < stats.size() && RowWidth(stats.subspan(next, count + 1), a_size) * rowScale <= available)
 					{
 						++count;
 					}
 					rows.push_back(stats.subspan(next, count));
-					scale = std::min(scale, available / RowWidth(rows.back(), a_size));
+					if (_fixedWidth <= 0.0f)
+					{
+						scale = std::min(scale, available / RowWidth(rows.back(), a_size));
+					}
 					next += count;
 				}
 
@@ -333,10 +364,11 @@ namespace Orbit::UI::OrbitMenu
 
 			Graphics::TextMeasure _text;
 			float _radius;
+			float _fixedWidth;
 		};
 	}
 
-	ItemDescriptionLayout ItemDescriptionLayout::Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_textSize, float a_iconSize, float a_centerBackgroundRadius)
+	ItemDescriptionLayout ItemDescriptionLayout::Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_titleSize, float a_textSize, float a_iconSize, float a_centerBackgroundRadius)
 	{
 		ItemDescriptionLayout layout;
 		layout.iconTop = -a_iconSize * 0.5f;
@@ -356,12 +388,12 @@ namespace Orbit::UI::OrbitMenu
 		std::vector<Sizes> tries;
 		for (float size = a_textSize; size > smallestText; size -= 1.0f)
 		{
-			tries.push_back({header, size});
+			tries.push_back({a_titleSize, header, size});
 		}
-		tries.push_back({header, smallestText});
+		tries.push_back({a_titleSize, header, smallestText});
 		for (const float factor : kSmallerHeaders)
 		{
-			tries.push_back({header * factor, smallestText * factor});
+			tries.push_back({a_titleSize * factor, header * factor, smallestText * factor});
 		}
 
 		const Placer placer{a_text, a_centerBackgroundRadius};
@@ -391,10 +423,10 @@ namespace Orbit::UI::OrbitMenu
 				break;
 			}
 			const float movedHeight = moved.y - centred;
+			blockTop = centred;
+			block = std::move(moved);
 			if (std::abs(movedHeight - height) < kCentringTolerance)
 			{
-				blockTop = centred;
-				block = std::move(moved);
 				break;
 			}
 			height = movedHeight;
@@ -402,6 +434,33 @@ namespace Orbit::UI::OrbitMenu
 
 		layout.pieces = std::move(block.pieces);
 		layout.iconTop = blockTop - lead;
+		return layout;
+	}
+
+	ItemDescriptionLayout ItemDescriptionLayout::ComputeStatic(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, const Config::Settings &a_settings)
+	{
+		ItemDescriptionLayout layout;
+		if (a_description.name.empty())
+		{
+			return layout;
+		}
+
+		const float textSize = static_cast<float>(a_settings.itemDescriptionTextSize);
+		const float header = textSize / kTextSize;
+		const Placer placer{a_text, 0.0f, static_cast<float>(a_settings.itemDescriptionWidth)};
+		Block title = placer.PlaceTitle(a_description.name, static_cast<float>(a_settings.itemDescriptionTitleTextSize), static_cast<float>(a_settings.itemDescriptionTitleY));
+		Block text = placer.PlaceText(a_description, header, textSize, static_cast<float>(a_settings.itemDescriptionTextY));
+
+		for (auto &piece : title.pieces)
+		{
+			piece.topLeft.x += static_cast<float>(a_settings.itemDescriptionTitleX);
+			layout.pieces.push_back(std::move(piece));
+		}
+		for (auto &piece : text.pieces)
+		{
+			piece.topLeft.x += static_cast<float>(a_settings.itemDescriptionTextX);
+			layout.pieces.push_back(std::move(piece));
+		}
 		return layout;
 	}
 }

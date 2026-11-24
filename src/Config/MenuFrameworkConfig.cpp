@@ -5,7 +5,7 @@
 #include <map>
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
-#include "Integration/I4Addon.h"
+#include "Integration/I4/I4Icons.h"
 #include "Items/Pages.h"
 #include "Items/SlotStore.h"
 #include "UI/OrbitMenu/OrbitRenderer.h"
@@ -125,7 +125,7 @@ namespace Orbit::Config
 			KeyRow("Swap hands:", Input::kBindingSwapHands);
 
 			SeparatorText("I4 (Inventory Interface Information Injector)");
-			if (Integration::I4Addon::IsInstalled())
+			if (Integration::I4Icons::IsInstalled())
 			{
 				Check("Use I4 icons##orbit", _settings.useI4);
 			}
@@ -202,6 +202,20 @@ namespace Orbit::Config
 			Check("Show Center Background##orbit", _settings.showCenterBackground);
 			Number("Center Background Size##orbit", _settings.centerBackgroundSize, Settings::kMinCenterBackgroundSize, Settings::kMaxCenterBackgroundSize, 2);
 			Number("Item Icon Description Size##orbit", _settings.itemIconDescriptionSize, Settings::kMinItemIconDescriptionSize, Settings::kMaxItemIconDescriptionSize);
+			Check("Static Item Description##orbit", _settings.staticItemDescription);
+			if (_settings.staticItemDescription)
+			{
+				Text("%s", Translate("Icon"));
+				Number("X##orbit_icon_x", _settings.itemIconDescriptionX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Number("Y##orbit_icon_y", _settings.itemIconDescriptionY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Text("%s", Translate("Title"));
+				Number("X##orbit_title_x", _settings.itemDescriptionTitleX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Number("Y##orbit_title_y", _settings.itemDescriptionTitleY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Text("%s", Translate("Description"));
+				Number("X##orbit_description_x", _settings.itemDescriptionTextX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
+			}
 
 			SeparatorText(Translate("Pointer"));
 			Check("Show Pointer##orbit", _settings.showPointer);
@@ -226,7 +240,8 @@ namespace Orbit::Config
 			Color("##orbit_hand_colour", _settings.handColor);
 			Spacing();
 			Text("%s", Translate("Item Description"));
-			Number("##orbit_item_description_size", _settings.itemDescriptionTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Number("Title##orbit_item_title_size", _settings.itemDescriptionTitleTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Number("Description##orbit_item_description_size", _settings.itemDescriptionTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_item_description_colour", _settings.itemDescriptionColor);
 			Spacing();
 			Text("%s", Translate("Controls Hint"));
@@ -419,8 +434,8 @@ namespace Orbit::Config
 
 	MenuFrameworkConfig &MenuFrameworkConfig::Get()
 	{
-		static MenuFrameworkConfig singleton;
-		return singleton;
+		static MenuFrameworkConfig instance;
+		return instance;
 	}
 
 	void __stdcall MenuFrameworkConfig::RenderSettings()

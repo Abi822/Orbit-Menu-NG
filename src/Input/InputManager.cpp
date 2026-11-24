@@ -1,6 +1,6 @@
 #include "Input/InputManager.h"
 #include "Game/GameState.h"
-#include "Integration/MenuFrameworkBridge.h"
+#include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include "Items/Assignment.h"
 #include "Items/EquipController.h"
 #include "Items/Pages.h"
@@ -57,8 +57,8 @@ namespace Orbit::Input
 
 	InputManager &InputManager::Get()
 	{
-		static InputManager singleton;
-		return singleton;
+		static InputManager instance;
+		return instance;
 	}
 
 	void InputManager::Enable()

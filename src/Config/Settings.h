@@ -50,6 +50,7 @@ namespace Orbit::Config
 		std::int32_t slotEmptyTextSize{};
 		std::int32_t slotKeyTextSize{};
 		std::int32_t handTextSize{};
+		std::int32_t itemDescriptionTitleTextSize{};
 		std::int32_t itemDescriptionTextSize{};
 		std::int32_t hintTextSize{};
 		bool showSlotKeys{};
@@ -68,6 +69,14 @@ namespace Orbit::Config
 		bool showItemDescription{};
 		bool showItemIconDescription{};
 		std::int32_t itemIconDescriptionSize{};
+		bool staticItemDescription{};
+		std::int32_t itemIconDescriptionX{};
+		std::int32_t itemIconDescriptionY{};
+		std::int32_t itemDescriptionTitleX{};
+		std::int32_t itemDescriptionTitleY{};
+		std::int32_t itemDescriptionTextX{};
+		std::int32_t itemDescriptionTextY{};
+		std::int32_t itemDescriptionWidth{};
 		bool showSlotGlow{};
 		bool showPointer{};
 		std::int32_t pointerSize{};
@@ -101,7 +110,7 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMinCurve = -30;
 		static constexpr std::int32_t kMaxCurve = 30;
 		static constexpr float kMinOpacity = 0.0f;
-		static constexpr float kMaxOpacity = 0.85f;
+		static constexpr float kMaxOpacity = 0.95f;
 		static constexpr std::int32_t kMinTextSize = 8;
 		static constexpr std::int32_t kMaxTextSize = 32;
 		static constexpr std::int32_t kMinNumberOfPages = 2;
@@ -121,6 +130,10 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMaxPointerSize = 96;
 		static constexpr std::int32_t kMinItemIconDescriptionSize = 16;
 		static constexpr std::int32_t kMaxItemIconDescriptionSize = 128;
+		static constexpr std::int32_t kMinItemDescriptionPosition = -600;
+		static constexpr std::int32_t kMaxItemDescriptionPosition = 600;
+		static constexpr std::int32_t kMinItemDescriptionWidth = 100;
+		static constexpr std::int32_t kMaxItemDescriptionWidth = 1200;
 		static constexpr std::int32_t kMinPointerDistance = -50;
 		static constexpr std::int32_t kMaxPointerDistance = 150;
 		static constexpr float kMinAnimationSpeed = 0.0f;

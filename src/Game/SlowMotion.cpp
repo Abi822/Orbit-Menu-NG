@@ -11,8 +11,8 @@ namespace Orbit::Game
 
 	SlowMotion &SlowMotion::Get()
 	{
-		static SlowMotion singleton;
-		return singleton;
+		static SlowMotion instance;
+		return instance;
 	}
 
 	void SlowMotion::Update(bool a_menuOpen)
