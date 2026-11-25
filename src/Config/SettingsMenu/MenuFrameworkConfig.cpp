@@ -14,30 +14,8 @@ namespace Orbit::Config::SettingsMenu
 {
 	namespace
 	{
+		// Used for MenuFrameworkBase::BoundKey returns where a binding key is stored in settings
 		constexpr std::array kBadgePositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
-
-		// Returns where a binding key is stored in settings
-		std::uint32_t *BoundKey(Settings &a_settings, Input::KeyBinding a_binding)
-		{
-			const bool pad = a_binding.gamepad;
-			switch (a_binding.id)
-			{
-			case Input::kBindingActivation:
-				return pad ? &a_settings.gamepadActivationKey : &a_settings.activationKey;
-			case Input::kBindingLeftHand:
-				return pad ? &a_settings.gamepadLeftHandKey : &a_settings.leftHandKey;
-			case Input::kBindingRightHand:
-				return pad ? &a_settings.gamepadRightHandKey : &a_settings.rightHandKey;
-			case Input::kBindingSwapHands:
-				return pad ? &a_settings.gamepadSwapHandsKey : &a_settings.swapHandsKey;
-			case Input::kBindingNextPage:
-				return pad ? &a_settings.gamepadNextPageKey : &a_settings.nextPageKey;
-			case Input::kBindingPreviousPage:
-				return pad ? &a_settings.gamepadPreviousPageKey : &a_settings.previousPageKey;
-			default:
-				return pad ? nullptr : &a_settings.slotKeys[static_cast<std::size_t>(a_binding.id)];
-			}
-		}
 	}
 
 	class MenuFrameworkConfig::Page : public MenuFrameworkBase
@@ -400,7 +378,7 @@ namespace Orbit::Config::SettingsMenu
 
 		if (const auto captured = input.TakeCapturedKey())
 		{
-			if (auto *key = BoundKey(settings, {captured->binding, Input::IsGamepadBind(captured->code)}))
+			if (auto *key = MenuFrameworkBase::BoundKey(settings, {captured->binding, Input::IsGamepadBind(captured->code)}))
 			{
 				*key = captured->code;
 				page.RequestSave();

@@ -5,6 +5,29 @@
 
 namespace Orbit::Config::SettingsMenu
 {
+	// Returns where a binding key is stored in settings
+	std::uint32_t *MenuFrameworkBase::BoundKey(Settings &a_settings, Input::KeyBinding a_binding)
+	{
+		const bool pad = a_binding.gamepad;
+		switch (a_binding.id)
+		{
+		case Input::kBindingActivation:
+			return pad ? &a_settings.gamepadActivationKey : &a_settings.activationKey;
+		case Input::kBindingLeftHand:
+			return pad ? &a_settings.gamepadLeftHandKey : &a_settings.leftHandKey;
+		case Input::kBindingRightHand:
+			return pad ? &a_settings.gamepadRightHandKey : &a_settings.rightHandKey;
+		case Input::kBindingSwapHands:
+			return pad ? &a_settings.gamepadSwapHandsKey : &a_settings.swapHandsKey;
+		case Input::kBindingNextPage:
+			return pad ? &a_settings.gamepadNextPageKey : &a_settings.nextPageKey;
+		case Input::kBindingPreviousPage:
+			return pad ? &a_settings.gamepadPreviousPageKey : &a_settings.previousPageKey;
+		default:
+			return pad ? nullptr : &a_settings.slotKeys[static_cast<std::size_t>(a_binding.id)];
+		}
+	}
+
 	const char *MenuFrameworkBase::Label(const char *a_label)
 	{
 		const std::string_view label{a_label};

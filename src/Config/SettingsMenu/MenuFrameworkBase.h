@@ -1,10 +1,14 @@
 #pragma once
 
+#include "Config/Settings.h"
+#include "Input/KeyBinds.h"
+
 namespace Orbit::Config::SettingsMenu
 {
 	class MenuFrameworkBase
 	{
 	public:
+		static std::uint32_t *BoundKey(Settings &a_settings, Input::KeyBinding a_binding);
 		bool SaveRequested() const { return _save; }
 		void RequestSave() { _save = true; }
 
