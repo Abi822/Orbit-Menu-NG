@@ -25,8 +25,7 @@ cmake --install build/vs2022 --config Release --component OrbitMenu --prefix "bu
 
 ## Compatibility
 
-Built with CommonLibSSE-NG v16.1.0 for SE 1.5.97, AE 1.6.x (including GOG) and 1.7.x through the
-Address Library. Tested in game on AE 1.6.1170. VR isn't supported.
+Built with CommonLibSSE-NG v16.1.0 for SE 1.5.97, AE 1.6.x (including GOG) and 1.7.x. VR isn't supported.
 
 ## License
 
