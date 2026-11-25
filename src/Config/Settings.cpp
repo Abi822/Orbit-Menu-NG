@@ -1,6 +1,7 @@
 #include "Config/Settings.h"
 #include "Input/KeyBinds.h"
 #include <SimpleIni.h>
+#include <charconv>
 #include <fstream>
 #include <iterator>
 
@@ -163,14 +164,24 @@ namespace Orbit::Config
 
 			void operator()(const char *a_section, const char *a_key, Color a_color) const
 			{
-				if (const long value = _ini.GetLongValue(a_section, a_key, -1); value >= 0)
+				const char *text = _ini.GetValue(a_section, a_key);
+				if (!text)
 				{
-					a_color.value = static_cast<std::uint32_t>(value);
+					return;
 				}
-				else if (const char *text = _ini.GetValue(a_section, a_key))
+				std::string_view digits{text};
+				if (digits.starts_with("0x") || digits.starts_with("0X"))
+				{
+					digits.remove_prefix(2);
+				}
+				std::uint32_t value = 0;
+				const auto [end, error] = std::from_chars(digits.data(), digits.data() + digits.size(), value, 16);
+				if (digits.empty() || digits.size() > 8 || error != std::errc{} || end != digits.data() + digits.size())
 				{
 					logger::warn("Settings: {} = {} is not a colour", a_key, text);
+					return;
 				}
+				a_color.value = digits.size() == 8 ? value : value | 0xFF000000;
 			}
 
 		private:
@@ -209,7 +220,7 @@ namespace Orbit::Config
 
 			void operator()(const char *a_section, const char *a_key, Color a_color) const
 			{
-				_ini.SetValue(a_section, a_key, std::format("0x{:06X}", a_color.value).c_str());
+				_ini.SetValue(a_section, a_key, std::format("0x{:08X}", a_color.value).c_str());
 			}
 
 		private:
@@ -326,11 +337,6 @@ namespace Orbit::Config
 		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
 		pointerDistance = std::clamp(pointerDistance, kMinPointerDistance, kMaxPointerDistance);
 		animationSpeed = std::clamp(animationSpeed, kMinAnimationSpeed, kMaxAnimationSpeed);
-
-		for (auto *color : {&backgroundColor, &slotColor, &highlightColor, &slotNameColor, &slotEmptyColor, &slotKeyColor, &handColor, &itemDescriptionColor, &hintColor})
-		{
-			*color &= 0xFFFFFF;
-		}
 	}
 
 	void Settings::CopyDisplay(const Settings &a_from)

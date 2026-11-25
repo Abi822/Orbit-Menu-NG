@@ -1,8 +1,8 @@
-#include "Config/MenuFrameworkConfig.h"
+#include "Config/SettingsMenu/MenuFrameworkConfig.h"
+#include "Config/SettingsMenu/MenuFrameworkBase.h"
 #include <SKSEMenuFramework.h>
 #include "Config/Settings.h"
 #include "Config/Translation.h"
-#include <map>
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
 #include "Integration/I4/I4Icons.h"
@@ -10,13 +10,13 @@
 #include "Items/SlotStore.h"
 #include "UI/OrbitMenu/OrbitRenderer.h"
 
-namespace Orbit::Config
+namespace Orbit::Config::SettingsMenu
 {
 	namespace
 	{
 		constexpr std::array kBadgePositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
 
-		// Holds the key for a binding.
+		// Returns where a binding key is stored in settings
 		std::uint32_t *BoundKey(Settings &a_settings, Input::KeyBinding a_binding)
 		{
 			const bool pad = a_binding.gamepad;
@@ -38,36 +38,14 @@ namespace Orbit::Config
 				return pad ? nullptr : &a_settings.slotKeys[static_cast<std::size_t>(a_binding.id)];
 			}
 		}
-
-		const char *Label(const char *a_label)
-		{
-			const std::string_view label{a_label};
-			const auto id = label.find("##");
-			const auto english = label.substr(0, id);
-			const auto text = Translate(english);
-			if (text == english)
-			{
-				return a_label;
-			}
-			static std::map<std::string, std::string, std::less<>> labels;
-			auto found = labels.find(label);
-			if (found == labels.end())
-			{
-				found = labels.emplace(label, std::string{text} + std::string{id == std::string_view::npos ? std::string_view{} : label.substr(id)}).first;
-			}
-			return found->second.c_str();
-		}
 	}
 
-	class MenuFrameworkConfig::Page
+	class MenuFrameworkConfig::Page : public MenuFrameworkBase
 	{
 	public:
 		Page(Input::InputManager &a_input, Settings &a_settings) : _input(a_input), _settings(a_settings), _capturing(a_input.CapturingBinding())
 		{
 		}
-
-		bool SaveRequested() const { return _save; }
-		void RequestSave() { _save = true; }
 
 		void DrawSettings()
 		{
@@ -310,60 +288,12 @@ namespace Orbit::Config
 		}
 
 	private:
-		void Slider(const char *a_label, float &a_value, float a_min, float a_max, const char *a_format, const char *a_tooltip = nullptr)
-		{
-			ImGuiMCP::SliderFloat(Label(a_label), &a_value, a_min, a_max, a_format, ImGuiMCP::ImGuiSliderFlags_AlwaysClamp);
-			_save |= ImGuiMCP::IsItemDeactivatedAfterEdit();
-			Tooltip(a_tooltip);
-		}
-
-		void Slider(const char *a_label, std::int32_t &a_value, std::int32_t a_min, std::int32_t a_max, const char *a_tooltip = nullptr)
-		{
-			ImGuiMCP::SliderInt(Label(a_label), &a_value, a_min, a_max, "%d", ImGuiMCP::ImGuiSliderFlags_AlwaysClamp);
-			_save |= ImGuiMCP::IsItemDeactivatedAfterEdit();
-			Tooltip(a_tooltip);
-		}
-
-		void Number(const char *a_label, std::int32_t &a_value, std::int32_t a_min, std::int32_t a_max, std::int32_t a_step = 1, const char *a_tooltip = nullptr)
-		{
-			if (ImGuiMCP::InputInt(Label(a_label), &a_value, a_step, a_step * 4))
-			{
-				a_value = std::clamp(a_value, a_min, a_max);
-			}
-			_save |= ImGuiMCP::IsItemDeactivatedAfterEdit();
-			Tooltip(a_tooltip);
-		}
-
-		void Check(const char *a_label, bool &a_value, const char *a_tooltip = nullptr)
-		{
-			_save |= ImGuiMCP::Checkbox(Label(a_label), &a_value);
-			Tooltip(a_tooltip);
-		}
-
 		void Choice(const char *a_label, std::int32_t &a_value, std::int32_t a_last)
 		{
 			std::array<const char *, kBadgePositions.size()> items{};
 			std::ranges::transform(kBadgePositions, items.begin(), [](const char *a_item)
 								   { return Translate(a_item); });
 			_save |= ImGuiMCP::Combo(Label(a_label), &a_value, items.data(), a_last + 1);
-		}
-
-		void Color(const char *a_label, std::uint32_t &a_rgb)
-		{
-			float rgb[3]{};
-			for (int i = 0; i < 3; ++i)
-			{
-				rgb[i] = static_cast<float>((a_rgb >> (16 - 8 * i)) & 0xFF) / 255.0f;
-			}
-			if (ImGuiMCP::ColorEdit3(Label(a_label), rgb, ImGuiMCP::ImGuiColorEditFlags_NoAlpha))
-			{
-				a_rgb = 0;
-				for (const float channel : rgb)
-				{
-					a_rgb = (a_rgb << 8) | static_cast<std::uint32_t>(std::lround(std::clamp(channel, 0.0f, 1.0f) * 255.0f));
-				}
-			}
-			_save |= ImGuiMCP::IsItemDeactivatedAfterEdit();
 		}
 
 		void KeyRow(const char *a_label, int a_binding)
@@ -418,18 +348,9 @@ namespace Orbit::Config
 			}
 		}
 
-		static void Tooltip(const char *a_text)
-		{
-			if (a_text && ImGuiMCP::IsItemHovered())
-			{
-				ImGuiMCP::SetTooltip("%s", Translate(a_text));
-			}
-		}
-
 		Input::InputManager &_input;
 		Settings &_settings;
 		std::optional<Input::KeyBinding> _capturing;
-		bool _save = false;
 	};
 
 	MenuFrameworkConfig &MenuFrameworkConfig::Get()

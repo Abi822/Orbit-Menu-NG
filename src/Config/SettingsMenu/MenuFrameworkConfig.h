@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Orbit::Config
+namespace Orbit::Config::SettingsMenu
 {
 	class MenuFrameworkConfig
 	{
