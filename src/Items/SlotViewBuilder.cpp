@@ -1,5 +1,5 @@
 #include "Items/SlotViewBuilder.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Integration/I4/I4Icons.h"
 #include "Items/ItemDescription.h"
 #include "Items/ItemIcons.h"
@@ -36,7 +36,7 @@ namespace Orbit::Items
 	{
 		auto *form = RE::TESForm::LookupByID(a_slot.formID);
 		const auto kind = GetItemKind(form);
-		Core::SlotView view{a_slot.name, Config::Translate("Missing"), Core::SlotState::kMissing};
+		Core::SlotView view{a_slot.name, Translation::Translate("Missing"), Core::SlotState::kMissing};
 		if (kind != ItemKind::kNone)
 		{
 			view = DescribeForm(*form, a_slot.name, kind);
@@ -54,7 +54,7 @@ namespace Orbit::Items
 		{
 			if (!_inventory.Knows(a_form))
 			{
-				return Missing(a_name, Config::Translate("Not known"));
+				return Missing(a_name, Translation::Translate("Not known"));
 			}
 		}
 		else
@@ -62,7 +62,7 @@ namespace Orbit::Items
 			const auto copy = _inventory.FindCarriedCopy(*a_form.As<RE::TESBoundObject>(), a_name);
 			if (!copy)
 			{
-				return Missing(a_name, Config::Translate("None left"));
+				return Missing(a_name, Translation::Translate("None left"));
 			}
 			extraList = copy->extraList;
 			if (a_kind == ItemKind::kConsumable || a_kind == ItemKind::kAmmo || a_kind == ItemKind::kScroll || a_kind == ItemKind::kMisc)

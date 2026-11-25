@@ -1,5 +1,5 @@
 #include "Items/Assignment.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Game/GameState.h"
 #include "Input/InputManager.h"
 #include "Items/ItemKind.h"
@@ -66,7 +66,7 @@ namespace Orbit::Items
 		if (GetItemKind(form) == ItemKind::kNone)
 		{
 			logger::info("Assignment: Slot {}: '{}' ({:08X}) can't go on the Orbit Menu", number, row->name, row->formID);
-			Game::ShowHudMessage(Config::Translate("{} can't go on the Orbit Menu", row->name));
+			Game::ShowHudMessage(Translation::Translate("{} can't go on the Orbit Menu", row->name));
 			return true;
 		}
 
@@ -81,7 +81,7 @@ namespace Orbit::Items
 			logger::info("Assignment: Slot {} cleared: ({})", number, chosen.name);
 			if (fromSlotKey)
 			{
-				Game::ShowHudMessage(Config::Translate("{} removed from slot {}", chosen.name, number));
+				Game::ShowHudMessage(Translation::Translate("{} removed from slot {}", chosen.name, number));
 			}
 			return true;
 		}
@@ -94,7 +94,7 @@ namespace Orbit::Items
 		logger::info("Assignment: Slot {} assigned: {} ({:08X})", number, chosen.name, chosen.formID);
 		if (fromSlotKey)
 		{
-			Game::ShowHudMessage(Config::Translate("{} assigned to slot {}", chosen.name, number));
+			Game::ShowHudMessage(Translation::Translate("{} assigned to slot {}", chosen.name, number));
 		}
 		return true;
 	}

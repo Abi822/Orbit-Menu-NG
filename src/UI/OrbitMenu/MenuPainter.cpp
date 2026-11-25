@@ -16,8 +16,6 @@ namespace Orbit::UI::OrbitMenu
 		constexpr float kHidden = 0.01f;
 		constexpr float kMissingAlpha = 0.45f;
 
-		using Skins::Part;
-
 		ImVec2 PositionSide(Config::BadgePosition a_position)
 		{
 			const auto index = static_cast<int>(a_position);
@@ -83,7 +81,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 		if (_scene.settings.showSlotBackground)
 		{
-			if (_scene.skin.Find(Part::kSlot))
+			if (_scene.skin.Find(Skins::Part::kSlot))
 			{
 				Graphics::PremultipliedDraw premultiplied{_drawList};
 				for (int slot = 0; slot < Core::kSlotCount; ++slot)
@@ -233,7 +231,7 @@ namespace Orbit::UI::OrbitMenu
 
 	void MenuPainter::DrawCentre() const
 	{
-		const auto skin = _scene.skin.Find(Part::kCentre);
+		const auto skin = _scene.skin.Find(Skins::Part::kCentre);
 		Core::PerSlot<ImVec2> outer{};
 		for (std::size_t i = 0; i < kSlots; ++i)
 		{
@@ -304,7 +302,7 @@ namespace Orbit::UI::OrbitMenu
 		const float angle = motion.pointerAngle;
 		const float size = Px(static_cast<float>(_scene.settings.pointerSize));
 		const float baseDistance = MenuLayout::InnerRadius(_layout.centerBackgroundRadius) + Px(static_cast<float>(_scene.settings.pointerDistance));
-		if (const auto image = _scene.skin.Find(Part::kPointer))
+		if (const auto image = _scene.skin.Find(Skins::Part::kPointer))
 		{
 			const ImVec2 center = _layout.PointAt(angle, baseDistance + size * 0.5f);
 			const ImVec2 up = Core::DirectionFromAngle(angle) * (size * 0.5f);
@@ -333,7 +331,7 @@ namespace Orbit::UI::OrbitMenu
 		const ImVec2 center = _layout.SlotCenter(a_slot);
 		const float radius = SlotRadius(a_slot);
 		const float glow = std::max(hover, flash);
-		if (const auto image = _scene.skin.Find(Part::kSlotGlow))
+		if (const auto image = _scene.skin.Find(Skins::Part::kSlotGlow))
 		{
 			Graphics::PremultipliedDraw premultiplied{_drawList};
 			Image(*image, center, radius * 2.0f * MenuLayout::kSlotGlowRatio, Graphics::PremultipliedColor(glow * _alpha));
@@ -361,9 +359,9 @@ namespace Orbit::UI::OrbitMenu
 	{
 		const auto &skin = _scene.skin;
 		const bool equipped = _scene.content.View(a_slot).state == Core::SlotState::kEquipped;
-		const auto equippedImage = equipped ? skin.Find(Part::kSlotEquipped) : std::nullopt;
-		const auto base = equippedImage ? equippedImage : skin.Find(Part::kSlot);
-		const auto hovered = skin.Find(Part::kSlotHovered);
+		const auto equippedImage = equipped ? skin.Find(Skins::Part::kSlotEquipped) : std::nullopt;
+		const auto base = equippedImage ? equippedImage : skin.Find(Skins::Part::kSlot);
+		const auto hovered = skin.Find(Skins::Part::kSlotHovered);
 		const float hover = _scene.motion.hover[static_cast<std::size_t>(a_slot)];
 		const ImVec2 center = _layout.SlotCenter(a_slot);
 		const float size = SlotRadius(a_slot) * 2.0f;
@@ -473,7 +471,7 @@ namespace Orbit::UI::OrbitMenu
 
 	void MenuPainter::DrawBadges() const
 	{
-		if (const auto image = _scene.skin.Find(Part::kSlotKeyBadge))
+		if (const auto image = _scene.skin.Find(Skins::Part::kSlotKeyBadge))
 		{
 			Graphics::PremultipliedDraw premultiplied{_drawList};
 			ForEachBadge([&](const Badge &a_badge)

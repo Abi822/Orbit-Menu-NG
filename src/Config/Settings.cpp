@@ -46,24 +46,16 @@ namespace Orbit::Config
 			a_visit(kControls, "bReleaseToEquip", a_settings.releaseToEquip);
 			a_visit(kControls, "bToggleOrbitMenu", a_settings.toggleOrbitMenu);
 			a_visit(kControls, "bUseRightStick", a_settings.useRightStick);
-
-			for (std::size_t i = 0; i < a_settings.slotKeys.size(); ++i)
-			{
-				a_visit(kAssignment, std::format("iSlotKey{}", i + 1).c_str(), a_settings.slotKeys[i]);
-			}
-
 			a_visit(kPages, "bEnablePages", a_settings.enablePages);
 			a_visit(kPages, "iNumberOfPages", a_settings.numberOfPages);
 			a_visit(kPages, "iNextPageKey", a_settings.nextPageKey);
 			a_visit(kPages, "iPreviousPageKey", a_settings.previousPageKey);
 			a_visit(kPages, "iGamepadNextPageKey", a_settings.gamepadNextPageKey);
 			a_visit(kPages, "iGamepadPreviousPageKey", a_settings.gamepadPreviousPageKey);
-
 			a_visit(kSlowMotion, "bEnableSlowMotion", a_settings.enableSlowMotion);
 			a_visit(kSlowMotion, "fSlowMotionTimeSpeed", a_settings.slowMotionTimeSpeed);
 			a_visit(kSlowMotion, "fSlowMotionFadeIn", a_settings.slowMotionFadeIn);
 			a_visit(kSlowMotion, "fSlowMotionFadeOut", a_settings.slowMotionFadeOut);
-
 			a_visit(kDisplay, "fOrbitMenuScale", a_settings.orbitMenuScale);
 			a_visit(kDisplay, "iPositionX", a_settings.positionX);
 			a_visit(kDisplay, "iPositionY", a_settings.positionY);
@@ -114,15 +106,16 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iPointerSize", a_settings.pointerSize);
 			a_visit(kDisplay, "iPointerDistance", a_settings.pointerDistance);
 			a_visit(kDisplay, "fAnimationSpeed", a_settings.animationSpeed);
-
 			a_visit(kSkins, "sSkinPath", a_settings.skinPath);
 			a_visit(kSkins, "sFontPath", a_settings.fontPath);
-
 			a_visit(kTranslation, "sLanguagePath", a_settings.languagePath);
-
 			a_visit(kIntegration, "bUseI4", a_settings.useI4);
-
 			a_visit(kMessages, "bShowHudMessages", a_settings.showHudMessages);
+
+			for (std::size_t i = 0; i < a_settings.slotKeys.size(); ++i)
+			{
+				a_visit(kAssignment, std::format("iSlotKey{}", i + 1).c_str(), a_settings.slotKeys[i]);
+			}
 		}
 
 		class IniReader
@@ -307,7 +300,6 @@ namespace Orbit::Config
 		slowMotionTimeSpeed = std::clamp(slowMotionTimeSpeed, kMinSlowMotionTimeSpeed, kMaxSlowMotionTimeSpeed);
 		slowMotionFadeIn = std::clamp(slowMotionFadeIn, 0.0f, kMaxSlowMotionFade);
 		slowMotionFadeOut = std::clamp(slowMotionFadeOut, 0.0f, kMaxSlowMotionFade);
-
 		mouseSensitivity = std::clamp(mouseSensitivity, kMinSensitivity, kMaxSensitivity);
 		mouseDPI = std::clamp(mouseDPI, kMinMouseDPI, kMaxMouseDPI);
 		orbitMenuScale = std::clamp(orbitMenuScale, kMinOrbitMenuScale, kMaxOrbitMenuScale);

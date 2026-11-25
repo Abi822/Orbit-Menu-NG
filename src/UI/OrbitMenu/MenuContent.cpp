@@ -1,5 +1,5 @@
 #include "UI/OrbitMenu/MenuContent.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Items/EquipController.h"
 #include "Items/Pages.h"
 #include "Items/SlotStore.h"
@@ -37,11 +37,11 @@ namespace Orbit::UI::OrbitMenu
 			switch (a_heldIn)
 			{
 			case Core::HeldIn::kLeft:
-				return Config::Translate("L");
+				return Translation::Translate("L");
 			case Core::HeldIn::kRight:
-				return Config::Translate("R");
+				return Translation::Translate("R");
 			case Core::HeldIn::kBoth:
-				return Config::Translate("LR");
+				return Translation::Translate("LR");
 			default:
 				return {};
 			}
@@ -113,7 +113,7 @@ namespace Orbit::UI::OrbitMenu
 	void MenuContent::LayoutSlots(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings, const Skins::Skin &a_skin)
 	{
 		const float nameSize = static_cast<float>(a_settings.slotNameTextSize);
-		_empty = Measure(a_text, Config::Translate("Empty"));
+		_empty = Measure(a_text, Translation::Translate("Empty"));
 
 		auto icons = _icons;
 		for (std::size_t i = 0; i < _views.size(); ++i)
@@ -194,36 +194,34 @@ namespace Orbit::UI::OrbitMenu
 
 	std::string MenuContent::BuildHint(const HintKeys &a_keys)
 	{
-		using Config::Translate;
-		using Input::KeyName;
 		const bool equip = a_keys.releaseToEquip && !a_keys.assign;
-		std::string hint = a_keys.toggle ? Translate(equip ? "Press {} to equip" : "Press {} to close", KeyName(a_keys.open))
-										 : Translate(equip ? "Release {} to equip" : "Release {} to close", KeyName(a_keys.open));
+		std::string hint = a_keys.toggle ? Translation::Translate(equip ? "Press {} to equip" : "Press {} to close", Input::KeyName(a_keys.open))
+										 : Translation::Translate(equip ? "Release {} to equip" : "Release {} to close", Input::KeyName(a_keys.open));
 		const bool left = a_keys.left != Input::kKeyBindNone;
 		const bool right = a_keys.right != Input::kKeyBindNone;
 		if (a_keys.assign)
 		{
 			if (left && right)
 			{
-				hint += kSeparator + Translate("Assign: {} or {}", KeyName(a_keys.left), KeyName(a_keys.right));
+				hint += kSeparator + Translation::Translate("Assign: {} or {}", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
 			}
 			else if (left || right)
 			{
-				hint += kSeparator + Translate("Assign: {}", KeyName(left ? a_keys.left : a_keys.right));
+				hint += kSeparator + Translation::Translate("Assign: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
 			}
 			return hint;
 		}
 		if (left && right)
 		{
-			hint += kSeparator + Translate("Equip in hand: {}, {} or both", KeyName(a_keys.left), KeyName(a_keys.right));
+			hint += kSeparator + Translation::Translate("Equip in hand: {}, {} or both", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
 		}
 		else if (left || right)
 		{
-			hint += kSeparator + Translate(left ? "Left hand: {}" : "Right hand: {}", KeyName(left ? a_keys.left : a_keys.right));
+			hint += kSeparator + Translation::Translate(left ? "Left hand: {}" : "Right hand: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
 		}
 		if (a_keys.swap != Input::kKeyBindNone && a_keys.swap != a_keys.open)
 		{
-			hint += kSeparator + Translate("Swap hands: {}", KeyName(a_keys.swap));
+			hint += kSeparator + Translation::Translate("Swap hands: {}", Input::KeyName(a_keys.swap));
 		}
 		return hint;
 	}

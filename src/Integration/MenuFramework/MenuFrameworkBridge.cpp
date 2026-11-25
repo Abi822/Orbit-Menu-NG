@@ -1,7 +1,7 @@
 #include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include <SKSEMenuFramework.h>
 #include "Config/SettingsMenu/MenuFrameworkConfig.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Input/InputManager.h"
 
 namespace Orbit::Integration::MenuFramework
@@ -32,10 +32,10 @@ namespace Orbit::Integration::MenuFramework
 
 		logger::info("SKSE Menu Framework found version {}", SKSEMenuFramework::GetMenuFrameworkVersion());
 		SKSEMenuFramework::SetSection("Orbit Menu");
-		SKSEMenuFramework::AddSectionItem(Config::Translate("Settings"), Config::SettingsMenu::MenuFrameworkConfig::RenderSettings);
-		SKSEMenuFramework::AddSectionItem(Config::Translate("Display"), Config::SettingsMenu::MenuFrameworkConfig::RenderDisplay);
-		SKSEMenuFramework::AddSectionItem(Config::Translate("Pages"), Config::SettingsMenu::MenuFrameworkConfig::RenderPages);
-		SKSEMenuFramework::AddSectionItem(Config::Translate("Slow Motion"), Config::SettingsMenu::MenuFrameworkConfig::RenderSlowMotion);
+		SKSEMenuFramework::AddSectionItem(Translation::Translate("Settings"), Config::SettingsMenu::MenuFrameworkConfig::RenderSettings);
+		SKSEMenuFramework::AddSectionItem(Translation::Translate("Display"), Config::SettingsMenu::MenuFrameworkConfig::RenderDisplay);
+		SKSEMenuFramework::AddSectionItem(Translation::Translate("Pages"), Config::SettingsMenu::MenuFrameworkConfig::RenderPages);
+		SKSEMenuFramework::AddSectionItem(Translation::Translate("Slow Motion"), Config::SettingsMenu::MenuFrameworkConfig::RenderSlowMotion);
 		SKSEMenuFramework::AddInputEvent(OnInputEvent);
 		SKSEMenuFramework::AddEvent(OnFrameworkEvent, 0.0f);
 	}

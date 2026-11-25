@@ -1,5 +1,5 @@
 #include "Config/Settings.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Game/Hooks.h"
 #include "Game/SlowMotion.h"
 #include "Input/InputManager.h"
@@ -88,7 +88,7 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 	logger::info("Orbit Menu loading on Skyrim {}", REL::Module::get().version().string("."));
 
 	Orbit::Config::SettingsStore::Get().Load();
-	Orbit::Config::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
+	Orbit::Translation::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
 	Orbit::Items::SlotStore::RegisterSerialization();
 
 	const auto *messaging = SKSE::GetMessagingInterface();

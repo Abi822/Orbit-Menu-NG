@@ -1,5 +1,5 @@
 #include "Items/Pages.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Input/KeyBinds.h"
 
 namespace Orbit::Items
@@ -41,7 +41,7 @@ namespace Orbit::Items
 
 	std::string Pages::Hint(const Config::Settings &a_settings, bool a_gamepad) const
 	{
-		std::string hint = Config::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
+		std::string hint = Translation::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
 		const auto previous = a_gamepad ? a_settings.gamepadPreviousPageKey : a_settings.previousPageKey;
 		const auto next = a_gamepad ? a_settings.gamepadNextPageKey : a_settings.nextPageKey;
 		std::string keys;
@@ -54,7 +54,7 @@ namespace Orbit::Items
 		}
 		if (!keys.empty())
 		{
-			hint += "   |   " + Config::Translate("Select Page: {}", keys);
+			hint += "   |   " + Translation::Translate("Select Page: {}", keys);
 		}
 		return hint;
 	}

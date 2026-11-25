@@ -97,7 +97,6 @@ namespace Orbit::Config
 		float slowMotionTimeSpeed{};
 		float slowMotionFadeIn{};
 		float slowMotionFadeOut{};
-
 		static constexpr float kMinSensitivity = 0.1f;
 		static constexpr float kMaxSensitivity = 5.0f;
 		static constexpr std::int32_t kMinMouseDPI = 200;
@@ -140,7 +139,6 @@ namespace Orbit::Config
 		static constexpr float kMaxAnimationSpeed = 2.0f;
 		static constexpr auto kLastSlotKeyPosition = static_cast<std::int32_t>(BadgePosition::kBottomRight);
 		static constexpr auto kLastHandPosition = static_cast<std::int32_t>(BadgePosition::kNextToName);
-
 		void Clamp(const Settings &a_valueDefault);
 		void CopyDisplay(const Settings &a_from);
 		void CopyPages(const Settings &a_from);

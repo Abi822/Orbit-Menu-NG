@@ -9,8 +9,6 @@ namespace Orbit::Items
 {
 	namespace
 	{
-		using Input::Hand;
-
 		const RE::BGSEquipSlot *HandSlot(bool a_left)
 		{
 			const auto *objects = RE::BGSDefaultObjectManager::GetSingleton();
@@ -50,15 +48,15 @@ namespace Orbit::Items
 			return a_form.Is(RE::FormType::Weapon, RE::FormType::Spell, RE::FormType::Scroll) && !IsTwoHanded(a_form);
 		}
 
-		bool IsHeldByPressedHand(Hand a_hand, bool a_inLeft, bool a_inRight)
+		bool IsHeldByPressedHand(Input::Hand a_hand, bool a_inLeft, bool a_inRight)
 		{
 			switch (a_hand)
 			{
-			case Hand::kLeft:
+			case Input::Hand::kLeft:
 				return a_inLeft;
-			case Hand::kRight:
+			case Input::Hand::kRight:
 				return a_inRight;
-			case Hand::kBoth:
+			case Input::Hand::kBoth:
 				return a_inLeft || a_inRight;
 			default:
 				return false;
@@ -80,7 +78,7 @@ namespace Orbit::Items
 				return Equipper{*player, *manager};
 			}
 
-			void Use(RE::TESForm &a_form, const AssignedItem &a_slot, Hand a_hand)
+			void Use(RE::TESForm &a_form, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				switch (GetItemKind(&a_form))
 				{
@@ -149,7 +147,7 @@ namespace Orbit::Items
 			{
 			}
 
-			void EquipHeld(RE::TESBoundObject &a_object, const AssignedItem &a_slot, Hand a_hand)
+			void EquipHeld(RE::TESBoundObject &a_object, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				const auto copy = _inventory.FindCarriedCopy(a_object, a_slot.name);
 				if (!copy)
@@ -177,7 +175,7 @@ namespace Orbit::Items
 					return;
 				}
 
-				if (a_hand == Hand::kDefault)
+				if (a_hand == Input::Hand::kDefault)
 				{
 					if (!inRight)
 					{
@@ -186,7 +184,7 @@ namespace Orbit::Items
 					return;
 				}
 
-				if (a_hand == Hand::kBoth)
+				if (a_hand == Input::Hand::kBoth)
 				{
 					if (inRight && inLeft)
 					{
@@ -214,7 +212,7 @@ namespace Orbit::Items
 					return;
 				}
 
-				const bool left = a_hand == Hand::kLeft;
+				const bool left = a_hand == Input::Hand::kLeft;
 				if (left ? inLeft : inRight)
 				{
 					UnequipFromHand(a_object, left);
@@ -225,7 +223,7 @@ namespace Orbit::Items
 				}
 			}
 
-			void EquipSpell(RE::SpellItem &a_spell, const AssignedItem &a_slot, Hand a_hand)
+			void EquipSpell(RE::SpellItem &a_spell, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				if (!_inventory.Knows(a_spell))
 				{
@@ -244,11 +242,11 @@ namespace Orbit::Items
 					{
 						if (inLeft)
 						{
-							UnequipSpellFromHand(a_spell, Hand::kLeft);
+							UnequipSpellFromHand(a_spell, Input::Hand::kLeft);
 						}
 						if (inRight)
 						{
-							UnequipSpellFromHand(a_spell, Hand::kRight);
+							UnequipSpellFromHand(a_spell, Input::Hand::kRight);
 						}
 					}
 					else
@@ -258,7 +256,7 @@ namespace Orbit::Items
 					return;
 				}
 
-				if (a_hand == Hand::kDefault)
+				if (a_hand == Input::Hand::kDefault)
 				{
 					if (!inRight)
 					{
@@ -267,9 +265,9 @@ namespace Orbit::Items
 					return;
 				}
 
-				const bool useLeft = a_hand != Hand::kRight;
-				const bool useRight = a_hand != Hand::kLeft;
-				const bool unequip = a_hand == Hand::kBoth ? inLeft && inRight : (useLeft ? inLeft : inRight);
+				const bool useLeft = a_hand != Input::Hand::kRight;
+				const bool useRight = a_hand != Input::Hand::kLeft;
+				const bool unequip = a_hand == Input::Hand::kBoth ? inLeft && inRight : (useLeft ? inLeft : inRight);
 				if (unequip)
 				{
 					UnequipSpellFromHand(a_spell, a_hand);
@@ -285,7 +283,7 @@ namespace Orbit::Items
 				}
 			}
 
-			void EquipPowerOrShout(RE::TESForm &a_form, const AssignedItem &a_slot, Hand a_hand)
+			void EquipPowerOrShout(RE::TESForm &a_form, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				if (!_inventory.Knows(a_form))
 				{
@@ -293,7 +291,7 @@ namespace Orbit::Items
 					return;
 				}
 				const bool unequip = _inventory.IsEquipped(a_form, a_slot.name);
-				if (unequip && a_hand == Hand::kDefault)
+				if (unequip && a_hand == Input::Hand::kDefault)
 				{
 					return;
 				}
@@ -321,11 +319,11 @@ namespace Orbit::Items
 				}
 			}
 
-			void EquipArmor(RE::TESObjectARMO &a_armor, const AssignedItem &a_slot, Hand a_hand)
+			void EquipArmor(RE::TESObjectARMO &a_armor, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				if (auto *worn = _inventory.WornExtraList(a_armor))
 				{
-					if (a_hand != Hand::kDefault)
+					if (a_hand != Input::Hand::kDefault)
 					{
 						_manager.UnequipObject(&_player, &a_armor, worn);
 					}
@@ -340,7 +338,7 @@ namespace Orbit::Items
 				_manager.EquipObject(&_player, &a_armor, copy->extraList);
 			}
 
-			void EquipAmmo(RE::TESAmmo &a_ammo, const AssignedItem &a_slot, Hand a_hand)
+			void EquipAmmo(RE::TESAmmo &a_ammo, const AssignedItem &a_slot, Input::Hand a_hand)
 			{
 				const auto copy = _inventory.FindCarriedCopy(a_ammo, a_slot.name);
 				if (!copy)
@@ -350,7 +348,7 @@ namespace Orbit::Items
 				}
 				if (_inventory.IsEquipped(a_ammo, a_slot.name))
 				{
-					if (a_hand != Hand::kDefault)
+					if (a_hand != Input::Hand::kDefault)
 					{
 						auto *worn = _inventory.WornExtraList(a_ammo);
 						const auto count = worn ? worn->GetCount() : copy->total;
@@ -378,13 +376,13 @@ namespace Orbit::Items
 				_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(a_leftHand), 1, HandSlot(a_leftHand));
 			}
 
-			void UnequipSpellFromHand(RE::SpellItem &a_spell, Hand a_hand)
+			void UnequipSpellFromHand(RE::SpellItem &a_spell, Input::Hand a_hand)
 			{
-				if (a_hand == Hand::kLeft || a_hand == Hand::kBoth)
+				if (a_hand == Input::Hand::kLeft || a_hand == Input::Hand::kBoth)
 				{
 					UnequipSpell(_manager, _player, a_spell, HandSlot(kLeftHand));
 				}
-				if (a_hand == Hand::kRight || a_hand == Hand::kBoth)
+				if (a_hand == Input::Hand::kRight || a_hand == Input::Hand::kBoth)
 				{
 					UnequipSpell(_manager, _player, a_spell, HandSlot(kRightHand));
 				}
@@ -405,7 +403,7 @@ namespace Orbit::Items
 			{
 				if (a_item.Is(RE::FormType::Spell))
 				{
-					UnequipSpellFromHand(*a_item.As<RE::SpellItem>(), a_leftHand ? Hand::kLeft : Hand::kRight);
+					UnequipSpellFromHand(*a_item.As<RE::SpellItem>(), a_leftHand ? Input::Hand::kLeft : Input::Hand::kRight);
 				}
 				else if (auto *object = a_item.As<RE::TESBoundObject>())
 				{
@@ -445,7 +443,7 @@ namespace Orbit::Items
 		}
 	}
 
-	void EquipController::EquipSlot(int a_slot, Hand a_hand)
+	void EquipController::EquipSlot(int a_slot, Input::Hand a_hand)
 	{
 		const auto slot = SlotStore::Get().Slot(a_slot);
 		auto *form = slot.IsEmpty() ? nullptr : RE::TESForm::LookupByID(slot.formID);

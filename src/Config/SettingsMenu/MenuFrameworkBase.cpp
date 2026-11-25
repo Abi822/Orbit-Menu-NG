@@ -1,6 +1,6 @@
 #include "Config/SettingsMenu/MenuFrameworkBase.h"
 #include <SKSEMenuFramework.h>
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include <map>
 
 namespace Orbit::Config::SettingsMenu
@@ -33,7 +33,7 @@ namespace Orbit::Config::SettingsMenu
 		const std::string_view label{a_label};
 		const auto id = label.find("##");
 		const auto english = label.substr(0, id);
-		const auto text = Translate(english);
+		const auto text = Translation::Translate(english);
 		if (text == english)
 		{
 			return a_label;
@@ -51,7 +51,7 @@ namespace Orbit::Config::SettingsMenu
 	{
 		if (a_text && ImGuiMCP::IsItemHovered())
 		{
-			ImGuiMCP::SetTooltip("%s", Translate(a_text));
+			ImGuiMCP::SetTooltip("%s", Translation::Translate(a_text));
 		}
 	}
 

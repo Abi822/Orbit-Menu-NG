@@ -2,7 +2,7 @@
 #include "Config/SettingsMenu/MenuFrameworkBase.h"
 #include <SKSEMenuFramework.h>
 #include "Config/Settings.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
 #include "Integration/I4/I4Icons.h"
@@ -33,7 +33,7 @@ namespace Orbit::Config::SettingsMenu
 			KeyRow("Hold to open:", Input::kBindingActivation);
 			if (_settings.activationKey == Input::kKeyBindNone && _settings.gamepadActivationKey == Input::kKeyBindNone)
 			{
-				Text("%s", Translate("No key is bound, so Orbit Menu can not be opened."));
+				Text("%s", Translation::Translate("No key is bound, so Orbit Menu can not be opened."));
 			}
 			Check("Toggle Orbit Menu##orbit", _settings.toggleOrbitMenu);
 			Check("Controller use right stick##orbit", _settings.useRightStick);
@@ -44,18 +44,18 @@ namespace Orbit::Config::SettingsMenu
 				   "It protects a small bump when you press the key doesn't highlight anything.\n"
 				   "Works like mouse DPI - the lower it is, the more you have to move the mouse, so slots are less likely to be highlighted by accident.");
 
-			SeparatorText(Translate("Slots"));
-			TextDisabled("%s", Translate("Hover over an item in the Inventory menu or a spell in the Magic menu, then press a slot key to assign it."));
+			SeparatorText(Translation::Translate("Slots"));
+			TextDisabled("%s", Translation::Translate("Hover over an item in the Inventory menu or a spell in the Magic menu, then press a slot key to assign it."));
 			const float em = GetFontSize();
 			const auto slots = Items::SlotStore::Get().Snapshot();
 			for (int i = 0; i < Core::kSlotCount; ++i)
 			{
 				const auto &slot = slots[static_cast<std::size_t>(i)];
-				Text("%s %d", Translate("Slot"), i + 1);
+				Text("%s %d", Translation::Translate("Slot"), i + 1);
 				SameLine(em * 4.0f);
 				if (slot.IsEmpty())
 				{
-					TextDisabled("%s", Translate("Empty"));
+					TextDisabled("%s", Translation::Translate("Empty"));
 				}
 				else
 				{
@@ -66,14 +66,14 @@ namespace Orbit::Config::SettingsMenu
 				if (!slot.IsEmpty())
 				{
 					SameLine();
-					if (Button(std::format("{}##orbit_clear_{}", Translate("Clear"), i).c_str()))
+					if (Button(std::format("{}##orbit_clear_{}", Translation::Translate("Clear"), i).c_str()))
 					{
 						Items::SlotStore::Get().Clear(i);
 					}
 				}
 			}
 
-			SeparatorText(Translate("Slot Controls"));
+			SeparatorText(Translation::Translate("Slot Controls"));
 			Check("Release to equip##orbit", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip last highlighted slot.\n"
 																	   "It's off by default because just by opening the menu to look could accidentally equip or use something.");
 			KeyRow("Equip in left hand:", Input::kBindingLeftHand);
@@ -93,14 +93,14 @@ namespace Orbit::Config::SettingsMenu
 				EndDisabled();
 				if (IsItemHovered(ImGuiMCP::ImGuiHoveredFlags_AllowWhenDisabled))
 				{
-					SetTooltip("%s", Translate("Inventory Interface Information Injector not installed!"));
+					SetTooltip("%s", Translation::Translate("Inventory Interface Information Injector not installed!"));
 				}
 			}
 
-			SeparatorText(Translate("Messages"));
+			SeparatorText(Translation::Translate("Messages"));
 			Check("Show HUD messages##orbit", _settings.showHudMessages);
 
-			SeparatorText(Translate("Settings"));
+			SeparatorText(Translation::Translate("Settings"));
 			Spacing();
 			if (Button(Label("Reset settings to defaults##orbit")))
 			{
@@ -125,9 +125,9 @@ namespace Orbit::Config::SettingsMenu
 				renderer.SetPreview(!preview);
 			}
 
-			SeparatorText(Translate("Display"));
+			SeparatorText(Translation::Translate("Display"));
 			Slider("Menu size##orbit", _settings.orbitMenuScale, Settings::kMinOrbitMenuScale, Settings::kMaxOrbitMenuScale, "%.2f");
-			Text("%s", Translate("Position"));
+			Text("%s", Translation::Translate("Position"));
 			Number("X##orbit_position_x", _settings.positionX, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Y##orbit_position_y", _settings.positionY, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Curve##orbit_curve", _settings.curve, Settings::kMinCurve, Settings::kMaxCurve, 5);
@@ -139,7 +139,7 @@ namespace Orbit::Config::SettingsMenu
 				   "0 turns the animations off.");
 			Check("Show the Controls Hint##orbit", _settings.showHint);
 
-			SeparatorText(Translate("Slot"));
+			SeparatorText(Translation::Translate("Slot"));
 			Check("Show Slot Keys##orbit", _settings.showSlotKeys);
 			Check("Show Slot Keys if controller detected##orbit", _settings.showSlotKeysOnController);
 			Check("Show Hand##orbit", _settings.showHand);
@@ -152,7 +152,7 @@ namespace Orbit::Config::SettingsMenu
 			Choice("Slot Key Position##orbit", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
 			Choice("Hand Position##orbit", _settings.handPosition, Settings::kLastHandPosition);
 
-			SeparatorText(Translate("Item Description"));
+			SeparatorText(Translation::Translate("Item Description"));
 			Check("Show Item Description##orbit", _settings.showItemDescription);
 			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
 			Check("Show Center Background##orbit", _settings.showCenterBackground);
@@ -161,46 +161,46 @@ namespace Orbit::Config::SettingsMenu
 			Check("Static Item Description##orbit", _settings.staticItemDescription);
 			if (_settings.staticItemDescription)
 			{
-				Text("%s", Translate("Icon"));
+				Text("%s", Translation::Translate("Icon"));
 				Number("X##orbit_icon_x", _settings.itemIconDescriptionX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_icon_y", _settings.itemIconDescriptionY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
-				Text("%s", Translate("Title"));
+				Text("%s", Translation::Translate("Title"));
 				Number("X##orbit_title_x", _settings.itemDescriptionTitleX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_title_y", _settings.itemDescriptionTitleY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
-				Text("%s", Translate("Description"));
+				Text("%s", Translation::Translate("Description"));
 				Number("X##orbit_description_x", _settings.itemDescriptionTextX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
 			}
 
-			SeparatorText(Translate("Pointer"));
+			SeparatorText(Translation::Translate("Pointer"));
 			Check("Show Pointer##orbit", _settings.showPointer);
 			Number("Pointer Size##orbit", _settings.pointerSize, Settings::kMinPointerSize, Settings::kMaxPointerSize);
 			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
 
-			SeparatorText(Translate("Text"));
-			Text("%s", Translate("Slot Name"));
+			SeparatorText(Translation::Translate("Text"));
+			Text("%s", Translation::Translate("Slot Name"));
 			Number("##orbit_slot_name_size", _settings.slotNameTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_name_colour", _settings.slotNameColor);
 			Spacing();
-			Text("%s", Translate("Slot Empty"));
+			Text("%s", Translation::Translate("Slot Empty"));
 			Number("##orbit_slot_empty_size", _settings.slotEmptyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_empty_colour", _settings.slotEmptyColor);
 			Spacing();
-			Text("%s", Translate("Slot keys"));
+			Text("%s", Translation::Translate("Slot keys"));
 			Number("##orbit_slot_key_size", _settings.slotKeyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_key_colour", _settings.slotKeyColor);
 			Spacing();
-			Text("%s", Translate("Hand"));
+			Text("%s", Translation::Translate("Hand"));
 			Number("##orbit_hand_size", _settings.handTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_hand_colour", _settings.handColor);
 			Spacing();
-			Text("%s", Translate("Item Description"));
+			Text("%s", Translation::Translate("Item Description"));
 			Number("Title##orbit_item_title_size", _settings.itemDescriptionTitleTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Number("Description##orbit_item_description_size", _settings.itemDescriptionTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_item_description_colour", _settings.itemDescriptionColor);
 			Spacing();
-			Text("%s", Translate("Controls Hint"));
+			Text("%s", Translation::Translate("Controls Hint"));
 			Number("##orbit_hint_size", _settings.hintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_hint_colour", _settings.hintColor);
 
@@ -219,7 +219,7 @@ namespace Orbit::Config::SettingsMenu
 			const bool enabled = _settings.enablePages;
 			const auto count = _settings.numberOfPages;
 
-			SeparatorText(Translate("Pages"));
+			SeparatorText(Translation::Translate("Pages"));
 			Check("Enable Pages##orbit", _settings.enablePages);
 			Number("Number of Pages##orbit", _settings.numberOfPages, Settings::kMinNumberOfPages, Settings::kMaxNumberOfPages);
 			KeyRow("Next Page:", Input::kBindingNextPage);
@@ -249,7 +249,7 @@ namespace Orbit::Config::SettingsMenu
 		void DrawSlowMotion()
 		{
 			using namespace ImGuiMCP;
-			SeparatorText(Translate("Slow Motion"));
+			SeparatorText(Translation::Translate("Slow Motion"));
 			Check("Enable Slow Motion##orbit", _settings.enableSlowMotion);
 			Slider("Time Speed##orbit", _settings.slowMotionTimeSpeed, Settings::kMinSlowMotionTimeSpeed, Settings::kMaxSlowMotionTimeSpeed, "%.2f",
 				   "1 is off, 0.30 and lower I do not recommend, can mess up physics, and mods like HDT-SMP");
@@ -270,13 +270,13 @@ namespace Orbit::Config::SettingsMenu
 		{
 			std::array<const char *, kBadgePositions.size()> items{};
 			std::ranges::transform(kBadgePositions, items.begin(), [](const char *a_item)
-								   { return Translate(a_item); });
+								   { return Translation::Translate(a_item); });
 			_save |= ImGuiMCP::Combo(Label(a_label), &a_value, items.data(), a_last + 1);
 		}
 
 		void KeyRow(const char *a_label, int a_binding)
 		{
-			ImGuiMCP::Text("%s", Translate(a_label));
+			ImGuiMCP::Text("%s", Translation::Translate(a_label));
 			ImGuiMCP::SameLine();
 			KeyButtons(a_binding);
 		}
@@ -303,13 +303,13 @@ namespace Orbit::Config::SettingsMenu
 			using namespace ImGuiMCP;
 			if (_capturing == a_binding)
 			{
-				Text("%s", Translate(a_binding.gamepad ? "Press a controller button..." : "Press a keyboard or mouse button..."));
+				Text("%s", Translation::Translate(a_binding.gamepad ? "Press a controller button..." : "Press a keyboard or mouse button..."));
 				return;
 			}
 
 			const int pad = a_binding.gamepad ? 1 : 0;
 			const auto name = Input::KeyName(a_key);
-			const auto label = a_binding.gamepad ? Translate("Controller: {}", name) : name;
+			const auto label = a_binding.gamepad ? Translation::Translate("Controller: {}", name) : name;
 			if (Button(std::format("{}##orbit_bind_{}_{}", label, a_binding.id, pad).c_str()))
 			{
 				_input.BeginKeyCapture(a_binding);
@@ -318,7 +318,7 @@ namespace Orbit::Config::SettingsMenu
 			if (a_key != Input::kKeyBindNone)
 			{
 				SameLine();
-				if (Button(std::format("{}##orbit_unbind_{}_{}", Translate("Unbind"), a_binding.id, pad).c_str()))
+				if (Button(std::format("{}##orbit_unbind_{}_{}", Translation::Translate("Unbind"), a_binding.id, pad).c_str()))
 				{
 					a_key = Input::kKeyBindNone;
 					_save = true;
@@ -412,7 +412,7 @@ namespace Orbit::Config::SettingsMenu
 		}
 		else
 		{
-			SetStatus(Translate("Could not write the settings file - see OrbitMenu.log."));
+			SetStatus(Translation::Translate("Could not write the settings file - see OrbitMenu.log."));
 		}
 	}
 

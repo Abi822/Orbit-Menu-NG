@@ -1,9 +1,9 @@
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 #include <fstream>
 #include <map>
 #include <nlohmann/json.hpp>
 
-namespace Orbit::Config
+namespace Orbit::Translation
 {
 	namespace
 	{
@@ -32,7 +32,7 @@ namespace Orbit::Config
 					++count;
 				}
 			}
-			logger::info("Translation: {} texts loaded from {}", count, name);
+			logger::info("Translation: {} loaded from {}", count, name);
 		}
 	}
 

@@ -1,5 +1,5 @@
 #include "Items/ItemDescription.h"
-#include "Config/Translation.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::Items
 {
@@ -76,21 +76,21 @@ namespace Orbit::Items
 			const auto skill = base->GetMinimumSkillLevel();
 			if (skill >= 100)
 			{
-				return Config::Translate("Master");
+				return Translation::Translate("Master");
 			}
 			if (skill >= 75)
 			{
-				return Config::Translate("Expert");
+				return Translation::Translate("Expert");
 			}
 			if (skill >= 50)
 			{
-				return Config::Translate("Adept");
+				return Translation::Translate("Adept");
 			}
 			if (skill >= 25)
 			{
-				return Config::Translate("Apprentice");
+				return Translation::Translate("Apprentice");
 			}
-			return Config::Translate("Novice");
+			return Translation::Translate("Novice");
 		}
 	}
 
@@ -105,8 +105,8 @@ namespace Orbit::Items
 			if (a_kind == ItemKind::kSpell && spell)
 			{
 				const bool perSecond = spell->GetCastingType() == RE::MagicSystem::CastingType::kConcentration;
-				item.footer.push_back({Config::Translate("lvl"), SpellLevel(*spell)});
-				item.footer.push_back({Config::Translate("COST"), Whole(spell->CalculateMagickaCost(&a_player)), perSecond ? Config::Translate("per sec") : ""});
+				item.footer.push_back({Translation::Translate("lvl"), SpellLevel(*spell)});
+				item.footer.push_back({Translation::Translate("COST"), Whole(spell->CalculateMagickaCost(&a_player)), perSecond ? Translation::Translate("per sec") : ""});
 			}
 			return item;
 		}
@@ -128,16 +128,16 @@ namespace Orbit::Items
 		switch (a_kind)
 		{
 		case ItemKind::kWeapon:
-			line = Config::Translate("Deals {} Damage", Whole(a_player.GetDamage(&entry)));
+			line = Translation::Translate("Deals {} Damage", Whole(a_player.GetDamage(&entry)));
 			break;
 		case ItemKind::kAmmo:
-			line = Config::Translate("Deals {} Damage", Decimal(a_form.As<RE::TESAmmo>()->GetRuntimeData().data.damage));
+			line = Translation::Translate("Deals {} Damage", Decimal(a_form.As<RE::TESAmmo>()->GetRuntimeData().data.damage));
 			break;
 		case ItemKind::kShield:
 		case ItemKind::kArmor:
 			if (const auto armor = std::lround(a_player.GetArmorValue(&entry)); armor > 0)
 			{
-				line = Config::Translate("Gives {} Armor", armor);
+				line = Translation::Translate("Gives {} Armor", armor);
 			}
 			break;
 		default:
