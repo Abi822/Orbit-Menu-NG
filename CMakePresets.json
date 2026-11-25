@@ -1,24 +1,11 @@
 {
   "version": 6,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 25,
-    "patch": 0
-  },
   "configurePresets": [
     {
       "name": "vs2022",
-      "displayName": "Visual Studio 2022 (x64, static CRT)",
-      "description": "Multi-config Visual Studio build. Needs VCPKG_ROOT pointing at a vcpkg checkout.",
       "generator": "Visual Studio 17 2022",
-      "architecture": {
-        "value": "x64",
-        "strategy": "set"
-      },
-      "toolset": {
-        "value": "v143,host=x64",
-        "strategy": "set"
-      },
+      "architecture": "x64",
+      "toolset": "v143,host=x64",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
@@ -31,7 +18,6 @@
   "buildPresets": [
     {
       "name": "release",
-      "displayName": "Release",
       "configurePreset": "vs2022",
       "configuration": "Release"
     }
