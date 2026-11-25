@@ -81,7 +81,7 @@ namespace
 
 SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 {
-	SKSE::Init(a_skse, {.log = false, .trampoline = true, .trampolineSize = Orbit::Game::Hooks::kTrampolineSize});
+	SKSE::Init(a_skse, {.log = false, .trampoline = true, .trampolineSize = 70});
 	OpenLog();
 
 	logger::info("Orbit Menu Starting...");
