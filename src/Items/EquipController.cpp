@@ -172,14 +172,7 @@ namespace Orbit::Items
 					}
 					else if (IsHeldByPressedHand(a_hand, inLeft, inRight))
 					{
-						if (a_object.Is(RE::FormType::Light))
-						{
-							UnequipFromHand(a_object, kLeftHand);
-						}
-						else
-						{
-							_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
-						}
+						_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
 					}
 					return;
 				}
