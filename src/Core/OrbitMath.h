@@ -7,6 +7,7 @@
 
 namespace Orbit::Core
 {
+	// Works out which slot the mouse or thumb stick is pointing at, and where each slot sits around the circle.
 	inline constexpr float kPi = std::numbers::pi_v<float>;
 	inline constexpr float kTwoPi = 2.0f * kPi;
 	inline constexpr float kSliceAngle = kTwoPi / static_cast<float>(kSlotCount);

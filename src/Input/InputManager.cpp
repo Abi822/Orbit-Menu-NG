@@ -10,10 +10,8 @@ namespace Orbit::Input
 	namespace
 	{
 		constexpr auto kCapturedPressWindow = 250ms;
-
 		constexpr std::uint8_t kClickLeft = 1 << 0;
 		constexpr std::uint8_t kClickRight = 1 << 1;
-
 		constexpr float kSwitchDistance = 130.0f;
 
 		std::optional<int> SlotOfKey(const Config::Settings &a_settings, std::uint32_t a_keybind)
