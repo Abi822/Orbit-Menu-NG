@@ -2,9 +2,7 @@
 
 #include "RE/Skyrim.h"
 #include "SKSE/SKSE.h"
-
 #include <Windows.h>
-
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -20,10 +18,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
-
 #include <spdlog/spdlog.h>
-
-#include "Version.h"
 
 using namespace std::literals;
 

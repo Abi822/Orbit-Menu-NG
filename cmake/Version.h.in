@@ -1,9 +1,0 @@
-#pragma once
-
-#include <string_view>
-
-namespace RMS::Version
-{
-	inline constexpr std::string_view STRING = "@PROJECT_VERSION@";
-	inline constexpr std::string_view PROJECT = "@PROJECT_NAME@";
-}

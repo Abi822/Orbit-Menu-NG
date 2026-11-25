@@ -65,7 +65,7 @@ namespace Orbit::Items
 			}
 		}
 
-		// The player and the game's equip manager, everything equipped/unequipped or used goes through here.
+		// Handles equipping and unequipping items for player.
 		class Equipper
 		{
 		public:
@@ -91,7 +91,7 @@ namespace Orbit::Items
 					EquipHeld(*a_form.As<RE::TESBoundObject>(), a_slot, a_hand);
 					break;
 				case ItemKind::kArmor:
-					Wear(*a_form.As<RE::TESObjectARMO>(), a_slot, a_hand);
+					EquipArmor(*a_form.As<RE::TESObjectARMO>(), a_slot, a_hand);
 					break;
 				case ItemKind::kSpell:
 					EquipSpell(*a_form.As<RE::SpellItem>(), a_slot, a_hand);
@@ -125,19 +125,19 @@ namespace Orbit::Items
 				auto *leftList = left ? ListForMove(*left, kLeftHand) : nullptr;
 				if (!left)
 				{
-					TakeOutOfHand(*right, kRightHand);
+					UnequipItemFromHand(*right, kRightHand);
 				}
 				if (!right)
 				{
-					TakeOutOfHand(*left, kLeftHand);
+					UnequipItemFromHand(*left, kLeftHand);
 				}
 				if (right)
 				{
-					PutInHand(*right, rightList, kLeftHand);
+					EquipItemInHand(*right, rightList, kLeftHand);
 				}
 				if (left)
 				{
-					PutInHand(*left, leftList, kRightHand);
+					EquipItemInHand(*left, leftList, kRightHand);
 				}
 				logger::info("Equip Controller: Swapped the items in the left and right hands");
 			}
@@ -154,13 +154,13 @@ namespace Orbit::Items
 				const auto copy = _inventory.FindCarriedCopy(a_object, a_slot.name);
 				if (!copy)
 				{
-					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					logger::info("Equip Controller: {} is not in inventory", a_slot.name);
 					return;
 				}
 
 				const bool inRight = _inventory.IsInHand(a_object, a_slot.name, kRightHand);
 				const bool inLeft = _inventory.IsInHand(a_object, a_slot.name, kLeftHand);
-				const auto put = [&](const RE::BGSEquipSlot *a_where)
+				const auto equip = [&](const RE::BGSEquipSlot *a_where)
 				{ _manager.EquipObject(&_player, &a_object, copy->extraList, 1, a_where); };
 
 				const bool leftOnly = a_object.Is(RE::FormType::Armor, RE::FormType::Light);
@@ -168,7 +168,7 @@ namespace Orbit::Items
 				{
 					if (!(leftOnly ? inLeft : inRight))
 					{
-						put(nullptr);
+						equip(nullptr);
 					}
 					else if (IsHeldByPressedHand(a_hand, inLeft, inRight))
 					{
@@ -181,7 +181,7 @@ namespace Orbit::Items
 				{
 					if (!inRight)
 					{
-						put(a_object.Is(RE::FormType::Scroll) ? HandSlot(kRightHand) : nullptr);
+						equip(a_object.Is(RE::FormType::Scroll) ? HandSlot(kRightHand) : nullptr);
 					}
 					return;
 				}
@@ -198,14 +198,14 @@ namespace Orbit::Items
 					{
 						if (!inRight)
 						{
-							put(HandSlot(kRightHand));
+							equip(HandSlot(kRightHand));
 						}
 						return;
 					}
 					const auto other = inRight ? copy : _inventory.FindCarriedCopy(a_object, a_slot.name, &*copy);
 					if (!inRight)
 					{
-						put(HandSlot(kRightHand));
+						equip(HandSlot(kRightHand));
 					}
 					if (!inLeft && other)
 					{
@@ -221,7 +221,7 @@ namespace Orbit::Items
 				}
 				else
 				{
-					put(HandSlot(left));
+					equip(HandSlot(left));
 				}
 			}
 
@@ -229,7 +229,7 @@ namespace Orbit::Items
 			{
 				if (!_inventory.Knows(a_spell))
 				{
-					logger::info("Equip Controller: You don't know {}", a_slot.name);
+					logger::info("Equip Controller: Player doesn't know {}", a_slot.name);
 					return;
 				}
 
@@ -244,11 +244,11 @@ namespace Orbit::Items
 					{
 						if (inLeft)
 						{
-							TakeSpellOutOfHand(a_spell, Hand::kLeft);
+							UnequipSpellFromHand(a_spell, Hand::kLeft);
 						}
 						if (inRight)
 						{
-							TakeSpellOutOfHand(a_spell, Hand::kRight);
+							UnequipSpellFromHand(a_spell, Hand::kRight);
 						}
 					}
 					else
@@ -269,10 +269,10 @@ namespace Orbit::Items
 
 				const bool useLeft = a_hand != Hand::kRight;
 				const bool useRight = a_hand != Hand::kLeft;
-				const bool takeOff = a_hand == Hand::kBoth ? inLeft && inRight : (useLeft ? inLeft : inRight);
-				if (takeOff)
+				const bool unequip = a_hand == Hand::kBoth ? inLeft && inRight : (useLeft ? inLeft : inRight);
+				if (unequip)
 				{
-					TakeSpellOutOfHand(a_spell, a_hand);
+					UnequipSpellFromHand(a_spell, a_hand);
 					return;
 				}
 				if (useLeft && !inLeft)
@@ -289,17 +289,17 @@ namespace Orbit::Items
 			{
 				if (!_inventory.Knows(a_form))
 				{
-					logger::info("Equip Controller: You don't know {}", a_slot.name);
+					logger::info("Equip Controller: Player doesn't know {}", a_slot.name);
 					return;
 				}
-				const bool takeOff = _inventory.IsEquipped(a_form, a_slot.name);
-				if (takeOff && a_hand == Hand::kDefault)
+				const bool unequip = _inventory.IsEquipped(a_form, a_slot.name);
+				if (unequip && a_hand == Hand::kDefault)
 				{
 					return;
 				}
 				if (auto *shout = a_form.As<RE::TESShout>())
 				{
-					if (takeOff)
+					if (unequip)
 					{
 						UnequipShout(_manager, _player, *shout);
 					}
@@ -310,7 +310,7 @@ namespace Orbit::Items
 				}
 				else if (auto *power = a_form.As<RE::SpellItem>())
 				{
-					if (takeOff)
+					if (unequip)
 					{
 						UnequipPower(_manager, _player, *power);
 					}
@@ -321,7 +321,7 @@ namespace Orbit::Items
 				}
 			}
 
-			void Wear(RE::TESObjectARMO &a_armor, const AssignedItem &a_slot, Hand a_hand)
+			void EquipArmor(RE::TESObjectARMO &a_armor, const AssignedItem &a_slot, Hand a_hand)
 			{
 				if (auto *worn = _inventory.WornExtraList(a_armor))
 				{
@@ -334,7 +334,7 @@ namespace Orbit::Items
 				const auto copy = _inventory.FindCarriedCopy(a_armor, a_slot.name);
 				if (!copy)
 				{
-					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					logger::info("Equip Controller: {} is not in inventory", a_slot.name);
 					return;
 				}
 				_manager.EquipObject(&_player, &a_armor, copy->extraList);
@@ -345,7 +345,7 @@ namespace Orbit::Items
 				const auto copy = _inventory.FindCarriedCopy(a_ammo, a_slot.name);
 				if (!copy)
 				{
-					logger::info("Equip Controller: {} is not in your inventory", a_slot.name);
+					logger::info("Equip Controller: {} is not in inventory", a_slot.name);
 					return;
 				}
 				if (_inventory.IsEquipped(a_ammo, a_slot.name))
@@ -367,7 +367,7 @@ namespace Orbit::Items
 				const auto copy = _inventory.FindCarriedCopy(a_item, a_slot.name);
 				if (!copy)
 				{
-					logger::info("Equip Controller: You have no {} left", a_slot.name);
+					logger::info("Equip Controller: Player has no {} left", a_slot.name);
 					return;
 				}
 				_manager.EquipObject(&_player, &a_item, copy->extraList);
@@ -378,7 +378,7 @@ namespace Orbit::Items
 				_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(a_leftHand), 1, HandSlot(a_leftHand));
 			}
 
-			void TakeSpellOutOfHand(RE::SpellItem &a_spell, Hand a_hand)
+			void UnequipSpellFromHand(RE::SpellItem &a_spell, Hand a_hand)
 			{
 				if (a_hand == Hand::kLeft || a_hand == Hand::kBoth)
 				{
@@ -401,11 +401,11 @@ namespace Orbit::Items
 				return _inventory.HeldExtraList(a_leftHand);
 			}
 
-			void TakeOutOfHand(RE::TESForm &a_item, bool a_leftHand)
+			void UnequipItemFromHand(RE::TESForm &a_item, bool a_leftHand)
 			{
 				if (a_item.Is(RE::FormType::Spell))
 				{
-					TakeSpellOutOfHand(*a_item.As<RE::SpellItem>(), a_leftHand ? Hand::kLeft : Hand::kRight);
+					UnequipSpellFromHand(*a_item.As<RE::SpellItem>(), a_leftHand ? Hand::kLeft : Hand::kRight);
 				}
 				else if (auto *object = a_item.As<RE::TESBoundObject>())
 				{
@@ -413,7 +413,7 @@ namespace Orbit::Items
 				}
 			}
 
-			void PutInHand(RE::TESForm &a_item, RE::ExtraDataList *a_extra, bool a_leftHand)
+			void EquipItemInHand(RE::TESForm &a_item, RE::ExtraDataList *a_extra, bool a_leftHand)
 			{
 				if (a_item.Is(RE::FormType::Spell))
 				{

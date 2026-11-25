@@ -1,199 +1,81 @@
 cmake_minimum_required(VERSION 3.25)
 
-cmake_policy(SET CMP0135 NEW)
-
-project(
-	OrbitMenu
-	VERSION 0.1.0
-	DESCRIPTION "Orbit Menu, a Witcher 3 style radial menu for Skyrim SE/AE"
-	LANGUAGES CXX
-)
-
-if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-	message(FATAL_ERROR "In-source builds are not allowed. Configure with: cmake --preset vs2022")
-endif()
+set(AUTHOR_NAME "Yuuri")
+project(OrbitMenu VERSION 0.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(MSVC AND CMAKE_GENERATOR MATCHES "Visual Studio")
-	add_compile_options(/MP)
-endif()
+add_compile_options(/MP)
 
-include(cmake/Dependencies.cmake)
+set(ENABLE_SKYRIM_SE ON CACHE BOOL "" FORCE)
+set(ENABLE_SKYRIM_AE ON CACHE BOOL "" FORCE)
+set(ENABLE_SKYRIM_VR OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(SKSE_SUPPORT_XBYAK OFF CACHE BOOL "" FORCE)
+set(SKSE_SUPPORT_PATCH_SAFETY OFF CACHE BOOL "" FORCE)
+set(COMMONLIB_ENABLE_IPO OFF CACHE BOOL "" FORCE)
+set(COMMONLIB_PREBUILT OFF CACHE BOOL "" FORCE)
 
-configure_file(cmake/Version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/Version.h" @ONLY)
-configure_file(cmake/version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc" @ONLY)
+include(FetchContent)
 
-set(JOST_FONT "${CMAKE_CURRENT_SOURCE_DIR}/fonts/Jost-Medium.ttf")
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${JOST_FONT}")
-file(READ "${JOST_FONT}" JOST_BYTES HEX)
-string(REPEAT "[0-9a-f]" 64 JOST_LINE)
-string(REGEX REPLACE "(${JOST_LINE})" "\\1\n" JOST_BYTES "${JOST_BYTES}")
-string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," JOST_BYTES "${JOST_BYTES}")
-file(CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/JostMedium.h"
-	CONTENT "#pragma once\n\ninline constexpr unsigned char kJostMedium[]{\n@JOST_BYTES@};\n" @ONLY)
-
-set(SOURCES
-	src/PCH.h
-	src/main.cpp
-
-	src/Core/Slots.h
-	src/Core/OrbitMath.h
-	src/Core/OrbitState.h
-	src/Core/OrbitState.cpp
-	src/Core/SlotView.h
-
-	src/Config/Settings.h
-	src/Config/Settings.cpp
-	src/Config/Translation.h
-	src/Config/Translation.cpp
-	src/Config/MenuFrameworkConfig.h
-	src/Config/MenuFrameworkConfig.cpp
-
-	src/Input/KeyBinds.h
-	src/Input/KeyBinds.cpp
-	src/Input/InputManager.h
-	src/Input/InputManager.cpp
-
-	src/Game/GameState.h
-	src/Game/GameState.cpp
-	src/Game/Hooks.h
-	src/Game/Hooks.cpp
-	src/Game/SlowMotion.h
-	src/Game/SlowMotion.cpp
-
-	src/UI/ImGuiLayer.h
-	src/UI/ImGuiLayer.cpp
-	src/UI/Graphics/Font.h
-	src/UI/Graphics/Font.cpp
-	src/UI/Graphics/GpuTexture.h
-	src/UI/Graphics/GpuTexture.cpp
-	src/UI/Graphics/SwfIcon.h
-	src/UI/Graphics/SwfIcon.cpp
-	src/UI/Graphics/TextMeasure.h
-	src/UI/Graphics/TextMeasure.cpp
-	src/UI/OrbitMenu/OrbitRenderer.h
-	src/UI/OrbitMenu/OrbitRenderer.cpp
-	src/UI/OrbitMenu/MenuAnimation.h
-	src/UI/OrbitMenu/MenuAnimation.cpp
-	src/UI/OrbitMenu/MenuLayout.h
-	src/UI/OrbitMenu/MenuPalette.h
-	src/UI/OrbitMenu/MenuPalette.cpp
-	src/UI/OrbitMenu/MenuContent.h
-	src/UI/OrbitMenu/MenuContent.cpp
-	src/UI/OrbitMenu/ItemDescriptionLayout.h
-	src/UI/OrbitMenu/ItemDescriptionLayout.cpp
-	src/UI/OrbitMenu/IconCache.h
-	src/UI/OrbitMenu/IconCache.cpp
-	src/UI/OrbitMenu/MenuPainter.h
-	src/UI/OrbitMenu/MenuPainter.cpp
-	src/UI/OrbitMenu/OrbitMenuCurved.h
-	src/UI/Skins/Skin.h
-	src/UI/Skins/Skin.cpp
-	src/UI/Skins/SkinIconNames.h
-	src/UI/Skins/SkinIconNames.cpp
-	src/UI/Skins/SvgImage.h
-	src/UI/Skins/SvgImage.cpp
-	src/UI/Skins/SkinImages.h
-	src/UI/Skins/SkinImages.cpp
-
-	src/Items/ItemKind.h
-	src/Items/SlotStore.h
-	src/Items/SlotStore.cpp
-	src/Items/Pages.h
-	src/Items/Pages.cpp
-	src/Items/Inventory.h
-	src/Items/Inventory.cpp
-	src/Items/Assignment.h
-	src/Items/Assignment.cpp
-	src/Items/SlotViewBuilder.h
-	src/Items/SlotViewBuilder.cpp
-	src/Items/EquipController.h
-	src/Items/EquipController.cpp
-	src/Items/ItemIcons.h
-	src/Items/ItemIcons.cpp
-	src/Items/ItemDescription.h
-	src/Items/ItemDescription.cpp
-
-	src/Integration/MenuFramework/MenuFrameworkBridge.h
-	src/Integration/MenuFramework/MenuFrameworkBridge.cpp
-
-	src/Integration/I4/I4Icons.h
-	src/Integration/I4/I4Icons.cpp
-	src/Integration/I4/ItemData.h
-	src/Integration/I4/ItemData.cpp
-	src/Integration/I4/RuleParser.h
-	src/Integration/I4/RuleParser.cpp
-	src/Integration/I4/Rules.h
-	src/Integration/I4/Rules.cpp
-	src/Integration/I4/ValueNames.h
-	src/Integration/I4/ValueNames.cpp
+FetchContent_Declare(
+	commonlibsse
+	URL https://github.com/alandtse/CommonLibVR/archive/f49373ed922fde1dfbff0208f63a49bf8846c109.tar.gz
+	URL_HASH SHA256=d5f3068944afceae56c50ee0a08bf5b798cc0f13451af345046f342a660f5095
+	SYSTEM
 )
 
-add_commonlibsse_plugin(
-	${PROJECT_NAME}
-	NAME "${PROJECT_NAME}"
-	USE_ADDRESS_LIBRARY
-	SOURCES ${SOURCES} "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc"
+FetchContent_Declare(
+	skse_menu_framework_api
+	URL https://github.com/QTR-Modding/SKSE-Menu-Framework-3-API/archive/1dcb70179076aae4ab626f43c5baab2735ca5877.tar.gz
+	URL_HASH SHA256=cc6715ddd61b0bf0ea1578687b0f64841a868ce5a1011b4c6468e6b38ddb96eb
+	SOURCE_SUBDIR no-cmake
 )
 
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "src" FILES ${SOURCES})
+FetchContent_MakeAvailable(commonlibsse skse_menu_framework_api)
+include(${commonlibsse_SOURCE_DIR}/cmake/CommonLibSSE.cmake)
 
-target_include_directories(
-	${PROJECT_NAME}
-	PRIVATE
-		"${CMAKE_CURRENT_SOURCE_DIR}/src"
-		"${CMAKE_CURRENT_BINARY_DIR}/generated"
-)
+find_package(imgui CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(NanoSVG CONFIG REQUIRED)
+find_path(SIMPLEINI_INCLUDE_DIRS SimpleIni.h REQUIRED)
 
-target_include_directories(
-	${PROJECT_NAME}
-	SYSTEM PRIVATE
-		"${skse_menu_framework_api_SOURCE_DIR}"
-		"${SIMPLEINI_INCLUDE_DIRS}"
-)
+configure_file(cmake/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc @ONLY)
 
-target_compile_definitions(
-	${PROJECT_NAME}
-	PRIVATE
-		UNICODE
-		_UNICODE
-		NOMINMAX
-		WIN32_LEAN_AND_MEAN
-		IMGUI_DEFINE_MATH_OPERATORS
-		_CRT_SECURE_NO_WARNINGS
-		_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING  # SKSEMenuFramework.h uses <codecvt>
-)
+set(font ${CMAKE_CURRENT_SOURCE_DIR}/fonts/Jost-Medium.ttf)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${font})
+file(READ ${font} font_bytes HEX)
+string(REPEAT "[0-9a-f]" 64 font_line)
+string(REGEX REPLACE "(${font_line})" "\\1\n" font_bytes "${font_bytes}")
+string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," font_bytes "${font_bytes}")
+file(CONFIGURE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/JostMedium.h
+	CONTENT "#pragma once\n\ninline constexpr unsigned char kJostMedium[]{\n@font_bytes@};\n" @ONLY)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui nlohmann_json::nlohmann_json NanoSVG::nanosvg NanoSVG::nanosvgrast)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.cpp src/*.h)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX src FILES ${sources})
+
+add_commonlibsse_plugin(${PROJECT_NAME} AUTHOR ${AUTHOR_NAME} SOURCES ${sources} ${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/PCH.h)
+target_include_directories(${PROJECT_NAME} PRIVATE src ${CMAKE_CURRENT_BINARY_DIR}/generated)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${skse_menu_framework_api_SOURCE_DIR} ${SIMPLEINI_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui nlohmann_json::nlohmann_json NanoSVG::nanosvg NanoSVG::nanosvgrast)
 
-if(MSVC)
-	target_compile_options(
-		${PROJECT_NAME}
-		PRIVATE
-			/W4
-			/permissive-
-			/utf-8
-			/Zc:inline
-			/Zc:__cplusplus
-			/external:anglebrackets
-			/external:W0
-			/Zi  # PDB for crash logs
-	)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+	UNICODE
+	_UNICODE
+	NOMINMAX
+	WIN32_LEAN_AND_MEAN
+	IMGUI_DEFINE_MATH_OPERATORS
+	_CRT_SECURE_NO_WARNINGS
+	_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+)
 
-	target_link_options(
-		${PROJECT_NAME}
-		PRIVATE
-			/DEBUG:FULL
-			"$<$<CONFIG:Release>:/OPT:REF;/OPT:ICF;/INCREMENTAL:NO>"
-	)
-endif()
+target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive- /utf-8 /Zc:inline /Zc:__cplusplus /external:anglebrackets /external:W0 /Zi)
+target_link_options(${PROJECT_NAME} PRIVATE /DEBUG:FULL /OPT:REF /OPT:ICF /INCREMENTAL:NO)
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "SKSE/Plugins" COMPONENT OrbitMenu)
-install(FILES "$<TARGET_PDB_FILE:${PROJECT_NAME}>" DESTINATION "SKSE/Plugins" COMPONENT OrbitMenu OPTIONAL)
-install(FILES "dist/SKSE/Plugins/OrbitMenu_Default.ini" DESTINATION "SKSE/Plugins/Orbit Menu" COMPONENT OrbitMenu)
-install(FILES "fonts/Jost-OFL.txt" DESTINATION "SKSE/Plugins/Orbit Menu/fonts" COMPONENT OrbitMenu)
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION SKSE/Plugins COMPONENT OrbitMenu)
+install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION SKSE/Plugins COMPONENT OrbitMenu OPTIONAL)
+install(FILES dist/SKSE/Plugins/OrbitMenu_Default.ini DESTINATION "SKSE/Plugins/Orbit Menu" COMPONENT OrbitMenu)
+install(FILES fonts/Jost-OFL.txt DESTINATION "SKSE/Plugins/Orbit Menu/fonts" RENAME OFL.txt COMPONENT OrbitMenu)
