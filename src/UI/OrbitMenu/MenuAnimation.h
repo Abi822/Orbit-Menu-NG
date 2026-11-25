@@ -24,7 +24,6 @@ namespace Orbit::UI::OrbitMenu
 		bool pointerValid = false;
 		int flashSlot = -1;
 		float flash = 0.0f;
-
 		int StrongestSlot() const;
 	};
 
@@ -33,7 +32,6 @@ namespace Orbit::UI::OrbitMenu
 	public:
 		MenuInput Track(Input::OrbitSnapshot a_snapshot);
 		bool Animate(int a_hoveredSlot, float a_speed);
-
 		const Motion &GetMotion() const { return _motion; }
 		bool IsVisible() const { return _visible; }
 		bool IsPreviewing() const { return _preview.load(); }
@@ -41,9 +39,7 @@ namespace Orbit::UI::OrbitMenu
 
 	private:
 		using Clock = std::chrono::steady_clock;
-
 		float Progress(Clock::time_point a_since, float a_seconds, float a_speed) const;
-
 		std::atomic<bool> _preview{false};
 		Input::OrbitSnapshot _snapshot{};
 		Clock::time_point _now{};

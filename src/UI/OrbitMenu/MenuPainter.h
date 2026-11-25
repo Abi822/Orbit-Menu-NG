@@ -45,13 +45,11 @@ namespace Orbit::UI::OrbitMenu
 		ImVec2 NameAt(int a_slot) const;
 		template <class Visit>
 		void ForEachBadge(const Visit &a_visit) const;
-
 		void TextAt(float a_size, ImVec2 a_topLeft, ImVec4 a_color, std::string_view a_text) const;
 		void Text(float a_size, ImVec2 a_topCenter, ImVec4 a_color, const TextLine &a_line) const;
 		void TextCentered(float a_size, ImVec2 a_center, ImVec4 a_color, const TextLine &a_line) const;
 		void Line(ImVec2 a_from, ImVec2 a_to, ImU32 a_color, float a_thickness) const;
 		void Image(const Graphics::CachedImage &a_image, ImVec2 a_center, float a_size, ImU32 a_color) const;
-
 		void DrawBackdrop() const;
 		void DrawCentre() const;
 		void DrawPointer() const;
@@ -65,7 +63,6 @@ namespace Orbit::UI::OrbitMenu
 		void DrawHands() const;
 		void DrawHint() const;
 		void Bend(int a_firstVertex, int a_hintVertex) const;
-
 		ImDrawList &_drawList;
 		ImFont &_font;
 		ImVec2 _display;

@@ -39,6 +39,7 @@ namespace Orbit::UI::Skins
 		{
 			return;
 		}
+
 		_generation = a_skin.Generation();
 		_pixelScale = a_pixelScale;
 		_badgeSize = badgeSize;
@@ -46,12 +47,12 @@ namespace Orbit::UI::Skins
 		_slotSize = slotSize;
 		_centerBackgroundSize = centerBackgroundSize;
 		_images = {};
-
 		std::array<std::vector<std::uint8_t>, kPartCount> pixels{};
 		std::array<int, kPartCount> sizes{};
 		std::array<int, kPartCount> offsets{};
 		int width = kGap;
 		int height = 0;
+
 		for (std::size_t i = 0; i < kPartCount; ++i)
 		{
 			const auto part = static_cast<Part>(i);

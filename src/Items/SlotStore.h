@@ -8,7 +8,6 @@ namespace Orbit::Items
 	{
 		RE::FormID formID = 0;
 		std::string name;
-
 		bool IsEmpty() const { return formID == 0; }
 		bool operator==(const AssignedItem &) const = default;
 	};
@@ -19,24 +18,20 @@ namespace Orbit::Items
 	{
 	public:
 		static SlotStore &Get();
-
 		AssignedItem Slot(int a_slot) const;
 		SlotArray Snapshot() const;
 		std::optional<int> Find(const AssignedItem &a_item) const;
 		std::uint32_t ChangeCount() const;
-
 		void Assign(int a_slot, AssignedItem a_item);
 		void Clear(int a_slot);
 		void ReplaceAll(SlotArray a_slots);
 		SlotArray Exchange(SlotArray a_slots);
-
 		static void RegisterSerialization();
 		[[nodiscard]] static bool WriteSlots(SKSE::SerializationInterface &a_intfc, const SlotArray &a_slots);
 		[[nodiscard]] static bool ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots);
 
 	private:
 		SlotStore() = default;
-
 		mutable std::mutex _lock;
 		SlotArray _slots{};
 		std::uint32_t _changeCount = 0;

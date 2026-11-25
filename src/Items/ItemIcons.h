@@ -9,8 +9,6 @@ namespace Orbit::Items::Icons
 	};
 
 	SkyUIIcon SkyUIIconFor(const RE::TESForm &a_form);
-
 	std::string_view SkyUISubType(const RE::TESForm &a_form);
-
 	std::uint32_t MainPartOf(std::uint32_t a_slotMask);
 }

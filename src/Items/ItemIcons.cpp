@@ -13,13 +13,11 @@ namespace Orbit::Items::Icons
 		constexpr std::array kWoodAxes{0x02F2F4u, 0x0AE086u};
 		constexpr RE::FormID kWeddingWreath = 0x08895A;
 		constexpr RE::FormID kVampireLordArmor = 0x011A84;
-
 		constexpr std::uint32_t kWeaponColor = 0xA4A5BF;
 		constexpr std::uint32_t kAmmoColor = 0xA89E8C;
 		constexpr std::uint32_t kArmorColor = 0xEDDA87;
 		constexpr std::uint32_t kLightArmorColor = 0x756000;
 		constexpr std::uint32_t kHeavyArmorColor = 0x6B7585;
-
 		constexpr std::array kPartOrder{Slot::kBody, Slot::kHair, Slot::kHands, Slot::kForearms, Slot::kFeet, Slot::kCalves, Slot::kShield,
 										Slot::kAmulet, Slot::kRing, Slot::kLongHair, Slot::kEars, Slot::kHead, Slot::kCirclet, Slot::kTail};
 

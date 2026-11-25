@@ -12,7 +12,6 @@ namespace Orbit::UI::OrbitMenu
 		static constexpr float kSlotHoverGrowth = 0.08f;
 		static constexpr float kSlotGlowRatio = 1.5f;
 		static constexpr float kBadgeInset = 0.72f;
-
 		ImVec2 center{};
 		float scale = 1.0f;
 		float ringRadius = kBaseRingRadius;

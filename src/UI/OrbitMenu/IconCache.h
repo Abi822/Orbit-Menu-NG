@@ -11,9 +11,7 @@ namespace Orbit::UI::OrbitMenu
 		std::string source;
 		std::string label;
 		std::optional<std::uint32_t> tint;
-
 		bool Empty() const { return skinFile.empty() && label.empty(); }
-
 		bool operator==(const IconRequest &) const = default;
 	};
 
@@ -27,17 +25,19 @@ namespace Orbit::UI::OrbitMenu
 	{
 	public:
 		void Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_centrePixels);
-
 		std::optional<Graphics::CachedImage> Find(int a_slot, IconSize a_size) const;
 
 	private:
-		bool Draw(const IconRequest &a_request, int a_slot);
+		int IndexOf(const IconRequest &a_request) const;
+		int FreeIndex() const;
+		void Store(int a_index, const IconRequest &a_request);
+		void Draw(const IconRequest &a_request, int a_index);
 		int Pixels(IconSize a_size) const;
-		int CellX(int a_slot) const;
-		int CellY(IconSize a_size) const;
-
+		int CellX(int a_index) const;
+		int CellY(int a_index, IconSize a_size) const;
 		Graphics::GpuTexture _texture;
-		Core::PerSlot<bool> _drawn{};
+		std::vector<IconRequest> _icons;
+		Core::PerSlot<int> _slotIcons{};
 		std::uint32_t _revision = 0;
 		int _slotPixels = 0;
 		int _centrePixels = 0;

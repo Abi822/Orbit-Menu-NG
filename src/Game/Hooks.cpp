@@ -155,12 +155,10 @@ namespace Orbit::Game::Hooks
 		const bool inputHooked = DispatchInputEvents::Install(trampoline);
 		const bool inventoryHooked = InstallInventoryHighlight(trampoline);
 		const bool magicHooked = InstallMagicHighlight(trampoline);
-
 		MenuPostDisplay<RE::HUDMenu>::Install();
 		MenuPostDisplay<RE::InventoryMenu>::Install();
 		MenuPostDisplay<RE::MagicMenu>::Install();
 		MenuPostDisplay<RE::LoadingMenu>::Install();
-
 		logger::info("Hooks: Installed for {}{}{}PostDisplay", inputHooked ? "Dispatch Input, " : "", inventoryHooked ? "Inventory highlight, " : "", magicHooked ? "Magic highlight, " : "");
 	}
 }

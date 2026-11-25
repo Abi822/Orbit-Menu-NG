@@ -15,28 +15,23 @@ namespace Orbit::UI::OrbitMenu
 		constexpr float kIconInset = 22.0f;
 		constexpr float kIconGap = 10.0f;
 		constexpr float kGap = 8.0f;
-
 		constexpr float kNameLineHeight = 1.1f;
 		constexpr std::size_t kNameLines = 2;
 		constexpr float kMinNameRatio = 0.7f;
-
 		constexpr float kValueSize = 20.0f;
 		constexpr float kLabelRatio = 0.6f;
 		constexpr float kLabelSpacingRatio = 0.2f;
 		constexpr float kStatSpacingRatio = 0.7f;
 		constexpr float kStatRowGapRatio = 0.25f;
 		constexpr float kMinRowScale = 0.85f;
-
 		constexpr float kTextSize = 17.0f;
 		constexpr float kMinTextSize = 12.0f;
 		constexpr float kTextLineHeight = 1.2f;
 		constexpr std::size_t kNoLineLimit = SIZE_MAX;
-
 		constexpr std::array kSmallerHeaders{0.9f, 0.8f, 0.7f};
 		constexpr int kEvenLineSteps = 8;
 		constexpr int kCentringSteps = 3;
 		constexpr float kCentringTolerance = 1.0f;
-
 		constexpr std::string_view kSpaces = " \t\r";
 
 		struct Sizes

@@ -32,13 +32,11 @@ namespace Orbit::UI::OrbitMenu
 		colors.slotFill = FromRgb(a_settings.slotColor, 0.92f);
 		colors.keyBadge = FromRgb(a_settings.slotColor, 0.95f);
 		colors.background = FromRgb(a_settings.backgroundColor, 1.0f);
-
 		const ImVec4 tint = Mix(Grey(colors.highlight), colors.highlight, 0.5f);
 		colors.slotBorder = Shade(tint, 0.64f, 0.85f);
 		colors.slotInnerRing = Shade(tint, 1.0f, 0.07f);
 		colors.centreBorder = Shade(tint, 0.86f, 0.55f);
 		colors.centreInnerBorder = Shade(tint, 1.0f, 0.10f);
-
 		colors.slotName = FromRgb(a_settings.slotNameColor, 1.0f);
 		colors.slotNameHovered = Shade(colors.slotName, kBrighter, 1.0f);
 		colors.slotNameDim = Shade(colors.slotName, kDimmer, 1.0f);

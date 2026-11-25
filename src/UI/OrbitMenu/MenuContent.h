@@ -17,7 +17,6 @@ namespace Orbit::UI::OrbitMenu
 	{
 		std::string text;
 		float widthPerPixel = 0.0f;
-
 		float Width(float a_size) const { return widthPerPixel * a_size; }
 	};
 
@@ -35,9 +34,7 @@ namespace Orbit::UI::OrbitMenu
 		static constexpr float kStatusRatio = 0.8125f;
 		static constexpr float kTitleWidthRatio = 10.625f;
 		static constexpr float kTitleLineSpacing = 1.15f;
-
 		void Refresh(ImFont &a_font, const Config::Settings &a_settings, bool a_settingsChanged, const Skins::Skin &a_skin, const MenuInput &a_input);
-
 		const Core::SlotView &View(int a_slot) const { return _views[static_cast<std::size_t>(a_slot)]; }
 		const SlotText &Text(int a_slot) const { return _text[static_cast<std::size_t>(a_slot)]; }
 		const ItemDescriptionLayout &Description(int a_slot) const { return _descriptions[static_cast<std::size_t>(a_slot)]; }
@@ -65,10 +62,8 @@ namespace Orbit::UI::OrbitMenu
 		void LayoutSlots(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings, const Skins::Skin &a_skin);
 		void LayoutKeys(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings);
 		void LayoutHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings);
-
 		static TextLine Measure(const Graphics::TextMeasure &a_text, std::string a_line);
 		static std::string BuildHint(const HintKeys &a_keys);
-
 		const ImFont *_font = nullptr;
 		bool _ready = false;
 		bool _gamepad = false;

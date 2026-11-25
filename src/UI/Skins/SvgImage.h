@@ -8,7 +8,6 @@ namespace Orbit::UI::Skins
 	{
 	public:
 		explicit SvgImage(const std::filesystem::path &a_file);
-
 		std::vector<std::uint8_t> Rasterize(int a_size) const;
 
 	private:

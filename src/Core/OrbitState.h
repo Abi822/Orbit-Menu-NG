@@ -18,17 +18,11 @@ namespace Orbit::Core
 	{
 	public:
 		void Open();
-
 		void AddPointerDelta(ImVec2 a_delta, const PointerLimits &a_limits);
-
 		void SetPointer(ImVec2 a_position, const PointerLimits &a_limits);
-
 		void Select(int a_slot);
-
 		[[nodiscard]] std::optional<int> Choose();
-
-		[[nodiscard]] std::optional<int> Close(bool a_commit);
-
+		[[nodiscard]] std::optional<int> Close(bool a_commit)
 		bool IsOpen() const { return _open; }
 		int HoveredSlot() const { return _hovered; }
 		std::uint32_t OpenCount() const { return _openCount; }

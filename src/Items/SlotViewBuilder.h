@@ -16,12 +16,10 @@ namespace Orbit::Items
 
 	private:
 		SlotViewBuilder(RE::PlayerCharacter &a_player, const Config::Settings &a_settings);
-
 		Core::SlotView Describe(const AssignedItem &a_slot) const;
 		Core::SlotView DescribeForm(RE::TESForm &a_form, const std::string &a_name, ItemKind a_kind) const;
 		Core::SlotView Missing(const std::string &a_name, std::string a_status) const;
 		void AddIcon(Core::SlotView &a_view, const RE::TESForm &a_form) const;
-
 		RE::PlayerCharacter &_player;
 		Inventory _inventory;
 		const Config::Settings &_settings;

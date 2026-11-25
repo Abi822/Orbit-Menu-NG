@@ -28,7 +28,6 @@ namespace Orbit::Core
 		std::string label;
 		std::string value;
 		std::string suffix;
-
 		bool operator==(const ItemStat &) const = default;
 	};
 
@@ -37,7 +36,6 @@ namespace Orbit::Core
 		std::string name;
 		std::string text;
 		std::vector<ItemStat> footer;
-
 		bool operator==(const ItemDescription &) const = default;
 	};
 
@@ -52,7 +50,6 @@ namespace Orbit::Core
 		std::optional<std::uint32_t> iconColor;
 		ItemDescription description;
 		RE::FormID formID = 0;
-
 		bool operator==(const SlotView &) const = default;
 	};
 }

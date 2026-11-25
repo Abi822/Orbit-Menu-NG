@@ -9,7 +9,6 @@ namespace Orbit::UI
 	public:
 		static void Setup();
 		static void Preload();
-
 		static void OnLoadingScreenDrawn();
 		static void OnMenuDrawn(bool a_itemMenu);
 
@@ -23,7 +22,6 @@ namespace Orbit::UI
 
 		static void Initialize();
 		static void PreloadImages();
-
 		static inline State _state = State::kUninitialized;
 		static inline ImFont *_font = nullptr;
 		static inline std::atomic<bool> _imagesPending{false};

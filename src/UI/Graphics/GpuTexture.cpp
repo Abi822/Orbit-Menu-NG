@@ -64,8 +64,6 @@ namespace Orbit::UI::Graphics
 
 		ID3D11RenderTargetView *target = a_texture._target.Get();
 		_context->OMSetRenderTargets(1, &target, nullptr);
-		constexpr float kClear[4]{0.0f, 0.0f, 0.0f, 0.0f};
-		_context->ClearRenderTargetView(target, kClear);
 		const D3D11_VIEWPORT viewport{0.0f, 0.0f, static_cast<float>(a_texture._width), static_cast<float>(a_texture._height), 0.0f, 1.0f};
 		_context->RSSetViewports(1, &viewport);
 	}

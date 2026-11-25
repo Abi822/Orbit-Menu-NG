@@ -8,7 +8,6 @@ namespace Orbit::Items
 	{
 	public:
 		static void OnHighlightChanged(std::string_view a_menuName);
-
 		static bool AssignHighlighted(int a_slot);
 
 	private:

@@ -41,7 +41,6 @@ namespace Orbit::UI::OrbitMenu
 		_now = Clock::now();
 		_dt = _lastFrame == Clock::time_point{} ? 0.0f : std::clamp(std::chrono::duration<float>(_now - _lastFrame).count(), 0.0f, 0.1f);
 		_lastFrame = _now;
-
 		const bool previewing = !a_snapshot.open && _preview.load();
 		const bool previewStarted = previewing && !_previewing;
 		_previewEnded = !previewing && _previewing;

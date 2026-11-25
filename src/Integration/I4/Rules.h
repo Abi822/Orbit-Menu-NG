@@ -21,7 +21,6 @@ namespace Orbit::Integration::I4
 		double min = -std::numeric_limits<double>::infinity();
 		double max = std::numeric_limits<double>::infinity();
 		std::vector<Condition> parts;
-
 		bool Matches(const Value &a_fact) const;
 	};
 
@@ -30,7 +29,6 @@ namespace Orbit::Integration::I4
 		std::map<std::string, Condition, std::less<>> match;
 		Values info;
 		Values icon;
-
 		bool Matches(const Values &a_facts) const;
 	};
 }

@@ -3,7 +3,6 @@
 namespace Orbit::Input
 {
 	namespace InputMap = SKSE::InputMap;
-
 	inline constexpr std::uint32_t kKeyBindNone = 0;
 	inline constexpr std::uint32_t kMouseLeft = InputMap::kMacro_MouseButtonOffset;
 	inline constexpr std::uint32_t kMouseWheelUp = InputMap::kMacro_MouseWheelOffset;
@@ -25,9 +24,7 @@ namespace Orbit::Input
 	}
 
 	std::optional<std::uint32_t> ToKeyBind(const RE::ButtonEvent &a_event);
-
 	std::string KeyName(std::uint32_t a_keybind);
-
 	inline constexpr int kBindingActivation = -1;
 	inline constexpr int kBindingLeftHand = -2;
 	inline constexpr int kBindingRightHand = -3;

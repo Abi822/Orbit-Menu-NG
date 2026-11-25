@@ -142,15 +142,10 @@ namespace Orbit::Config
 		static constexpr auto kLastHandPosition = static_cast<std::int32_t>(BadgePosition::kNextToName);
 
 		void Clamp(const Settings &a_valueDefault);
-
 		void CopyDisplay(const Settings &a_from);
-
 		void CopyPages(const Settings &a_from);
-
 		void CopySlowMotion(const Settings &a_from);
-
 		float SelectionDeadzone() const { return 24000.0f / static_cast<float>(mouseDPI); }
-
 		bool operator==(const Settings &) const = default;
 	};
 
@@ -158,22 +153,14 @@ namespace Orbit::Config
 	{
 	public:
 		static SettingsStore &Get();
-
 		Settings Snapshot() const;
-
 		Settings Defaults() const;
-
 		void Set(Settings a_settings);
-
 		void Load();
-
 		bool Save() const;
-
 		std::uint32_t ChangeCount() const { return _changes; }
-
 	private:
 		SettingsStore() = default;
-
 		mutable std::mutex _lock;
 		Settings _defaults;
 		Settings _settings;
