@@ -29,8 +29,10 @@ namespace Orbit::UI::OrbitMenu
 	{
 		MenuPalette colors;
 		colors.highlight = FromArgb(a_settings.highlightColor, 1.0f);
+		colors.pointer = FromArgb(a_settings.pointerColor, 1.0f);
+		colors.centreFill = FromArgb(a_settings.itemDescriptionBackgroundColor, 1.0f);
 		colors.slotFill = FromArgb(a_settings.slotColor, 0.92f);
-		colors.keyBadge = FromArgb(a_settings.slotColor, 0.95f);
+		colors.keyBadge = FromArgb(a_settings.slotKeyBackgroundColor, 0.95f);
 		colors.background = FromArgb(a_settings.backgroundColor, 1.0f);
 		const ImVec4 tint = Mix(Grey(colors.highlight), colors.highlight, 0.5f);
 		colors.slotBorder = Shade(tint, 0.64f, 0.85f);
@@ -46,7 +48,7 @@ namespace Orbit::UI::OrbitMenu
 		colors.description = FromArgb(a_settings.itemDescriptionColor, 1.0f);
 		colors.descriptionBright = Shade(colors.description, kBrighter, 1.0f);
 		colors.descriptionDim = Shade(colors.description, kDimmer, 1.0f);
-		colors.hint = FromArgb(a_settings.hintColor, 1.0f);
+		colors.controlsHint = FromArgb(a_settings.controlsHintColor, 1.0f);
 		return colors;
 	}
 

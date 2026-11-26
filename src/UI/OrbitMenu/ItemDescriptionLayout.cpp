@@ -115,7 +115,7 @@ namespace Orbit::UI::OrbitMenu
 				return block;
 			}
 
-			Block PlaceText(const Core::ItemDescription &a_description, float a_header, float a_textSize, float a_top) const
+			Block PlaceText(const Core::ItemDescription &a_description, float a_header, float a_textSize, float a_lineSpacing, float a_top) const
 			{
 				Block block{.y = a_top, .bottom = FLT_MAX, .even = true};
 				if (!a_description.footer.empty())
@@ -125,7 +125,7 @@ namespace Orbit::UI::OrbitMenu
 				if (!a_description.text.empty())
 				{
 					block.Gap(kGap * a_header);
-					AddLines(block, a_description.text, a_textSize, a_textSize * kTextLineHeight, kNoLineLimit, TextRole::kText);
+					AddLines(block, a_description.text, a_textSize, a_textSize * a_lineSpacing, kNoLineLimit, TextRole::kText);
 				}
 				return block;
 			}
@@ -363,7 +363,7 @@ namespace Orbit::UI::OrbitMenu
 		};
 	}
 
-	ItemDescriptionLayout ItemDescriptionLayout::Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_titleSize, float a_textSize, float a_iconSize, float a_centerBackgroundRadius)
+	ItemDescriptionLayout ItemDescriptionLayout::Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_titleSize, float a_textSize, float a_iconSize, float a_itemDescriptionBackgroundRadius)
 	{
 		ItemDescriptionLayout layout;
 		layout.iconTop = -a_iconSize * 0.5f;
@@ -373,7 +373,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 
 		const bool withIcon = a_iconSize > 0.0f;
-		const float innerRadius = MenuLayout::InnerRadius(a_centerBackgroundRadius);
+		const float innerRadius = MenuLayout::InnerRadius(a_itemDescriptionBackgroundRadius);
 		const float lead = withIcon ? a_iconSize + kIconGap : 0.0f;
 		const float top = withIcon ? kIconInset + lead - innerRadius : kEdgeInset - innerRadius;
 		const float bottom = innerRadius - kEdgeInset;
@@ -391,7 +391,7 @@ namespace Orbit::UI::OrbitMenu
 			tries.push_back({a_titleSize * factor, header * factor, smallestText * factor});
 		}
 
-		const Placer placer{a_text, a_centerBackgroundRadius};
+		const Placer placer{a_text, a_itemDescriptionBackgroundRadius};
 		Sizes sizes;
 		for (const auto &tried : tries)
 		{
@@ -444,7 +444,7 @@ namespace Orbit::UI::OrbitMenu
 		const float header = textSize / kTextSize;
 		const Placer placer{a_text, 0.0f, static_cast<float>(a_settings.itemDescriptionWidth)};
 		Block title = placer.PlaceTitle(a_description.name, static_cast<float>(a_settings.itemDescriptionTitleTextSize), static_cast<float>(a_settings.itemDescriptionTitleY));
-		Block text = placer.PlaceText(a_description, header, textSize, static_cast<float>(a_settings.itemDescriptionTextY));
+		Block text = placer.PlaceText(a_description, header, textSize, a_settings.itemDescriptionLineSpacing, static_cast<float>(a_settings.itemDescriptionTextY));
 
 		for (auto &piece : title.pieces)
 		{

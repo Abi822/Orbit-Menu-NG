@@ -118,7 +118,7 @@ namespace Orbit::Input
 				if (const auto code = ToKeyBind(*button))
 				{
 					std::scoped_lock lock{_lock};
-					_swallow[*code] = true;
+					_pressBlocked[*code] = true;
 				}
 			}
 			result.block = true;
@@ -165,23 +165,34 @@ namespace Orbit::Input
 
 		const bool down = a_button.IsDown();
 		const bool up = a_button.IsUp();
-		auto &swallowed = _swallow[*code];
+		auto &pressBlocked = _pressBlocked[*code];
 		if (down)
 		{
 			if (_capturedPress && _capturedPress->code == *code && Clock::now() - _capturedPress->at < kCapturedPressWindow)
 			{
 				_capturedPress.reset();
-				swallowed = true;
+				pressBlocked = true;
 				a_result.block = true;
 				return;
 			}
-			swallowed = false;
+			pressBlocked = false;
 		}
 
 		const bool gamepad = IsGamepadBind(*code);
-		if (*code == a_settings.gamepadActivationModifierKey)
+		const bool combo = a_settings.gamepadActivationKey != kKeyBindNone && a_settings.gamepadActivationModifierKey != kKeyBindNone;
+		if (*code == a_settings.gamepadActivationKey)
 		{
-			_modifierHeld = a_button.IsPressed();
+			_activationHeld = a_button.IsPressed();
+		}
+		if (combo && *code == a_settings.gamepadActivationModifierKey && down && !_state.IsOpen() && _activationHeld)
+		{
+			if (const bool assign = Game::IsInItemMenu(); !IsBlockedLocked(assign))
+			{
+				OpenLocked(true, assign);
+				pressBlocked = true;
+				a_result.block = true;
+				return;
+			}
 		}
 		if (*code == a_settings.activationKey || *code == a_settings.gamepadActivationKey)
 		{
@@ -189,11 +200,10 @@ namespace Orbit::Input
 			{
 				if (!_state.IsOpen())
 				{
-					const bool modifierReady = !gamepad || a_settings.gamepadActivationModifierKey == kKeyBindNone || _modifierHeld;
-					if (const bool assign = Game::IsInItemMenu(); modifierReady && !IsBlockedLocked(assign))
+					if (const bool assign = Game::IsInItemMenu(); !(gamepad && combo) && !IsBlockedLocked(assign))
 					{
 						OpenLocked(gamepad, assign);
-						swallowed = true;
+						pressBlocked = true;
 						a_result.block = true;
 						return;
 					}
@@ -204,28 +214,24 @@ namespace Orbit::Input
 					{
 						a_result.committed = ReleaseLocked(a_settings);
 					}
-					swallowed = true;
+					pressBlocked = true;
 					a_result.block = true;
 					return;
 				}
 			}
 			else if (up)
 			{
-				const bool wasSwallowed = std::exchange(swallowed, false);
+				const bool wasPressBlocked = std::exchange(pressBlocked, false);
 				if (_state.IsOpen() && !a_settings.toggleOrbitMenu)
 				{
 					a_result.committed = ReleaseLocked(a_settings);
-					a_result.block = true;
 				}
-				else
-				{
-					a_result.block = wasSwallowed || _state.IsOpen();
-				}
+				a_result.block = wasPressBlocked;
 				return;
 			}
 			else
 			{
-				a_result.block = swallowed || _state.IsOpen();
+				a_result.block = pressBlocked || _state.IsOpen();
 				return;
 			}
 		}
@@ -237,7 +243,7 @@ namespace Orbit::Input
 			if (down)
 			{
 				_clicks |= button;
-				swallowed = true;
+				pressBlocked = true;
 				a_result.block = true;
 				return;
 			}
@@ -245,7 +251,7 @@ namespace Orbit::Input
 			{
 				const Hand hand = _clicks == (kClickLeft | kClickRight) ? Hand::kBoth : (button == kClickLeft ? Hand::kRight : Hand::kLeft);
 				_clicks = 0;
-				swallowed = false;
+				pressBlocked = false;
 				a_result.block = true;
 				if (const auto slot = _state.Choose())
 				{
@@ -255,11 +261,11 @@ namespace Orbit::Input
 			}
 		}
 
-		if (swallowed && !down)
+		if (pressBlocked && !down)
 		{
 			if (up)
 			{
-				swallowed = false;
+				pressBlocked = false;
 			}
 			a_result.block = true;
 			return;
@@ -280,7 +286,7 @@ namespace Orbit::Input
 			if (down)
 			{
 				_state.Select(*keySlot);
-				swallowed = true;
+				pressBlocked = true;
 				a_result.block = true;
 			}
 			return;
@@ -290,7 +296,7 @@ namespace Orbit::Input
 		{
 			if (down)
 			{
-				swallowed = true;
+				pressBlocked = true;
 				a_result.block = true;
 				a_result.pageStep = step;
 			}
@@ -299,18 +305,18 @@ namespace Orbit::Input
 
 		if (!_assignMode && (*code == a_settings.swapHandsKey || *code == a_settings.gamepadSwapHandsKey) && down)
 		{
-			swallowed = true;
+			pressBlocked = true;
 			a_result.block = true;
 			a_result.swapHands = true;
 			return;
 		}
 
 		// Stop every other button in inventory so that nothing gets equipped or unequipped by accident.
-		if (_assignMode || IsMouseBind(*code))
+		if (_assignMode)
 		{
 			if (down)
 			{
-				swallowed = true;
+				pressBlocked = true;
 				a_result.block = true;
 			}
 			return;
@@ -347,9 +353,9 @@ namespace Orbit::Input
 			{
 				_state.SetPointer(_stick, {.deadzone = a_deadzone});
 			}
+			a_stick.xValue = 0.0f;
+			a_stick.yValue = 0.0f;
 		}
-		a_stick.xValue = 0.0f;
-		a_stick.yValue = 0.0f;
 	}
 
 	bool InputManager::HandleCapture(RE::InputEvent &a_event)
@@ -372,7 +378,7 @@ namespace Orbit::Input
 		}
 
 		_capturedPress = CapturedPress{*code, Clock::now()};
-		_swallow[*code] = true;
+		_pressBlocked[*code] = true;
 		_capture.active = false;
 		_capture.result = CapturedKey{_capture.binding.id, *code};
 		logger::info("InputManager: Key captured: {} ({})", *code, KeyName(*code));
@@ -382,6 +388,7 @@ namespace Orbit::Input
 	void InputManager::ForceClose()
 	{
 		std::scoped_lock lock{_lock};
+		_activationHeld = false;
 		CloseLocked(false);
 	}
 

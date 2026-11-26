@@ -8,13 +8,13 @@ namespace Orbit::UI::OrbitMenu
 		constexpr std::size_t kSlots = static_cast<std::size_t>(Core::kSlotCount);
 		constexpr std::size_t kEdgeSegments = 8;
 		constexpr int kImageGrid = 8;
-		constexpr int kBadgeSegments = 24;
+		constexpr int kSlotKeyBadgeSegments = 24;
 		constexpr float kPointerHalfWidth = 0.393f;
-		constexpr float kHintLineSpacing = 1.3f;
-		constexpr float kInnerRingInset = 6.0f;
-		constexpr float kInsideRingMargin = 8.0f;
+		constexpr float kControlsHintLineSpacing = 1.3f;
+		constexpr float kSlotInnerRingInset = 6.0f;
+		constexpr float kSlotHandTextMargin = 8.0f;
 		constexpr float kHidden = 0.01f;
-		constexpr float kMissingAlpha = 0.45f;
+		constexpr float kNoneLeftAlpha = 0.45f;
 
 		ImVec2 PositionSide(Config::BadgePosition a_position)
 		{
@@ -43,7 +43,7 @@ namespace Orbit::UI::OrbitMenu
 			const auto &settings = a_scene.settings;
 			const ImVec2 offset{static_cast<float>(settings.positionX), static_cast<float>(settings.positionY)};
 			return MenuLayout::Compute(a_display, offset, settings.orbitMenuScale, a_scene.motion.scale, static_cast<float>(settings.slotDistance),
-									   static_cast<float>(settings.slotSize) * 0.5f, static_cast<float>(settings.centerBackgroundSize) * 0.5f);
+									   static_cast<float>(settings.slotSize) * 0.5f, static_cast<float>(settings.itemDescriptionBackgroundSize) * 0.5f);
 		}
 	}
 
@@ -64,7 +64,7 @@ namespace Orbit::UI::OrbitMenu
 	{
 		DrawBackdrop();
 		const int firstVertex = _drawList.VtxBuffer.Size;
-		if (_scene.settings.showCenterBackground)
+		if (_scene.settings.showItemDescriptionBackground)
 		{
 			DrawCentre();
 		}
@@ -105,9 +105,9 @@ namespace Orbit::UI::OrbitMenu
 		}
 		DrawBadges();
 		DrawHands();
-		const int hintVertex = _drawList.VtxBuffer.Size;
-		DrawHint();
-		Bend(firstVertex, hintVertex);
+		const int controlsHintVertex = _drawList.VtxBuffer.Size;
+		DrawControlsHint();
+		Bend(firstVertex, controlsHintVertex);
 	}
 
 	float MenuPainter::Px(float a_base) const
@@ -130,7 +130,7 @@ namespace Orbit::UI::OrbitMenu
 		switch (_scene.content.View(a_slot).state)
 		{
 		case Core::SlotState::kMissing:
-			return kMissingAlpha;
+			return kNoneLeftAlpha;
 		case Core::SlotState::kEmpty:
 			return 0.7f;
 		default:
@@ -223,9 +223,9 @@ namespace Orbit::UI::OrbitMenu
 
 	void MenuPainter::DrawBackdrop() const
 	{
-		if (_scene.settings.backgroundOpacity > 0.0f)
+		if (_scene.settings.showBackground && _colors.background.w > 0.0f)
 		{
-			_drawList.AddRectFilled({0.0f, 0.0f}, _display, Color(_colors.background, _scene.settings.backgroundOpacity * _alpha));
+			_drawList.AddRectFilled({0.0f, 0.0f}, _display, Color(_colors.background, _alpha));
 		}
 	}
 
@@ -235,7 +235,7 @@ namespace Orbit::UI::OrbitMenu
 		Core::PerSlot<ImVec2> outer{};
 		for (std::size_t i = 0; i < kSlots; ++i)
 		{
-			outer[i] = _layout.CenterBackgroundVertex(static_cast<int>(i), _layout.centerBackgroundRadius);
+			outer[i] = _layout.ItemDescriptionBackgroundVertex(static_cast<int>(i), _layout.itemDescriptionBackgroundRadius);
 		}
 		const auto next = [](std::size_t a_index)
 		{ return (a_index + 1) % kSlots; };
@@ -243,14 +243,14 @@ namespace Orbit::UI::OrbitMenu
 		if (skin)
 		{
 			Graphics::PremultipliedDraw premultiplied{_drawList};
-			Image(*skin, _layout.center, _layout.centerBackgroundRadius * 2.0f, Graphics::PremultipliedColor(_alpha));
+			Image(*skin, _layout.center, _layout.itemDescriptionBackgroundRadius * 2.0f, Graphics::PremultipliedColor(_alpha));
 		}
 		else
 		{
 			Core::PerSlot<ImVec2> inner{};
 			for (std::size_t i = 0; i < kSlots; ++i)
 			{
-				inner[i] = _layout.CenterBackgroundVertex(static_cast<int>(i), _layout.centerBackgroundRadius - Px(9.0f));
+				inner[i] = _layout.ItemDescriptionBackgroundVertex(static_cast<int>(i), _layout.itemDescriptionBackgroundRadius - Px(9.0f));
 			}
 			if (_curve.Active())
 			{
@@ -301,7 +301,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 		const float angle = motion.pointerAngle;
 		const float size = Px(static_cast<float>(_scene.settings.pointerSize));
-		const float baseDistance = MenuLayout::InnerRadius(_layout.centerBackgroundRadius) + Px(static_cast<float>(_scene.settings.pointerDistance));
+		const float baseDistance = MenuLayout::InnerRadius(_layout.itemDescriptionBackgroundRadius) + Px(static_cast<float>(_scene.settings.pointerDistance));
 		if (const auto image = _scene.skin.Find(Skins::Part::kPointer))
 		{
 			const ImVec2 center = _layout.PointAt(angle, baseDistance + size * 0.5f);
@@ -316,7 +316,7 @@ namespace Orbit::UI::OrbitMenu
 		const ImVec2 tip = _layout.PointAt(angle, baseDistance + size * 0.5f);
 		const ImVec2 left = _layout.PointAt(angle - spread, baseDistance);
 		const ImVec2 right = _layout.PointAt(angle + spread, baseDistance);
-		_drawList.AddTriangleFilled(left, tip, right, Color(_colors.highlight, _strength * _alpha));
+		_drawList.AddTriangleFilled(left, tip, right, Color(_colors.pointer, _strength * _alpha));
 	}
 
 	void MenuPainter::DrawSlotGlow(int a_slot) const
@@ -349,7 +349,7 @@ namespace Orbit::UI::OrbitMenu
 		const bool equipped = _scene.content.View(a_slot).state == Core::SlotState::kEquipped;
 
 		_drawList.AddCircleFilled(center, radius, Color(_colors.slotFill, _alpha), kCircleSegments);
-		_drawList.AddCircle(center, radius - Px(kInnerRingInset), Color(equipped ? _colors.highlight : _colors.slotInnerRing, (equipped ? 0.5f : 1.0f) * _alpha),
+		_drawList.AddCircle(center, radius - Px(kSlotInnerRingInset), Color(equipped ? _colors.highlight : _colors.slotInnerRing, (equipped ? 0.5f : 1.0f) * _alpha),
 							kCircleSegments, std::max(1.0f, Px(1.0f)));
 		_drawList.AddCircle(center, radius, Color(Mix(_colors.slotBorder, _colors.highlight, hover), SlotAlpha(a_slot) * _alpha), kCircleSegments,
 							std::max(1.0f, Px(2.0f + hover)));
@@ -396,7 +396,7 @@ namespace Orbit::UI::OrbitMenu
 				{
 					center = _layout.center + ImVec2{Px(static_cast<float>(settings.itemIconDescriptionX)), Px(static_cast<float>(settings.itemIconDescriptionY))};
 				}
-				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kMissingAlpha : 1.0f) * _strength * _alpha));
+				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kNoneLeftAlpha : 1.0f) * _strength * _alpha));
 			}
 		}
 
@@ -481,8 +481,8 @@ namespace Orbit::UI::OrbitMenu
 		{
 			ForEachBadge([&](const Badge &a_badge)
 						 {
-				_drawList.AddCircleFilled(a_badge.at, a_badge.size, Color(_colors.keyBadge, _alpha), kBadgeSegments);
-				_drawList.AddCircle(a_badge.at, a_badge.size, Color(_colors.slotBorder, a_badge.alpha * _alpha), kBadgeSegments, std::max(1.0f, Px(1.0f))); });
+				_drawList.AddCircleFilled(a_badge.at, a_badge.size, Color(_colors.keyBadge, _alpha), kSlotKeyBadgeSegments);
+				_drawList.AddCircle(a_badge.at, a_badge.size, Color(_colors.slotBorder, a_badge.alpha * _alpha), kSlotKeyBadgeSegments, std::max(1.0f, Px(1.0f))); });
 		}
 		ForEachBadge([&](const Badge &a_badge)
 					 { TextCentered(a_badge.size, a_badge.at, a_badge.color, a_badge.text); });
@@ -509,32 +509,32 @@ namespace Orbit::UI::OrbitMenu
 				TextAt(size, {name.x + text.title.front().Width(nameSize) * 0.5f + Px(4.0f), name.y + (nameSize - size) * 0.5f}, color, text.hand.text);
 				continue;
 			}
-			const float inside = SlotRadius(slot) - Px(kInnerRingInset + kInsideRingMargin);
+			const float inside = SlotRadius(slot) - Px(kSlotInnerRingInset + kSlotHandTextMargin);
 			TextAt(size, TextInsideCircle(_layout.SlotCenter(slot), inside, position, {width, size}), color, text.hand.text);
 		}
 	}
 
-	void MenuPainter::DrawHint() const
+	void MenuPainter::DrawControlsHint() const
 	{
 		const auto &settings = _scene.settings;
-		if (!settings.showHint || !_scene.input.open)
+		if (!settings.showControlsHint || !_scene.input.open)
 		{
 			return;
 		}
-		const float size = TextPx(settings.hintTextSize);
-		const auto &pageHint = _scene.content.PageHint();
-		const float pageLine = pageHint.text.empty() ? 0.0f : size * kHintLineSpacing;
+		const float size = TextPx(settings.controlsHintTextSize);
+		const auto &pageLine = _scene.content.PageLine();
+		const float pageLineGap = pageLine.text.empty() ? 0.0f : size * kControlsHintLineSpacing;
 		const float below = _layout.center.y + _layout.ringRadius + _layout.slotRadius + Px(16.0f) + 3.0f * TextPx(settings.slotNameTextSize) * MenuContent::kTitleLineSpacing;
-		ImVec2 at{_layout.center.x, std::min(below, _display.y - size * 1.6f - pageLine)};
-		Text(size, at, _colors.hint, _scene.content.Hint());
-		if (pageLine > 0.0f)
+		ImVec2 at{_layout.center.x, std::min(below, _display.y - size * 1.6f - pageLineGap)};
+		Text(size, at, _colors.controlsHint, _scene.content.ControlsHint());
+		if (pageLineGap > 0.0f)
 		{
-			at.y += pageLine;
-			Text(size, at, _colors.hint, pageHint);
+			at.y += pageLineGap;
+			Text(size, at, _colors.controlsHint, pageLine);
 		}
 	}
 
-	void MenuPainter::Bend(int a_firstVertex, int a_hintVertex) const
+	void MenuPainter::Bend(int a_firstVertex, int a_controlsHintVertex) const
 	{
 		if (!_curve.Active())
 		{
@@ -542,7 +542,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 		for (int i = a_firstVertex; i < _drawList.VtxBuffer.Size; ++i)
 		{
-			_curve.Project(_drawList.VtxBuffer[i].pos, i < a_hintVertex);
+			_curve.Project(_drawList.VtxBuffer[i].pos, i < a_controlsHintVertex);
 		}
 	}
 }

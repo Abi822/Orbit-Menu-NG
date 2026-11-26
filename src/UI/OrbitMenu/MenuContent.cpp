@@ -72,13 +72,13 @@ namespace Orbit::UI::OrbitMenu
 			_gamepad = a_input.gamepad;
 			_assign = a_input.assign;
 			LayoutKeys(text, a_settings);
-			LayoutHint(text, a_settings);
+			LayoutControlsHint(text, a_settings);
 		}
 		const int page = a_settings.enablePages ? Items::Pages::Get().Current() : 0;
 		if (settingsChanged || modeChanged || fontChanged || page != _page)
 		{
 			_page = page;
-			_pageHint = a_settings.enablePages ? Measure(text, Items::Pages::Get().Hint(a_settings, _gamepad)) : TextLine{};
+			_pageLine = a_settings.enablePages ? Measure(text, Items::Pages::Get().Line(a_settings, _gamepad)) : TextLine{};
 		}
 		_ready = true;
 	}
@@ -144,7 +144,7 @@ namespace Orbit::UI::OrbitMenu
 				_descriptions[i] = ItemDescriptionLayout::Compute(a_text, view.description, static_cast<float>(a_settings.itemDescriptionTitleTextSize),
 																  static_cast<float>(a_settings.itemDescriptionTextSize),
 																  a_settings.showItemIconDescription && !icons[i].Empty() ? static_cast<float>(a_settings.itemIconDescriptionSize) : 0.0f,
-																  static_cast<float>(a_settings.centerBackgroundSize) * 0.5f);
+																  static_cast<float>(a_settings.itemDescriptionBackgroundSize) * 0.5f);
 			}
 		}
 		if (icons != _icons)
@@ -174,15 +174,15 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	void MenuContent::LayoutHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
+	void MenuContent::LayoutControlsHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
 	{
 		const auto &s = a_settings;
-		HintKeys keys = _gamepad ? HintKeys{s.gamepadActivationKey, s.gamepadLeftHandKey, s.gamepadRightHandKey, s.gamepadSwapHandsKey}
-								 : HintKeys{s.activationKey, s.leftHandKey, s.rightHandKey, s.swapHandsKey};
+		ControlsHintKeys keys = _gamepad ? ControlsHintKeys{s.gamepadActivationKey, s.gamepadLeftHandKey, s.gamepadRightHandKey, s.gamepadSwapHandsKey}
+								 : ControlsHintKeys{s.activationKey, s.leftHandKey, s.rightHandKey, s.swapHandsKey};
 		keys.assign = _assign;
 		keys.releaseToEquip = s.releaseToEquip;
 		keys.toggle = s.toggleOrbitMenu;
-		_hint = Measure(a_text, BuildHint(keys));
+		_controlsHint = Measure(a_text, BuildControlsHint(keys));
 	}
 
 	TextLine MenuContent::Measure(const Graphics::TextMeasure &a_text, std::string a_line)
@@ -192,10 +192,10 @@ namespace Orbit::UI::OrbitMenu
 		return {std::move(a_line), width / kReferenceSize};
 	}
 
-	std::string MenuContent::BuildHint(const HintKeys &a_keys)
+	std::string MenuContent::BuildControlsHint(const ControlsHintKeys &a_keys)
 	{
 		const bool equip = a_keys.releaseToEquip && !a_keys.assign;
-		std::string hint = a_keys.toggle ? Translation::Translate(equip ? "Press {} to equip" : "Press {} to close", Input::KeyName(a_keys.open))
+		std::string controlsHint = a_keys.toggle ? Translation::Translate(equip ? "Press {} to equip" : "Press {} to close", Input::KeyName(a_keys.open))
 										 : Translation::Translate(equip ? "Release {} to equip" : "Release {} to close", Input::KeyName(a_keys.open));
 		const bool left = a_keys.left != Input::kKeyBindNone;
 		const bool right = a_keys.right != Input::kKeyBindNone;
@@ -203,26 +203,26 @@ namespace Orbit::UI::OrbitMenu
 		{
 			if (left && right)
 			{
-				hint += kSeparator + Translation::Translate("Assign: {} or {}", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
+				controlsHint += kSeparator + Translation::Translate("Assign: {} or {}", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
 			}
 			else if (left || right)
 			{
-				hint += kSeparator + Translation::Translate("Assign: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
+				controlsHint += kSeparator + Translation::Translate("Assign: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
 			}
-			return hint;
+			return controlsHint;
 		}
 		if (left && right)
 		{
-			hint += kSeparator + Translation::Translate("Equip in hand: {}, {} or both", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
+			controlsHint += kSeparator + Translation::Translate("Equip in hand: {}, {} or both", Input::KeyName(a_keys.left), Input::KeyName(a_keys.right));
 		}
 		else if (left || right)
 		{
-			hint += kSeparator + Translation::Translate(left ? "Left hand: {}" : "Right hand: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
+			controlsHint += kSeparator + Translation::Translate(left ? "Left hand: {}" : "Right hand: {}", Input::KeyName(left ? a_keys.left : a_keys.right));
 		}
 		if (a_keys.swap != Input::kKeyBindNone && a_keys.swap != a_keys.open)
 		{
-			hint += kSeparator + Translation::Translate("Swap hands: {}", Input::KeyName(a_keys.swap));
+			controlsHint += kSeparator + Translation::Translate("Swap hands: {}", Input::KeyName(a_keys.swap));
 		}
-		return hint;
+		return controlsHint;
 	}
 }

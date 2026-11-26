@@ -65,44 +65,44 @@ namespace Orbit::Integration
 
 	I4Icons::Look I4Icons::Evaluate(const RE::TESForm &a_form, bool a_equipped, Look a_look) const
 	{
-		auto facts = I4::ItemDataFor(a_form, a_equipped);
-		facts["iconLabel"] = a_look.iconLabel;
+		auto itemData = I4::ItemDataFor(a_form, a_equipped);
+		itemData["iconLabel"] = a_look.iconLabel;
 		if (a_look.iconColor)
 		{
-			facts["iconColor"] = static_cast<double>(*a_look.iconColor);
+			itemData["iconColor"] = static_cast<double>(*a_look.iconColor);
 		}
 
 		for (const auto &rule : _rules)
 		{
-			if (rule.Matches(facts))
+			if (rule.Matches(itemData))
 			{
 				for (const auto &[name, value] : rule.info)
 				{
-					facts[name] = value;
+					itemData[name] = value;
 				}
 			}
 		}
 		for (const auto &rule : _rules)
 		{
-			if (rule.Matches(facts))
+			if (rule.Matches(itemData))
 			{
 				for (const auto &[name, value] : rule.icon)
 				{
-					facts[name] = value;
+					itemData[name] = value;
 				}
 			}
 		}
 
-		if (const auto source = facts.find("iconSource"); source != facts.end())
+		if (const auto source = itemData.find("iconSource"); source != itemData.end())
 		{
 			const auto *path = std::get_if<std::string>(&source->second);
 			a_look.iconSource = path ? *path : std::string{};
 		}
-		if (const auto *label = std::get_if<std::string>(&facts["iconLabel"]))
+		if (const auto *label = std::get_if<std::string>(&itemData["iconLabel"]))
 		{
 			a_look.iconLabel = *label;
 		}
-		const auto *color = std::get_if<double>(&facts["iconColor"]);
+		const auto *color = std::get_if<double>(&itemData["iconColor"]);
 		a_look.iconColor = color ? std::optional{static_cast<std::uint32_t>(*color)} : std::nullopt;
 		return a_look;
 	}

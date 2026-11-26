@@ -16,7 +16,7 @@ namespace Orbit::Items
 		}
 
 		// Stops player from holding ghost spells
-		void UnequipSpell(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::SpellItem &a_spell, const RE::BGSEquipSlot *a_slot)
+		void UnequipSpell(RE::ActorEquipManager &a_equipManager, RE::Actor &a_actor, RE::SpellItem &a_spell, const RE::BGSEquipSlot *a_slot)
 		{
 			if (!a_slot)
 			{
@@ -24,23 +24,23 @@ namespace Orbit::Items
 			}
 			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::SpellItem *, const RE::BGSEquipSlot *);
 			static REL::Relocation<func_t> func{RELOCATION_ID(37946, 38902)};
-			func(&a_manager, &a_actor, &a_spell, a_slot);
+			func(&a_equipManager, &a_actor, &a_spell, a_slot);
 		}
 
-		void UnequipShout(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::TESShout &a_shout)
+		void UnequipShout(RE::ActorEquipManager &a_equipManager, RE::Actor &a_actor, RE::TESShout &a_shout)
 		{
 			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::TESShout *);
 			static REL::Relocation<func_t> func{RELOCATION_ID(37948, 38904)};
-			func(&a_manager, &a_actor, &a_shout);
+			func(&a_equipManager, &a_actor, &a_shout);
 		}
 
 		constexpr std::uint32_t kVoiceSource = 2;
 
-		void UnequipPower(RE::ActorEquipManager &a_manager, RE::Actor &a_actor, RE::SpellItem &a_power)
+		void UnequipPower(RE::ActorEquipManager &a_equipManager, RE::Actor &a_actor, RE::SpellItem &a_power)
 		{
 			using func_t = void (*)(RE::ActorEquipManager *, RE::Actor *, RE::SpellItem *, std::uint32_t);
 			static REL::Relocation<func_t> func{RELOCATION_ID(37947, 38903)};
-			func(&a_manager, &a_actor, &a_power, kVoiceSource);
+			func(&a_equipManager, &a_actor, &a_power, kVoiceSource);
 		}
 
 		bool CanChangeHands(const RE::TESForm &a_form)
@@ -70,12 +70,12 @@ namespace Orbit::Items
 			static std::optional<Equipper> Create()
 			{
 				auto *player = RE::PlayerCharacter::GetSingleton();
-				auto *manager = RE::ActorEquipManager::GetSingleton();
-				if (!player || !manager)
+				auto *equipManager = RE::ActorEquipManager::GetSingleton();
+				if (!player || !equipManager)
 				{
 					return std::nullopt;
 				}
-				return Equipper{*player, *manager};
+				return Equipper{*player, *equipManager};
 			}
 
 			void Use(RE::TESForm &a_form, const AssignedItem &a_slot, Input::Hand a_hand)
@@ -141,8 +141,8 @@ namespace Orbit::Items
 			}
 
 		private:
-			Equipper(RE::PlayerCharacter &a_player, RE::ActorEquipManager &a_manager) : _player(a_player),
-																						_manager(a_manager),
+			Equipper(RE::PlayerCharacter &a_player, RE::ActorEquipManager &a_equipManager) : _player(a_player),
+																						_equipManager(a_equipManager),
 																						_inventory(a_player)
 			{
 			}
@@ -159,7 +159,7 @@ namespace Orbit::Items
 				const bool inRight = _inventory.IsInHand(a_object, a_slot.name, kRightHand);
 				const bool inLeft = _inventory.IsInHand(a_object, a_slot.name, kLeftHand);
 				const auto equip = [&](const RE::BGSEquipSlot *a_where)
-				{ _manager.EquipObject(&_player, &a_object, copy->extraList, 1, a_where); };
+				{ _equipManager.EquipObject(&_player, &a_object, copy->extraList, 1, a_where); };
 
 				const bool leftOnly = a_object.Is(RE::FormType::Armor, RE::FormType::Light);
 				if (leftOnly || IsTwoHanded(a_object))
@@ -170,7 +170,7 @@ namespace Orbit::Items
 					}
 					else if (IsHeldByPressedHand(a_hand, inLeft, inRight))
 					{
-						_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
+						_equipManager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(leftOnly));
 					}
 					return;
 				}
@@ -207,7 +207,7 @@ namespace Orbit::Items
 					}
 					if (!inLeft && other)
 					{
-						_manager.EquipObject(&_player, &a_object, other->extraList, 1, HandSlot(kLeftHand));
+						_equipManager.EquipObject(&_player, &a_object, other->extraList, 1, HandSlot(kLeftHand));
 					}
 					return;
 				}
@@ -234,7 +234,7 @@ namespace Orbit::Items
 				const bool inLeft = _inventory.IsInHand(a_spell, a_slot.name, kLeftHand);
 				const bool inRight = _inventory.IsInHand(a_spell, a_slot.name, kRightHand);
 				const auto equip = [&](bool a_left)
-				{ _manager.EquipSpell(&_player, &a_spell, HandSlot(a_left)); };
+				{ _equipManager.EquipSpell(&_player, &a_spell, HandSlot(a_left)); };
 
 				if (a_spell.IsTwoHanded())
 				{
@@ -251,7 +251,7 @@ namespace Orbit::Items
 					}
 					else
 					{
-						_manager.EquipSpell(&_player, &a_spell, a_spell.GetEquipSlot());
+						_equipManager.EquipSpell(&_player, &a_spell, a_spell.GetEquipSlot());
 					}
 					return;
 				}
@@ -299,22 +299,22 @@ namespace Orbit::Items
 				{
 					if (unequip)
 					{
-						UnequipShout(_manager, _player, *shout);
+						UnequipShout(_equipManager, _player, *shout);
 					}
 					else
 					{
-						_manager.EquipShout(&_player, shout);
+						_equipManager.EquipShout(&_player, shout);
 					}
 				}
 				else if (auto *power = a_form.As<RE::SpellItem>())
 				{
 					if (unequip)
 					{
-						UnequipPower(_manager, _player, *power);
+						UnequipPower(_equipManager, _player, *power);
 					}
 					else
 					{
-						_manager.EquipSpell(&_player, power, power->GetEquipSlot());
+						_equipManager.EquipSpell(&_player, power, power->GetEquipSlot());
 					}
 				}
 			}
@@ -325,7 +325,7 @@ namespace Orbit::Items
 				{
 					if (a_hand != Input::Hand::kDefault)
 					{
-						_manager.UnequipObject(&_player, &a_armor, worn);
+						_equipManager.UnequipObject(&_player, &a_armor, worn);
 					}
 					return;
 				}
@@ -335,7 +335,7 @@ namespace Orbit::Items
 					logger::info("Equip Controller: {} is not in inventory", a_slot.name);
 					return;
 				}
-				_manager.EquipObject(&_player, &a_armor, copy->extraList);
+				_equipManager.EquipObject(&_player, &a_armor, copy->extraList);
 			}
 
 			void EquipAmmo(RE::TESAmmo &a_ammo, const AssignedItem &a_slot, Input::Hand a_hand)
@@ -352,12 +352,12 @@ namespace Orbit::Items
 					{
 						auto *worn = _inventory.WornExtraList(a_ammo);
 						const auto count = worn ? worn->GetCount() : copy->total;
-						_manager.UnequipObject(&_player, &a_ammo, worn, static_cast<std::uint32_t>(count));
+						_equipManager.UnequipObject(&_player, &a_ammo, worn, static_cast<std::uint32_t>(count));
 					}
 					return;
 				}
 				const auto count = copy->extraList ? copy->extraList->GetCount() : copy->total;
-				_manager.EquipObject(&_player, &a_ammo, copy->extraList, static_cast<std::uint32_t>(count));
+				_equipManager.EquipObject(&_player, &a_ammo, copy->extraList, static_cast<std::uint32_t>(count));
 			}
 
 			void Consume(RE::TESBoundObject &a_item, const AssignedItem &a_slot)
@@ -368,23 +368,23 @@ namespace Orbit::Items
 					logger::info("Equip Controller: Player has no {} left", a_slot.name);
 					return;
 				}
-				_manager.EquipObject(&_player, &a_item, copy->extraList);
+				_equipManager.EquipObject(&_player, &a_item, copy->extraList);
 			}
 
 			void UnequipFromHand(RE::TESBoundObject &a_object, bool a_leftHand)
 			{
-				_manager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(a_leftHand), 1, HandSlot(a_leftHand));
+				_equipManager.UnequipObject(&_player, &a_object, _inventory.HeldExtraList(a_leftHand), 1, HandSlot(a_leftHand));
 			}
 
 			void UnequipSpellFromHand(RE::SpellItem &a_spell, Input::Hand a_hand)
 			{
 				if (a_hand == Input::Hand::kLeft || a_hand == Input::Hand::kBoth)
 				{
-					UnequipSpell(_manager, _player, a_spell, HandSlot(kLeftHand));
+					UnequipSpell(_equipManager, _player, a_spell, HandSlot(kLeftHand));
 				}
 				if (a_hand == Input::Hand::kRight || a_hand == Input::Hand::kBoth)
 				{
-					UnequipSpell(_manager, _player, a_spell, HandSlot(kRightHand));
+					UnequipSpell(_equipManager, _player, a_spell, HandSlot(kRightHand));
 				}
 			}
 
@@ -415,16 +415,16 @@ namespace Orbit::Items
 			{
 				if (a_item.Is(RE::FormType::Spell))
 				{
-					_manager.EquipSpell(&_player, a_item.As<RE::SpellItem>(), HandSlot(a_leftHand));
+					_equipManager.EquipSpell(&_player, a_item.As<RE::SpellItem>(), HandSlot(a_leftHand));
 				}
 				else if (auto *object = a_item.As<RE::TESBoundObject>())
 				{
-					_manager.EquipObject(&_player, object, a_extra, 1, HandSlot(a_leftHand));
+					_equipManager.EquipObject(&_player, object, a_extra, 1, HandSlot(a_leftHand));
 				}
 			}
 
 			RE::PlayerCharacter &_player;
-			RE::ActorEquipManager &_manager;
+			RE::ActorEquipManager &_equipManager;
 			Inventory _inventory;
 		};
 	}

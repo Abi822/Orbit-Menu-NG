@@ -21,7 +21,10 @@ namespace Orbit::Config
 		constexpr std::array kRemovedKeys{std::pair{kDisplay, "fTextScale"}, std::pair{kDisplay, "fSlotKeyTextScale"}, std::pair{kDisplay, "fItemDescriptionTextScale"},
 										  std::pair{kDisplay, "sSkinPath"}, std::pair{kDisplay, "iOctagonSize"}, std::pair{kDisplay, "sAccentColor"},
 										  std::pair{kDisplay, "bShowHands"}, std::pair{kDisplay, "bShowItemIcon"}, std::pair{kDisplay, "iItemIconSize"},
-										  std::pair{kSlowMotion, "fSlowMotionSpeed"}, std::pair{kPages, "iPageCount"}};
+										  std::pair{kSlowMotion, "fSlowMotionSpeed"}, std::pair{kPages, "iPageCount"},
+										  std::pair{kDisplay, "fBackgroundOpacity"}, std::pair{kDisplay, "bShowCenterBackground"},
+										  std::pair{kDisplay, "iCenterBackgroundSize"}, std::pair{kDisplay, "sCenterBackgroundColor"},
+										  std::pair{kDisplay, "bShowHint"}, std::pair{kDisplay, "iHintTextSize"}, std::pair{kDisplay, "sHintColor"}};
 		const std::filesystem::path kDefaultsPath{"Data/SKSE/Plugins/Orbit Menu/OrbitMenu_Default.ini"};
 		const std::filesystem::path kUserPath{"Data/SKSE/Plugins/Orbit Menu/OrbitMenu.ini"};
 
@@ -61,36 +64,39 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iPositionX", a_settings.positionX);
 			a_visit(kDisplay, "iPositionY", a_settings.positionY);
 			a_visit(kDisplay, "iCurve", a_settings.curve);
-			a_visit(kDisplay, "fBackgroundOpacity", a_settings.backgroundOpacity);
 			a_visit(kDisplay, "sBackgroundColor", Color{a_settings.backgroundColor});
 			a_visit(kDisplay, "sSlotColor", Color{a_settings.slotColor});
+			a_visit(kDisplay, "sSlotKeyBackgroundColor", Color{a_settings.slotKeyBackgroundColor});
 			a_visit(kDisplay, "sHighlightColor", Color{a_settings.highlightColor});
+			a_visit(kDisplay, "sPointerColor", Color{a_settings.pointerColor});
+			a_visit(kDisplay, "sItemDescriptionBackgroundColor", Color{a_settings.itemDescriptionBackgroundColor});
 			a_visit(kDisplay, "sSlotNameColor", Color{a_settings.slotNameColor});
 			a_visit(kDisplay, "sSlotEmptyColor", Color{a_settings.slotEmptyColor});
 			a_visit(kDisplay, "sSlotKeyColor", Color{a_settings.slotKeyColor});
 			a_visit(kDisplay, "sHandColor", Color{a_settings.handColor});
 			a_visit(kDisplay, "sItemDescriptionColor", Color{a_settings.itemDescriptionColor});
-			a_visit(kDisplay, "sHintColor", Color{a_settings.hintColor});
+			a_visit(kDisplay, "sControlsHintColor", Color{a_settings.controlsHintColor});
 			a_visit(kDisplay, "iSlotNameTextSize", a_settings.slotNameTextSize);
 			a_visit(kDisplay, "iSlotEmptyTextSize", a_settings.slotEmptyTextSize);
 			a_visit(kDisplay, "iSlotKeyTextSize", a_settings.slotKeyTextSize);
 			a_visit(kDisplay, "iHandTextSize", a_settings.handTextSize);
 			a_visit(kDisplay, "iItemDescriptionTitleTextSize", a_settings.itemDescriptionTitleTextSize);
 			a_visit(kDisplay, "iItemDescriptionTextSize", a_settings.itemDescriptionTextSize);
-			a_visit(kDisplay, "iHintTextSize", a_settings.hintTextSize);
+			a_visit(kDisplay, "iControlsHintTextSize", a_settings.controlsHintTextSize);
 			a_visit(kDisplay, "bShowSlotKeys", a_settings.showSlotKeys);
 			a_visit(kDisplay, "bShowSlotKeysOnController", a_settings.showSlotKeysOnController);
 			a_visit(kDisplay, "iSlotDistance", a_settings.slotDistance);
 			a_visit(kDisplay, "iSlotSize", a_settings.slotSize);
 			a_visit(kDisplay, "iSlotIconSize", a_settings.slotIconSize);
+			a_visit(kDisplay, "bShowBackground", a_settings.showBackground);
 			a_visit(kDisplay, "bShowSlotBackground", a_settings.showSlotBackground);
-			a_visit(kDisplay, "bShowCenterBackground", a_settings.showCenterBackground);
-			a_visit(kDisplay, "iCenterBackgroundSize", a_settings.centerBackgroundSize);
+			a_visit(kDisplay, "bShowItemDescriptionBackground", a_settings.showItemDescriptionBackground);
+			a_visit(kDisplay, "iItemDescriptionBackgroundSize", a_settings.itemDescriptionBackgroundSize);
 			a_visit(kDisplay, "iSlotKeyPosition", a_settings.slotKeyPosition);
 			a_visit(kDisplay, "bShowHand", a_settings.showHand);
 			a_visit(kDisplay, "iHandPosition", a_settings.handPosition);
 			a_visit(kDisplay, "bShowSlotEmpty", a_settings.showSlotEmpty);
-			a_visit(kDisplay, "bShowHint", a_settings.showHint);
+			a_visit(kDisplay, "bShowControlsHint", a_settings.showControlsHint);
 			a_visit(kDisplay, "bShowItemDescription", a_settings.showItemDescription);
 			a_visit(kDisplay, "bShowItemIconDescription", a_settings.showItemIconDescription);
 			a_visit(kDisplay, "iItemIconDescriptionSize", a_settings.itemIconDescriptionSize);
@@ -102,6 +108,7 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iItemDescriptionTextX", a_settings.itemDescriptionTextX);
 			a_visit(kDisplay, "iItemDescriptionTextY", a_settings.itemDescriptionTextY);
 			a_visit(kDisplay, "iItemDescriptionWidth", a_settings.itemDescriptionWidth);
+			a_visit(kDisplay, "fItemDescriptionLineSpacing", a_settings.itemDescriptionLineSpacing);
 			a_visit(kDisplay, "bShowSlotGlow", a_settings.showSlotGlow);
 			a_visit(kDisplay, "bShowPointer", a_settings.showPointer);
 			a_visit(kDisplay, "iPointerSize", a_settings.pointerSize);
@@ -250,7 +257,22 @@ namespace Orbit::Config
 				}
 			}
 
-			void Read(Settings &a_settings) const { ForEachSetting(a_settings, IniReader{_ini}); }
+			void Read(Settings &a_settings) const
+			{
+				const IniReader reader{_ini};
+				reader(kDisplay, "bShowCenterBackground", a_settings.showItemDescriptionBackground);
+				reader(kDisplay, "iCenterBackgroundSize", a_settings.itemDescriptionBackgroundSize);
+				reader(kDisplay, "sCenterBackgroundColor", Color{a_settings.itemDescriptionBackgroundColor});
+				reader(kDisplay, "bShowHint", a_settings.showControlsHint);
+				reader(kDisplay, "iHintTextSize", a_settings.controlsHintTextSize);
+				reader(kDisplay, "sHintColor", Color{a_settings.controlsHintColor});
+				ForEachSetting(a_settings, reader);
+				if (const double opacity = _ini.GetDoubleValue(kDisplay, "fBackgroundOpacity", -1.0); opacity >= 0.0)
+				{
+					const auto alpha = static_cast<std::uint32_t>(std::lround(std::clamp(opacity, 0.0, 1.0) * 255.0));
+					a_settings.backgroundColor = alpha << 24 | (a_settings.backgroundColor & 0xFFFFFF);
+				}
+			}
 
 			void Write(Settings a_settings) { ForEachSetting(a_settings, IniWriter{_ini}); }
 
@@ -308,18 +330,17 @@ namespace Orbit::Config
 		positionX = std::clamp(positionX, kMinPosition, kMaxPosition);
 		positionY = std::clamp(positionY, kMinPosition, kMaxPosition);
 		curve = std::clamp(curve, kMinCurve, kMaxCurve);
-		backgroundOpacity = std::clamp(backgroundOpacity, kMinOpacity, kMaxOpacity);
 		slotNameTextSize = std::clamp(slotNameTextSize, kMinTextSize, kMaxTextSize);
 		slotEmptyTextSize = std::clamp(slotEmptyTextSize, kMinTextSize, kMaxTextSize);
 		slotKeyTextSize = std::clamp(slotKeyTextSize, kMinTextSize, kMaxTextSize);
 		handTextSize = std::clamp(handTextSize, kMinTextSize, kMaxTextSize);
 		itemDescriptionTitleTextSize = std::clamp(itemDescriptionTitleTextSize, kMinTextSize, kMaxTextSize);
 		itemDescriptionTextSize = std::clamp(itemDescriptionTextSize, kMinTextSize, kMaxTextSize);
-		hintTextSize = std::clamp(hintTextSize, kMinTextSize, kMaxTextSize);
+		controlsHintTextSize = std::clamp(controlsHintTextSize, kMinTextSize, kMaxTextSize);
 		slotDistance = std::clamp(slotDistance, kMinSlotDistance, kMaxSlotDistance);
 		slotSize = std::clamp(slotSize, kMinSlotSize, kMaxSlotSize);
 		slotIconSize = std::clamp(slotIconSize, kMinSlotIconSize, kMaxSlotIconSize);
-		centerBackgroundSize = std::clamp(centerBackgroundSize, kMinCenterBackgroundSize, kMaxCenterBackgroundSize);
+		itemDescriptionBackgroundSize = std::clamp(itemDescriptionBackgroundSize, kMinItemDescriptionBackgroundSize, kMaxItemDescriptionBackgroundSize);
 		slotKeyPosition = std::clamp(slotKeyPosition, 0, kLastSlotKeyPosition);
 		handPosition = std::clamp(handPosition, 0, kLastHandPosition);
 		itemIconDescriptionSize = std::clamp(itemIconDescriptionSize, kMinItemIconDescriptionSize, kMaxItemIconDescriptionSize);
@@ -328,6 +349,7 @@ namespace Orbit::Config
 			*position = std::clamp(*position, kMinItemDescriptionPosition, kMaxItemDescriptionPosition);
 		}
 		itemDescriptionWidth = std::clamp(itemDescriptionWidth, kMinItemDescriptionWidth, kMaxItemDescriptionWidth);
+		itemDescriptionLineSpacing = std::clamp(itemDescriptionLineSpacing, kMinItemDescriptionLineSpacing, kMaxItemDescriptionLineSpacing);
 		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
 		pointerDistance = std::clamp(pointerDistance, kMinPointerDistance, kMaxPointerDistance);
 		animationSpeed = std::clamp(animationSpeed, kMinAnimationSpeed, kMaxAnimationSpeed);
@@ -339,36 +361,39 @@ namespace Orbit::Config
 		positionX = a_from.positionX;
 		positionY = a_from.positionY;
 		curve = a_from.curve;
-		backgroundOpacity = a_from.backgroundOpacity;
 		backgroundColor = a_from.backgroundColor;
 		slotColor = a_from.slotColor;
+		slotKeyBackgroundColor = a_from.slotKeyBackgroundColor;
 		highlightColor = a_from.highlightColor;
+		pointerColor = a_from.pointerColor;
+		itemDescriptionBackgroundColor = a_from.itemDescriptionBackgroundColor;
 		slotNameColor = a_from.slotNameColor;
 		slotEmptyColor = a_from.slotEmptyColor;
 		slotKeyColor = a_from.slotKeyColor;
 		handColor = a_from.handColor;
 		itemDescriptionColor = a_from.itemDescriptionColor;
-		hintColor = a_from.hintColor;
+		controlsHintColor = a_from.controlsHintColor;
 		slotNameTextSize = a_from.slotNameTextSize;
 		slotEmptyTextSize = a_from.slotEmptyTextSize;
 		slotKeyTextSize = a_from.slotKeyTextSize;
 		handTextSize = a_from.handTextSize;
 		itemDescriptionTitleTextSize = a_from.itemDescriptionTitleTextSize;
 		itemDescriptionTextSize = a_from.itemDescriptionTextSize;
-		hintTextSize = a_from.hintTextSize;
+		controlsHintTextSize = a_from.controlsHintTextSize;
 		showSlotKeys = a_from.showSlotKeys;
 		showSlotKeysOnController = a_from.showSlotKeysOnController;
 		slotDistance = a_from.slotDistance;
 		slotSize = a_from.slotSize;
 		slotIconSize = a_from.slotIconSize;
+		showBackground = a_from.showBackground;
 		showSlotBackground = a_from.showSlotBackground;
-		showCenterBackground = a_from.showCenterBackground;
-		centerBackgroundSize = a_from.centerBackgroundSize;
+		showItemDescriptionBackground = a_from.showItemDescriptionBackground;
+		itemDescriptionBackgroundSize = a_from.itemDescriptionBackgroundSize;
 		slotKeyPosition = a_from.slotKeyPosition;
 		showHand = a_from.showHand;
 		handPosition = a_from.handPosition;
 		showSlotEmpty = a_from.showSlotEmpty;
-		showHint = a_from.showHint;
+		showControlsHint = a_from.showControlsHint;
 		showItemDescription = a_from.showItemDescription;
 		showItemIconDescription = a_from.showItemIconDescription;
 		itemIconDescriptionSize = a_from.itemIconDescriptionSize;
@@ -380,6 +405,7 @@ namespace Orbit::Config
 		itemDescriptionTextX = a_from.itemDescriptionTextX;
 		itemDescriptionTextY = a_from.itemDescriptionTextY;
 		itemDescriptionWidth = a_from.itemDescriptionWidth;
+		itemDescriptionLineSpacing = a_from.itemDescriptionLineSpacing;
 		showSlotGlow = a_from.showSlotGlow;
 		showPointer = a_from.showPointer;
 		pointerSize = a_from.pointerSize;

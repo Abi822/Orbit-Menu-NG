@@ -8,6 +8,7 @@ namespace Orbit::UI::OrbitMenu
 	struct MenuPalette
 	{
 		ImVec4 highlight;
+		ImVec4 pointer;
 		ImVec4 slotFill;
 		ImVec4 keyBadge;
 		ImVec4 background;
@@ -24,8 +25,8 @@ namespace Orbit::UI::OrbitMenu
 		ImVec4 description;
 		ImVec4 descriptionBright;
 		ImVec4 descriptionDim;
-		ImVec4 hint;
-		ImVec4 centreFill{0.02f, 0.02f, 0.025f, 0.55f};
+		ImVec4 controlsHint;
+		ImVec4 centreFill;
 		ImVec4 textShadow{0.0f, 0.0f, 0.0f, 0.75f};
 		static MenuPalette Make(const Config::Settings &a_settings);
 	};

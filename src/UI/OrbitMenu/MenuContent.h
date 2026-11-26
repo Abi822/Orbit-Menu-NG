@@ -41,13 +41,13 @@ namespace Orbit::UI::OrbitMenu
 		const Core::PerSlot<IconRequest> &IconRequests() const { return _icons; }
 		std::uint32_t IconRevision() const { return _iconRevision; }
 		const MenuPalette &Colors() const { return _colors; }
-		const TextLine &Hint() const { return _hint; }
-		const TextLine &PageHint() const { return _pageHint; }
+		const TextLine &ControlsHint() const { return _controlsHint; }
+		const TextLine &PageLine() const { return _pageLine; }
 		const TextLine &EmptyLabel() const { return _empty; }
 		int FirstFilledSlot() const;
 
 	private:
-		struct HintKeys
+		struct ControlsHintKeys
 		{
 			std::uint32_t open = Input::kKeyBindNone;
 			std::uint32_t left = Input::kKeyBindNone;
@@ -61,9 +61,9 @@ namespace Orbit::UI::OrbitMenu
 		bool DescribeSlots(const Config::Settings &a_settings, bool a_force);
 		void LayoutSlots(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings, const Skins::Skin &a_skin);
 		void LayoutKeys(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings);
-		void LayoutHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings);
+		void LayoutControlsHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings);
 		static TextLine Measure(const Graphics::TextMeasure &a_text, std::string a_line);
-		static std::string BuildHint(const HintKeys &a_keys);
+		static std::string BuildControlsHint(const ControlsHintKeys &a_keys);
 		const ImFont *_font = nullptr;
 		bool _ready = false;
 		bool _gamepad = false;
@@ -78,8 +78,8 @@ namespace Orbit::UI::OrbitMenu
 		Core::PerSlot<SlotText> _text{};
 		Core::PerSlot<ItemDescriptionLayout> _descriptions{};
 		MenuPalette _colors{};
-		TextLine _hint;
-		TextLine _pageHint;
+		TextLine _controlsHint;
+		TextLine _pageLine;
 		TextLine _empty;
 	};
 }

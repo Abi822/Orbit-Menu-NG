@@ -15,7 +15,7 @@ namespace Orbit::Items
 		void Turn(int a_step);
 		void Fit(const Config::Settings &a_settings);
 		void ClearExtraPages();
-		std::string Hint(const Config::Settings &a_settings, bool a_gamepad) const;
+		std::string Line(const Config::Settings &a_settings, bool a_gamepad) const;
 		SlotArray FirstPage() const;
 		void Save(SKSE::SerializationInterface &a_intfc) const;
 		void Load(SKSE::SerializationInterface &a_intfc);

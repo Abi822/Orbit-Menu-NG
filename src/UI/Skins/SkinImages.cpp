@@ -8,14 +8,14 @@ namespace Orbit::UI::Skins
 	{
 		constexpr int kGap = 2;
 
-		float BaseSize(Part a_part, float a_badgeSize, float a_pointerSize, float a_slotSize, float a_centerBackgroundSize)
+		float BaseSize(Part a_part, float a_badgeSize, float a_pointerSize, float a_slotSize, float a_itemDescriptionBackgroundSize)
 		{
 			using Layout = OrbitMenu::MenuLayout;
 			const float largestSlot = Layout::LargestSlotRadius(a_slotSize * 0.5f) * 2.0f;
 			switch (a_part)
 			{
 			case Part::kCentre:
-				return a_centerBackgroundSize;
+				return a_itemDescriptionBackgroundSize;
 			case Part::kSlotGlow:
 				return largestSlot * Layout::kSlotGlowRatio;
 			case Part::kPointer:
@@ -33,9 +33,9 @@ namespace Orbit::UI::Skins
 		const float badgeSize = 2.0f * static_cast<float>(a_settings.slotKeyTextSize);
 		const auto pointerSize = static_cast<float>(a_settings.pointerSize);
 		const auto slotSize = static_cast<float>(a_settings.slotSize);
-		const auto centerBackgroundSize = static_cast<float>(a_settings.centerBackgroundSize);
+		const auto itemDescriptionBackgroundSize = static_cast<float>(a_settings.itemDescriptionBackgroundSize);
 		if (a_skin.Generation() == _generation && a_pixelScale == _pixelScale && badgeSize == _badgeSize && pointerSize == _pointerSize &&
-			slotSize == _slotSize && centerBackgroundSize == _centerBackgroundSize)
+			slotSize == _slotSize && itemDescriptionBackgroundSize == _itemDescriptionBackgroundSize)
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ namespace Orbit::UI::Skins
 		_badgeSize = badgeSize;
 		_pointerSize = pointerSize;
 		_slotSize = slotSize;
-		_centerBackgroundSize = centerBackgroundSize;
+		_itemDescriptionBackgroundSize = itemDescriptionBackgroundSize;
 		_images = {};
 		std::array<std::vector<std::uint8_t>, kPartCount> pixels{};
 		std::array<int, kPartCount> sizes{};
@@ -61,7 +61,7 @@ namespace Orbit::UI::Skins
 			{
 				continue;
 			}
-			sizes[i] = static_cast<int>(std::ceil(BaseSize(part, badgeSize, pointerSize, slotSize, centerBackgroundSize) * a_pixelScale));
+			sizes[i] = static_cast<int>(std::ceil(BaseSize(part, badgeSize, pointerSize, slotSize, itemDescriptionBackgroundSize) * a_pixelScale));
 			pixels[i] = SvgImage{file}.Rasterize(sizes[i]);
 			if (pixels[i].empty())
 			{

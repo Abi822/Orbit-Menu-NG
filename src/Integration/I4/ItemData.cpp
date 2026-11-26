@@ -43,9 +43,9 @@ namespace Orbit::Integration::I4
 			return number ? Value{*number} : Value{};
 		}
 
-		void AddMagicData(const RE::MagicItem &a_magic, Values &a_facts)
+		void AddMagicData(const RE::MagicItem &a_magic, Values &a_itemData)
 		{
-			a_facts["spellName"] = std::string{a_magic.GetFullName()};
+			a_itemData["spellName"] = std::string{a_magic.GetFullName()};
 
 			Keywords effectKeywords;
 			for (const auto *effect : a_magic.effects)
@@ -56,19 +56,19 @@ namespace Orbit::Integration::I4
 					effectKeywords.insert(effectKeywords.end(), keywords.begin(), keywords.end());
 				}
 			}
-			a_facts["effectKeywords"] = std::move(effectKeywords);
+			a_itemData["effectKeywords"] = std::move(effectKeywords);
 
 			if (const auto *spell = a_magic.As<RE::SpellItem>())
 			{
-				a_facts["spellType"] = static_cast<double>(std::to_underlying(spell->GetSpellType()));
+				a_itemData["spellType"] = static_cast<double>(std::to_underlying(spell->GetSpellType()));
 				if (const auto *slot = spell->GetEquipSlot())
 				{
-					a_facts["equipSlot"] = static_cast<double>(slot->GetFormID());
+					a_itemData["equipSlot"] = static_cast<double>(slot->GetFormID());
 				}
 			}
 			if (const auto *potion = a_magic.As<RE::AlchemyItem>())
 			{
-				a_facts["flags"] = static_cast<double>(potion->data.flags.underlying());
+				a_itemData["flags"] = static_cast<double>(potion->data.flags.underlying());
 			}
 
 			const auto *effect = a_magic.GetCostliestEffectItem();
@@ -77,66 +77,66 @@ namespace Orbit::Integration::I4
 				return;
 			}
 			const auto &data = effect->baseEffect->data;
-			a_facts["magnitude"] = static_cast<double>(effect->effectItem.magnitude);
-			a_facts["duration"] = static_cast<double>(effect->effectItem.duration);
-			a_facts["area"] = static_cast<double>(effect->effectItem.area);
-			a_facts["effectName"] = std::string{effect->baseEffect->GetFullName()};
-			a_facts["effectFlags"] = static_cast<double>(data.flags.underlying());
-			a_facts["school"] = static_cast<double>(std::to_underlying(data.associatedSkill));
-			a_facts["skillLevel"] = static_cast<double>(data.minimumSkill);
-			a_facts["archetype"] = static_cast<double>(std::to_underlying(data.archetype));
-			a_facts["deliveryType"] = static_cast<double>(std::to_underlying(data.delivery));
-			a_facts["castType"] = static_cast<double>(std::to_underlying(data.castingType));
-			a_facts["actorValue"] = static_cast<double>(std::to_underlying(data.primaryAV));
-			a_facts["resistance"] = static_cast<double>(std::to_underlying(data.resistVariable));
-			a_facts.try_emplace("subType", static_cast<double>(std::to_underlying(data.associatedSkill)));
+			a_itemData["magnitude"] = static_cast<double>(effect->effectItem.magnitude);
+			a_itemData["duration"] = static_cast<double>(effect->effectItem.duration);
+			a_itemData["area"] = static_cast<double>(effect->effectItem.area);
+			a_itemData["effectName"] = std::string{effect->baseEffect->GetFullName()};
+			a_itemData["effectFlags"] = static_cast<double>(data.flags.underlying());
+			a_itemData["school"] = static_cast<double>(std::to_underlying(data.associatedSkill));
+			a_itemData["skillLevel"] = static_cast<double>(data.minimumSkill);
+			a_itemData["archetype"] = static_cast<double>(std::to_underlying(data.archetype));
+			a_itemData["deliveryType"] = static_cast<double>(std::to_underlying(data.delivery));
+			a_itemData["castType"] = static_cast<double>(std::to_underlying(data.castingType));
+			a_itemData["actorValue"] = static_cast<double>(std::to_underlying(data.primaryAV));
+			a_itemData["resistance"] = static_cast<double>(std::to_underlying(data.resistVariable));
+			a_itemData.try_emplace("subType", static_cast<double>(std::to_underlying(data.associatedSkill)));
 		}
 	}
 
 	Values ItemDataFor(const RE::TESForm &a_form, bool a_equipped)
 	{
-		Values facts{{"formType", static_cast<double>(std::to_underlying(a_form.GetFormType()))},
+		Values itemData{{"formType", static_cast<double>(std::to_underlying(a_form.GetFormType()))},
 					 {"formId", static_cast<double>(a_form.GetFormID())},
 					 {"weight", static_cast<double>(a_form.GetWeight())},
 					 {"isEquipped", a_equipped}};
 		if (const auto *keywords = a_form.As<RE::BGSKeywordForm>())
 		{
-			facts["keywords"] = KeywordsOf(*keywords);
+			itemData["keywords"] = KeywordsOf(*keywords);
 		}
 		if (const auto subType = IndexOf(SubTypeNames(a_form.GetFormType()), Items::Icons::SkyUISubType(a_form)))
 		{
-			facts["subType"] = *subType;
+			itemData["subType"] = *subType;
 		}
 		if (const auto *armor = a_form.As<RE::TESObjectARMO>())
 		{
-			facts["partMask"] = static_cast<double>(armor->GetSlotMask().underlying());
-			facts["weightClass"] = WeightClassOf(*armor);
-			facts["isEnchanted"] = armor->formEnchanting != nullptr;
+			itemData["partMask"] = static_cast<double>(armor->GetSlotMask().underlying());
+			itemData["weightClass"] = WeightClassOf(*armor);
+			itemData["isEnchanted"] = armor->formEnchanting != nullptr;
 		}
 		if (const auto *weapon = a_form.As<RE::TESObjectWEAP>())
 		{
-			facts["weaponType"] = static_cast<double>(std::to_underlying(weapon->GetWeaponType()));
-			facts["speed"] = static_cast<double>(weapon->weaponData.speed);
-			facts["reach"] = static_cast<double>(weapon->weaponData.reach);
-			facts["stagger"] = static_cast<double>(weapon->weaponData.staggerValue);
-			facts["minRange"] = static_cast<double>(weapon->weaponData.minRange);
-			facts["maxRange"] = static_cast<double>(weapon->weaponData.maxRange);
-			facts["critDamage"] = static_cast<double>(weapon->criticalData.damage);
-			facts["baseDamage"] = static_cast<double>(weapon->GetAttackDamage());
-			facts["isEnchanted"] = weapon->formEnchanting != nullptr;
+			itemData["weaponType"] = static_cast<double>(std::to_underlying(weapon->GetWeaponType()));
+			itemData["speed"] = static_cast<double>(weapon->weaponData.speed);
+			itemData["reach"] = static_cast<double>(weapon->weaponData.reach);
+			itemData["stagger"] = static_cast<double>(weapon->weaponData.staggerValue);
+			itemData["minRange"] = static_cast<double>(weapon->weaponData.minRange);
+			itemData["maxRange"] = static_cast<double>(weapon->weaponData.maxRange);
+			itemData["critDamage"] = static_cast<double>(weapon->criticalData.damage);
+			itemData["baseDamage"] = static_cast<double>(weapon->GetAttackDamage());
+			itemData["isEnchanted"] = weapon->formEnchanting != nullptr;
 			if (const auto *slot = weapon->GetEquipSlot())
 			{
-				facts["equipSlot"] = static_cast<double>(slot->GetFormID());
+				itemData["equipSlot"] = static_cast<double>(slot->GetFormID());
 			}
 		}
 		if (const auto *ammo = a_form.As<RE::TESAmmo>())
 		{
-			facts["flags"] = static_cast<double>(ammo->GetRuntimeData().data.flags.underlying());
+			itemData["flags"] = static_cast<double>(ammo->GetRuntimeData().data.flags.underlying());
 		}
 		if (const auto *magic = a_form.As<RE::MagicItem>())
 		{
-			AddMagicData(*magic, facts);
+			AddMagicData(*magic, itemData);
 		}
-		return facts;
+		return itemData;
 	}
 }

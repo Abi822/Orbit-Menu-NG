@@ -16,7 +16,7 @@ namespace Orbit::UI::OrbitMenu
 		float scale = 1.0f;
 		float ringRadius = kBaseRingRadius;
 		float slotRadius = 0.0f;
-		float centerBackgroundRadius = 0.0f;
+		float itemDescriptionBackgroundRadius = 0.0f;
 
 		static float ScreenScale(ImVec2 a_display)
 		{
@@ -28,7 +28,7 @@ namespace Orbit::UI::OrbitMenu
 			return a_slotRadius * (1.0f + kSlotHoverGrowth);
 		}
 
-		static MenuLayout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_centerBackgroundRadius)
+		static MenuLayout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_itemDescriptionBackgroundRadius)
 		{
 			MenuLayout layout;
 			const float screenScale = ScreenScale(a_display);
@@ -36,7 +36,7 @@ namespace Orbit::UI::OrbitMenu
 			layout.scale = screenScale * a_userScale * a_animScale;
 			layout.ringRadius = a_ringRadius * layout.scale;
 			layout.slotRadius = a_slotRadius * layout.scale;
-			layout.centerBackgroundRadius = a_centerBackgroundRadius * layout.scale;
+			layout.itemDescriptionBackgroundRadius = a_itemDescriptionBackgroundRadius * layout.scale;
 			return layout;
 		}
 
@@ -50,7 +50,7 @@ namespace Orbit::UI::OrbitMenu
 			return PointAt(Core::SlotCenterAngle(a_slot), ringRadius);
 		}
 
-		ImVec2 CenterBackgroundVertex(int a_index, float a_radius) const
+		ImVec2 ItemDescriptionBackgroundVertex(int a_index, float a_radius) const
 		{
 			return PointAt(Core::SlotCenterAngle(a_index) - Core::kSliceAngle * 0.5f, a_radius);
 		}

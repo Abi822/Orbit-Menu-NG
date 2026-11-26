@@ -31,13 +31,13 @@ namespace Orbit::Config::SettingsMenu
 
 			SeparatorText("Orbit Menu");
 			KeyRow("Hold to open:", Input::kBindingActivation);
-			KeyRow("Hold with:", Input::kBindingActivationModifier);
+			KeyRow("Activate Orbit Menu with:", Input::kBindingActivationModifier);
 			if (_settings.activationKey == Input::kKeyBindNone && _settings.gamepadActivationKey == Input::kKeyBindNone)
 			{
 				Text("%s", Translation::Translate("No key is bound, so Orbit Menu can not be opened."));
 			}
 			Check("Toggle Orbit Menu##orbit", _settings.toggleOrbitMenu);
-			Check("Controller use right stick##orbit", _settings.useRightStick);
+			Check("Use Right Stick on Controller##orbit", _settings.useRightStick);
 			Slider("Mouse sensitivity##orbit", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
 				   "The lower it is, the more you have to move the mouse sideways to swing over to the next slot.");
 			Slider("Mouse DPI##orbit", _settings.mouseDPI, Settings::kMinMouseDPI, Settings::kMaxMouseDPI,
@@ -121,7 +121,7 @@ namespace Orbit::Config::SettingsMenu
 			auto &renderer = UI::OrbitMenu::OrbitRenderer::Get();
 
 			const bool preview = renderer.IsPreviewing();
-			if (RadioButton(Label("Show Orbit Menu in background##orbit"), preview))
+			if (RadioButton(Label("Show Orbit Menu in Background##orbit"), preview))
 			{
 				renderer.SetPreview(!preview);
 			}
@@ -132,21 +132,22 @@ namespace Orbit::Config::SettingsMenu
 			Number("X##orbit_position_x", _settings.positionX, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Y##orbit_position_y", _settings.positionY, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Curve##orbit_curve", _settings.curve, Settings::kMinCurve, Settings::kMaxCurve, 5);
-			Slider("Background Opacity##orbit", _settings.backgroundOpacity, Settings::kMinOpacity, Settings::kMaxOpacity, "%.2f");
-			Color("Background colour##orbit", _settings.backgroundColor);
-			Color("Slot colour##orbit", _settings.slotColor);
-			Color("Highlight colour##orbit", _settings.highlightColor);
+			Color("Background Colour##orbit", _settings.backgroundColor);
+			Color("Highlight Colour##orbit", _settings.highlightColor);
 			Slider("Animation speed##orbit", _settings.animationSpeed, Settings::kMinAnimationSpeed, Settings::kMaxAnimationSpeed, "%.2f",
-				   "0 turns the animations off.");
-			Check("Show the Controls Hint##orbit", _settings.showHint);
+				   "0 to turn off animations.");
+			Check("Show Background##orbit", _settings.showBackground);
+			Check("Show the Controls Hint##orbit", _settings.showControlsHint);
 
 			SeparatorText(Translation::Translate("Slot"));
-			Check("Show Slot Keys##orbit", _settings.showSlotKeys);
-			Check("Show Slot Keys if controller detected##orbit", _settings.showSlotKeysOnController);
+			Check("Show Slot Key##orbit", _settings.showSlotKeys);
+			Check("Show Slot Key if controller detected##orbit", _settings.showSlotKeysOnController);
 			Check("Show Hand##orbit", _settings.showHand);
 			Check("Show Slot Empty##orbit", _settings.showSlotEmpty);
 			Check("Show Slot Glow##orbit", _settings.showSlotGlow);
 			Check("Show Slot Background##orbit", _settings.showSlotBackground);
+			Color("Slot Colour##orbit", _settings.slotColor);
+			Color("Slot key Background Colour##orbit", _settings.slotKeyBackgroundColor);
 			Number("Slot Size##orbit", _settings.slotSize, Settings::kMinSlotSize, Settings::kMaxSlotSize, 2);
 			Number("Slot Icon Size##orbit", _settings.slotIconSize, Settings::kMinSlotIconSize, Settings::kMaxSlotIconSize, 2);
 			Number("Slot Distance##orbit", _settings.slotDistance, Settings::kMinSlotDistance, Settings::kMaxSlotDistance, 5);
@@ -156,8 +157,9 @@ namespace Orbit::Config::SettingsMenu
 			SeparatorText(Translation::Translate("Item Description"));
 			Check("Show Item Description##orbit", _settings.showItemDescription);
 			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
-			Check("Show Center Background##orbit", _settings.showCenterBackground);
-			Number("Center Background Size##orbit", _settings.centerBackgroundSize, Settings::kMinCenterBackgroundSize, Settings::kMaxCenterBackgroundSize, 2);
+			Check("Show Item Description Background##orbit", _settings.showItemDescriptionBackground);
+			Color("Item Description Background Colour##orbit", _settings.itemDescriptionBackgroundColor);
+			Number("Item Description Background Size##orbit", _settings.itemDescriptionBackgroundSize, Settings::kMinItemDescriptionBackgroundSize, Settings::kMaxItemDescriptionBackgroundSize, 2);
 			Number("Item Icon Description Size##orbit", _settings.itemIconDescriptionSize, Settings::kMinItemIconDescriptionSize, Settings::kMaxItemIconDescriptionSize);
 			Check("Static Item Description##orbit", _settings.staticItemDescription);
 			if (_settings.staticItemDescription)
@@ -172,10 +174,12 @@ namespace Orbit::Config::SettingsMenu
 				Number("X##orbit_description_x", _settings.itemDescriptionTextX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
+				Slider("Line Spacing##orbit_description_line_spacing", _settings.itemDescriptionLineSpacing, Settings::kMinItemDescriptionLineSpacing, Settings::kMaxItemDescriptionLineSpacing, "%.2f");
 			}
 
 			SeparatorText(Translation::Translate("Pointer"));
 			Check("Show Pointer##orbit", _settings.showPointer);
+			Color("Pointer Colour##orbit", _settings.pointerColor);
 			Number("Pointer Size##orbit", _settings.pointerSize, Settings::kMinPointerSize, Settings::kMaxPointerSize);
 			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
 
@@ -188,7 +192,7 @@ namespace Orbit::Config::SettingsMenu
 			Number("##orbit_slot_empty_size", _settings.slotEmptyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_empty_colour", _settings.slotEmptyColor);
 			Spacing();
-			Text("%s", Translation::Translate("Slot keys"));
+			Text("%s", Translation::Translate("Slot key"));
 			Number("##orbit_slot_key_size", _settings.slotKeyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_key_colour", _settings.slotKeyColor);
 			Spacing();
@@ -202,8 +206,8 @@ namespace Orbit::Config::SettingsMenu
 			Color("##orbit_item_description_colour", _settings.itemDescriptionColor);
 			Spacing();
 			Text("%s", Translation::Translate("Controls Hint"));
-			Number("##orbit_hint_size", _settings.hintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
-			Color("##orbit_hint_colour", _settings.hintColor);
+			Number("##orbit_controls_hint_size", _settings.controlsHintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
+			Color("##orbit_controls_hint_colour", _settings.controlsHintColor);
 
 			Separator();
 			Spacing();

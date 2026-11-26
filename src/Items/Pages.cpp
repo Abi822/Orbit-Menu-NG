@@ -39,9 +39,9 @@ namespace Orbit::Items
 		logger::info("Pages: User has cleared page");
 	}
 
-	std::string Pages::Hint(const Config::Settings &a_settings, bool a_gamepad) const
+	std::string Pages::Line(const Config::Settings &a_settings, bool a_gamepad) const
 	{
-		std::string hint = Translation::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
+		std::string line = Translation::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
 		const auto previous = a_gamepad ? a_settings.gamepadPreviousPageKey : a_settings.previousPageKey;
 		const auto next = a_gamepad ? a_settings.gamepadNextPageKey : a_settings.nextPageKey;
 		std::string keys;
@@ -54,9 +54,9 @@ namespace Orbit::Items
 		}
 		if (!keys.empty())
 		{
-			hint += "   |   " + Translation::Translate("Select Page: {}", keys);
+			line += "   |   " + Translation::Translate("Select Page: {}", keys);
 		}
-		return hint;
+		return line;
 	}
 
 	SlotArray Pages::FirstPage() const
