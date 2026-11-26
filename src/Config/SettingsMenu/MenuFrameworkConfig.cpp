@@ -31,6 +31,7 @@ namespace Orbit::Config::SettingsMenu
 
 			SeparatorText("Orbit Menu");
 			KeyRow("Hold to open:", Input::kBindingActivation);
+			KeyRow("Hold with:", Input::kBindingActivationModifier);
 			if (_settings.activationKey == Input::kKeyBindNone && _settings.gamepadActivationKey == Input::kKeyBindNone)
 			{
 				Text("%s", Translation::Translate("No key is bound, so Orbit Menu can not be opened."));
@@ -314,7 +315,14 @@ namespace Orbit::Config::SettingsMenu
 			{
 				_input.BeginKeyCapture(a_binding);
 			}
-			Tooltip(a_binding.gamepad ? "Click, then press the new controller button." : "Click, then press the new keyboard or mouse button.");
+			if (a_binding.id == Input::kBindingActivationModifier)
+			{
+				Tooltip("Click, then press the new controller activation button.");
+			}
+			else
+			{
+				Tooltip(a_binding.gamepad ? "Click, then press the new controller button." : "Click, then press the new keyboard or mouse button.");
+			}
 			if (a_key != Input::kKeyBindNone)
 			{
 				SameLine();

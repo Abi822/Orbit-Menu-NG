@@ -179,13 +179,18 @@ namespace Orbit::Input
 		}
 
 		const bool gamepad = IsGamepadBind(*code);
+		if (*code == a_settings.gamepadActivationModifierKey)
+		{
+			_modifierHeld = a_button.IsPressed();
+		}
 		if (*code == a_settings.activationKey || *code == a_settings.gamepadActivationKey)
 		{
 			if (down)
 			{
 				if (!_state.IsOpen())
 				{
-					if (const bool assign = Game::IsInItemMenu(); !IsBlockedLocked(assign))
+					const bool modifierReady = !gamepad || a_settings.gamepadActivationModifierKey == kKeyBindNone || _modifierHeld;
+					if (const bool assign = Game::IsInItemMenu(); modifierReady && !IsBlockedLocked(assign))
 					{
 						OpenLocked(gamepad, assign);
 						swallowed = true;

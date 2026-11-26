@@ -23,6 +23,8 @@ namespace Orbit::Config::SettingsMenu
 			return pad ? &a_settings.gamepadNextPageKey : &a_settings.nextPageKey;
 		case Input::kBindingPreviousPage:
 			return pad ? &a_settings.gamepadPreviousPageKey : &a_settings.previousPageKey;
+		case Input::kBindingActivationModifier:
+			return pad ? &a_settings.gamepadActivationModifierKey : nullptr;
 		default:
 			return pad ? nullptr : &a_settings.slotKeys[static_cast<std::size_t>(a_binding.id)];
 		}

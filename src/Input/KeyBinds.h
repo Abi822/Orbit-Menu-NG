@@ -31,6 +31,7 @@ namespace Orbit::Input
 	inline constexpr int kBindingSwapHands = -4;
 	inline constexpr int kBindingNextPage = -5;
 	inline constexpr int kBindingPreviousPage = -6;
+	inline constexpr int kBindingActivationModifier = -7;
 
 	struct KeyBinding
 	{

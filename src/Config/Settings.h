@@ -25,6 +25,7 @@ namespace Orbit::Config
 		std::uint32_t rightHandKey{};
 		std::uint32_t swapHandsKey{};
 		std::uint32_t gamepadActivationKey{};
+		std::uint32_t gamepadActivationModifierKey{};
 		std::uint32_t gamepadLeftHandKey{};
 		std::uint32_t gamepadRightHandKey{};
 		std::uint32_t gamepadSwapHandsKey{};

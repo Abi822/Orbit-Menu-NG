@@ -97,6 +97,7 @@ namespace Orbit::Input
 		std::uint32_t _closeCount = 0;
 		bool _lastCloseChoseSlot = false;
 		bool _openedWithGamepad = false;
+		bool _modifierHeld = false;
 		std::atomic<bool> _orbitMenuOpen{false};
 		std::atomic<bool> _assignMode{false};
 	};

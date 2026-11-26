@@ -25,7 +25,7 @@ namespace Orbit::Input
 	{
 		if (a_keybind == kKeyBindNone)
 		{
-			return "Not bound.";
+			return "Not bound";
 		}
 		auto name = InputMap::GetKeyName(a_keybind);
 		return name.empty() ? std::format("Key {}", a_keybind) : name;

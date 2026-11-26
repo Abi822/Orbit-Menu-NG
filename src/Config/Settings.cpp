@@ -40,6 +40,7 @@ namespace Orbit::Config
 			a_visit(kControls, "iRightHandKey", a_settings.rightHandKey);
 			a_visit(kControls, "iSwapHandsKey", a_settings.swapHandsKey);
 			a_visit(kControls, "iGamepadActivationKey", a_settings.gamepadActivationKey);
+			a_visit(kControls, "iGamepadActivationModifierKey", a_settings.gamepadActivationModifierKey);
 			a_visit(kControls, "iGamepadLeftHandKey", a_settings.gamepadLeftHandKey);
 			a_visit(kControls, "iGamepadRightHandKey", a_settings.gamepadRightHandKey);
 			a_visit(kControls, "iGamepadSwapHandsKey", a_settings.gamepadSwapHandsKey);
@@ -285,6 +286,7 @@ namespace Orbit::Config
 		checkKey(rightHandKey, a_valueDefault.rightHandKey, false);
 		checkKey(swapHandsKey, a_valueDefault.swapHandsKey, false);
 		checkKey(gamepadActivationKey, a_valueDefault.gamepadActivationKey, true);
+		checkKey(gamepadActivationModifierKey, a_valueDefault.gamepadActivationModifierKey, true);
 		checkKey(gamepadLeftHandKey, a_valueDefault.gamepadLeftHandKey, true);
 		checkKey(gamepadRightHandKey, a_valueDefault.gamepadRightHandKey, true);
 		checkKey(gamepadSwapHandsKey, a_valueDefault.gamepadSwapHandsKey, true);
