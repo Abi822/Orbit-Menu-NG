@@ -78,4 +78,4 @@ target_link_options(${PROJECT_NAME} PRIVATE /DEBUG:FULL /OPT:REF /OPT:ICF /INCRE
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION SKSE/Plugins COMPONENT OrbitMenu)
 install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION SKSE/Plugins COMPONENT OrbitMenu OPTIONAL)
 install(FILES dist/SKSE/Plugins/OrbitMenu_Default.ini DESTINATION "SKSE/Plugins/Orbit Menu" COMPONENT OrbitMenu)
-install(FILES fonts/Jost-OFL.txt DESTINATION "SKSE/Plugins/Orbit Menu/fonts" RENAME OFL.txt COMPONENT OrbitMenu)
+install(FILES fonts/OFL.txt DESTINATION "SKSE/Plugins/Orbit Menu/fonts" COMPONENT OrbitMenu)
