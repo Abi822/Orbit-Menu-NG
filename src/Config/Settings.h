@@ -86,6 +86,7 @@ namespace Orbit::Config
 		bool showPointer{};
 		std::int32_t pointerSize{};
 		std::int32_t pointerDistance{};
+		std::int32_t pointerRotation{};
 		float animationSpeed{};
 		std::string skinPath;
 		std::string fontPath;
@@ -109,8 +110,8 @@ namespace Orbit::Config
 		static constexpr float kControllerDeadzone = 0.5f;
 		static constexpr float kMinOrbitMenuScale = 0.5f;
 		static constexpr float kMaxOrbitMenuScale = 1.5f;
-		static constexpr std::int32_t kMinPosition = -2000;
-		static constexpr std::int32_t kMaxPosition = 2000;
+		static constexpr std::int32_t kMinPosition = -2880;
+		static constexpr std::int32_t kMaxPosition = 2880;
 		static constexpr std::int32_t kMinCurve = -30;
 		static constexpr std::int32_t kMaxCurve = 30;
 		static constexpr std::int32_t kMinTextSize = 8;
@@ -121,8 +122,8 @@ namespace Orbit::Config
 		static constexpr float kMaxSlowMotionTimeSpeed = 1.0f;
 		static constexpr float kMaxSlowMotionFade = 1.0f;
 		static constexpr std::int32_t kMinSlotDistance = 200;
-		static constexpr std::int32_t kMaxSlotDistance = 450;
-		static constexpr std::int32_t kMinSlotSize = 60;
+		static constexpr std::int32_t kMaxSlotDistance = 800;
+		static constexpr std::int32_t kMinSlotSize = 50;
 		static constexpr std::int32_t kMaxSlotSize = 200;
 		static constexpr std::int32_t kMinSlotIconSize = 16;
 		static constexpr std::int32_t kMaxSlotIconSize = 200;
@@ -138,8 +139,9 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMaxItemDescriptionWidth = 1200;
 		static constexpr float kMinItemDescriptionLineSpacing = 0.8f;
 		static constexpr float kMaxItemDescriptionLineSpacing = 2.0f;
-		static constexpr std::int32_t kMinPointerDistance = -50;
-		static constexpr std::int32_t kMaxPointerDistance = 150;
+		static constexpr std::int32_t kMinPointerDistance = -600;
+		static constexpr std::int32_t kMaxPointerDistance = 600;
+		static constexpr std::int32_t kMaxPointerRotation = 360;
 		static constexpr float kMinAnimationSpeed = 0.0f;
 		static constexpr float kMaxAnimationSpeed = 2.0f;
 		static constexpr auto kLastSlotKeyPosition = static_cast<std::int32_t>(BadgePosition::kBottomRight);

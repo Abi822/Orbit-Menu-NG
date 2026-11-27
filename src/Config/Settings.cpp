@@ -113,6 +113,7 @@ namespace Orbit::Config
 			a_visit(kDisplay, "bShowPointer", a_settings.showPointer);
 			a_visit(kDisplay, "iPointerSize", a_settings.pointerSize);
 			a_visit(kDisplay, "iPointerDistance", a_settings.pointerDistance);
+			a_visit(kDisplay, "iPointerRotation", a_settings.pointerRotation);
 			a_visit(kDisplay, "fAnimationSpeed", a_settings.animationSpeed);
 			a_visit(kSkins, "sSkinPath", a_settings.skinPath);
 			a_visit(kSkins, "sFontPath", a_settings.fontPath);
@@ -352,6 +353,7 @@ namespace Orbit::Config
 		itemDescriptionLineSpacing = std::clamp(itemDescriptionLineSpacing, kMinItemDescriptionLineSpacing, kMaxItemDescriptionLineSpacing);
 		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
 		pointerDistance = std::clamp(pointerDistance, kMinPointerDistance, kMaxPointerDistance);
+		pointerRotation = std::clamp(pointerRotation, 0, kMaxPointerRotation);
 		animationSpeed = std::clamp(animationSpeed, kMinAnimationSpeed, kMaxAnimationSpeed);
 	}
 
@@ -410,6 +412,7 @@ namespace Orbit::Config
 		showPointer = a_from.showPointer;
 		pointerSize = a_from.pointerSize;
 		pointerDistance = a_from.pointerDistance;
+		pointerRotation = a_from.pointerRotation;
 		animationSpeed = a_from.animationSpeed;
 		skinPath = a_from.skinPath;
 	}

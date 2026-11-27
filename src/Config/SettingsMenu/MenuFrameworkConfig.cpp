@@ -182,6 +182,7 @@ namespace Orbit::Config::SettingsMenu
 			Color("Pointer Colour##orbit", _settings.pointerColor);
 			Number("Pointer Size##orbit", _settings.pointerSize, Settings::kMinPointerSize, Settings::kMaxPointerSize);
 			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
+			Slider("Pointer Rotation##orbit", _settings.pointerRotation, 0, Settings::kMaxPointerRotation);
 
 			SeparatorText(Translation::Translate("Text"));
 			Text("%s", Translation::Translate("Slot Name"));
