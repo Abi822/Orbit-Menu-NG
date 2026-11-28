@@ -26,9 +26,6 @@ namespace Orbit::Items
 		void Clear(int a_slot);
 		void ReplaceAll(SlotArray a_slots);
 		SlotArray Exchange(SlotArray a_slots);
-		static void RegisterSerialization();
-		[[nodiscard]] static bool WriteSlots(SKSE::SerializationInterface &a_intfc, const SlotArray &a_slots);
-		[[nodiscard]] static bool ReadSlots(SKSE::SerializationInterface &a_intfc, SlotArray &a_slots);
 
 	private:
 		SlotStore() = default;

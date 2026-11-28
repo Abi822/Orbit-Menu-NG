@@ -60,78 +60,18 @@ namespace Orbit::Items
 		return line;
 	}
 
-	SlotArray Pages::FirstPage() const
+	Pages::PageArray Pages::Snapshot() const
 	{
 		std::scoped_lock lock{_lock};
-		return Current() == 0 ? SlotStore::Get().Snapshot() : _pages[0];
+		PageArray pages = _pages;
+		pages[static_cast<std::size_t>(Current())] = SlotStore::Get().Snapshot();
+		return pages;
 	}
 
-	void Pages::Save(SKSE::SerializationInterface &a_intfc) const
+	void Pages::Restore(PageArray a_pages)
 	{
-		const auto settings = Config::SettingsStore::Get().Snapshot();
-		if (!settings.enablePages)
-		{
-			return;
-		}
-		std::vector<SlotArray> pages;
-		{
-			std::scoped_lock lock{_lock};
-			for (int page = 1; page < settings.numberOfPages; ++page)
-			{
-				pages.push_back(page == Current() ? SlotStore::Get().Snapshot() : _pages[static_cast<std::size_t>(page)]);
-			}
-		}
-		while (!pages.empty() && std::ranges::all_of(pages.back(), &AssignedItem::IsEmpty))
-		{
-			pages.pop_back();
-		}
-		if (pages.empty())
-		{
-			return;
-		}
-		if (!a_intfc.OpenRecord(kRecord, kVersion))
-		{
-			logger::error("Pages: SKSE co-save could not open the pages record!");
-			return;
-		}
-		bool written = a_intfc.WriteRecordData(static_cast<std::uint32_t>(pages.size()));
-		for (const auto &slots : pages)
-		{
-			written = written && SlotStore::WriteSlots(a_intfc, slots);
-		}
-		if (!written)
-		{
-			logger::error("Pages: SKSE co-save writing pages 2 and up failed and they will load empty!");
-		}
-	}
-
-	void Pages::Load(SKSE::SerializationInterface &a_intfc)
-	{
-		if (!Config::SettingsStore::Get().Snapshot().enablePages)
-		{
-			logger::info("Pages: SKSE co-save Pages is off, so pages 2 and up in this save are not used");
-			return;
-		}
-		PageArray pages{};
-		std::uint32_t count = 0;
-		bool read = a_intfc.ReadRecordData(count) == sizeof(count);
-		for (std::uint32_t i = 0; read && i < count; ++i)
-		{
-			SlotArray slots{};
-			read = SlotStore::ReadSlots(a_intfc, slots);
-			if (read && i + 1 < pages.size())
-			{
-				pages[i + 1] = std::move(slots);
-			}
-		}
-		if (!read)
-		{
-			logger::error("Pages: SKSE co-save pages record is damaged pages 2 and up are left empty!");
-			return;
-		}
 		std::scoped_lock lock{_lock};
-		_pages = std::move(pages);
-		logger::info("Pages: SKSE co-save {} more page(s) loaded", count);
+		_pages = std::move(a_pages);
 	}
 
 	void Pages::Revert()

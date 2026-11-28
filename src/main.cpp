@@ -6,7 +6,7 @@
 #include "Integration/I4/Icons.h"
 #include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include "Items/EquipController.h"
-#include "Items/SlotStore.h"
+#include "Items/Serialization.h"
 #include "Translation/Translation.h"
 #include "UI/ImGuiLayer.h"
 #include <spdlog/sinks/basic_file_sink.h>
@@ -89,7 +89,7 @@ SKSEPluginLoad(const SKSE::LoadInterface *a_skse)
 
 	Orbit::Config::SettingsStore::Get().Load();
 	Orbit::Translation::LoadTranslation(Orbit::Config::SettingsStore::Get().Snapshot().languagePath);
-	Orbit::Items::SlotStore::RegisterSerialization();
+	Orbit::Items::Serialization::Register();
 
 	const auto *messaging = SKSE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(OnSKSEMessage))
