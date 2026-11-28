@@ -138,10 +138,8 @@ namespace Orbit::Config::SettingsMenu
 				   "0 to turn off animations.");
 			Check("Show Background##orbit", _settings.showBackground);
 			Check("Show the Controls Hint##orbit", _settings.showControlsHint);
-			Text("%s", Translation::Translate("Controls Hint Position"));
-			Number("X##orbit_controls_hint_x", _settings.controlsHintX, Settings::kMinPosition, Settings::kMaxPosition, 5);
-			Number("Y##orbit_controls_hint_y", _settings.controlsHintY, Settings::kMinPosition, Settings::kMaxPosition, 5);
 
+			Spacing();
 			SeparatorText(Translation::Translate("Slot"));
 			Check("Show Slot Key##orbit", _settings.showSlotKeys);
 			Check("Show Slot Key if controller detected##orbit", _settings.showSlotKeysOnController);
@@ -157,6 +155,7 @@ namespace Orbit::Config::SettingsMenu
 			Choice("Slot Key Position##orbit", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
 			Choice("Hand Position##orbit", _settings.handPosition, Settings::kLastHandPosition);
 
+			Spacing();
 			SeparatorText(Translation::Translate("Item Description"));
 			Check("Show Item Description##orbit", _settings.showItemDescription);
 			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
@@ -179,9 +178,10 @@ namespace Orbit::Config::SettingsMenu
 				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
 				Slider("Line Spacing##orbit_description_line_spacing", _settings.itemDescriptionLineSpacing, Settings::kMinItemDescriptionLineSpacing, Settings::kMaxItemDescriptionLineSpacing, "%.2f");
-				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title wraps to a second line, the description moves down with it so they don't overlap.");
+				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title is too big to fit in a single line when width is exceeded, the description moves down so they don't overlap.");
 			}
 
+			Spacing();
 			SeparatorText(Translation::Translate("Pointer"));
 			Check("Show Pointer##orbit", _settings.showPointer);
 			Color("Pointer Colour##orbit", _settings.pointerColor);
@@ -189,6 +189,13 @@ namespace Orbit::Config::SettingsMenu
 			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
 			Slider("Pointer Rotation##orbit", _settings.pointerRotation, 0, Settings::kMaxPointerRotation);
 
+			Spacing();
+			SeparatorText(Translation::Translate("Controls Hint"));
+			Text("%s", Translation::Translate("Controls Hint Position"));
+			Number("X##orbit_controls_hint_x", _settings.controlsHintX, Settings::kMinPosition, Settings::kMaxPosition, 5);
+			Number("Y##orbit_controls_hint_y", _settings.controlsHintY, Settings::kMinPosition, Settings::kMaxPosition, 5);
+
+			Spacing();
 			SeparatorText(Translation::Translate("Text"));
 			Text("%s", Translation::Translate("Slot Name"));
 			Number("##orbit_slot_name_size", _settings.slotNameTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
