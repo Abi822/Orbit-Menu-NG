@@ -36,7 +36,7 @@ namespace Orbit::Items
 		std::scoped_lock lock{_lock};
 		ShowLocked(0);
 		_pages = {};
-		logger::info("Pages: User has cleared page");
+		logger::info("Pages: User cleared pages 2 and up");
 	}
 
 	std::string Pages::Line(const Config::Settings &a_settings, bool a_gamepad) const

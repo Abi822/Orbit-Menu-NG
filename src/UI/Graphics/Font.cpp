@@ -62,7 +62,7 @@ namespace Orbit::UI::Graphics
 		config.FontDataOwnedByAtlas = false;
 		if (ImFont *font = a_atlas.AddFontFromMemoryTTF(const_cast<unsigned char *>(kJostMedium), static_cast<int>(sizeof(kJostMedium)), kFontSize, &config))
 		{
-			logger::info("Font: Using Default font");
+			logger::info("Font: Using default font");
 			return font;
 		}
 

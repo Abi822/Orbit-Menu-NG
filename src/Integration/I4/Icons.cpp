@@ -22,7 +22,7 @@ namespace Orbit::Integration::I4
 		_rules.clear();
 		if (!IsInstalled())
 		{
-			logger::info("I4 Icons: is not installed.");
+			logger::info("I4 Icons: I4 is not installed.");
 			return;
 		}
 		auto *data = RE::TESDataHandler::GetSingleton();

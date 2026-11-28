@@ -215,7 +215,7 @@ namespace Orbit::Config
 			}
 			else
 			{
-				logger::error("Settings: {} Could not be read! Ini error {}",
+				logger::error("Settings: {} could not be read! Ini error {}",
 							  OrbitMenuIni::kDefaultsPath.string(), static_cast<int>(result));
 			}
 			defaults.Clamp(Settings{});
@@ -231,7 +231,7 @@ namespace Orbit::Config
 			}
 			else
 			{
-				logger::warn("Settings: {} Could not be read! Ini error {}, using the defaults settings!",
+				logger::warn("Settings: {} could not be read! Ini error {}, using the default settings!",
 							 OrbitMenuIni::kUserPath.string(), static_cast<int>(result));
 			}
 		}

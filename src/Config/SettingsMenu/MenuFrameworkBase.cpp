@@ -87,7 +87,7 @@ namespace Orbit::Config::SettingsMenu
 		Tooltip(a_tooltip);
 	}
 
-	// SKSE Menu Framework for the alpha channel still have convert to use ImGui's ColorEdit4 for ARGB to work.
+	// SKSE Menu Framework needs ImGui's ColorEdit4 for the alpha channel, so the ARGB colour is converted for it.
 	void MenuFrameworkBase::Color(const char *a_label, std::uint32_t &a_argb)
 	{
 		constexpr std::array kShifts{16, 8, 0, 24};

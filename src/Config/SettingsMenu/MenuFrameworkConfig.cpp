@@ -14,7 +14,7 @@ namespace Orbit::Config::SettingsMenu
 {
 	namespace
 	{
-		// Used for MenuFrameworkBase::BoundKey returns where a binding key is stored in settings
+		// Used by MenuFrameworkBase::BoundKey, which returns where a binding's key is stored in the settings
 		constexpr std::array kSlotTextPositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
 	}
 
@@ -34,16 +34,16 @@ namespace Orbit::Config::SettingsMenu
 			KeyRow("Activate Orbit Menu with:", Input::kBindingActivationModifier);
 			if (_settings.activationKey == Input::kKeyBindNone && _settings.gamepadActivationKey == Input::kKeyBindNone)
 			{
-				Text("%s", Translation::Translate("No key is bound, so Orbit Menu can not be opened."));
+				Text("%s", Translation::Translate("No key is bound, Orbit Menu can not be opened!"));
 			}
 			Check("Toggle Orbit Menu##orbit", _settings.toggleOrbitMenu);
 			Check("Use Right Stick on Controller##orbit", _settings.useRightStick);
-			Slider("Mouse sensitivity##orbit", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
+			Slider("Mouse Sensitivity##orbit", _settings.mouseSensitivity, Settings::kMinSensitivity, Settings::kMaxSensitivity, "%.2f",
 				   "The lower it is, the more you have to move the mouse sideways to swing over to the next slot.");
 			Slider("Mouse DPI##orbit", _settings.mouseDPI, Settings::kMinMouseDPI, Settings::kMaxMouseDPI,
 				   "Mouse DPI, also known as deadzone, is how far the mouse has to move from the middle before the first slot is highlighted.\n"
-				   "It protects a small bump when you press the key doesn't highlight anything.\n"
-				   "Works like mouse DPI - the lower it is, the more you have to move the mouse, so slots are less likely to be highlighted by accident.");
+				   "Makes sure a small bump when you press the key doesn't highlight anything.\n"
+				   "The lower it is, the more you have to move the mouse, so slots are less likely to be highlighted by accident.");
 
 			NewLine();
 			SeparatorText(Translation::Translate("Slots"));
@@ -77,8 +77,8 @@ namespace Orbit::Config::SettingsMenu
 
 			NewLine();
 			SeparatorText(Translation::Translate("Slot Controls"));
-			Check("Release to equip##orbit", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip last highlighted slot.\n"
-																	   "It's off by default because just by opening the menu to look could accidentally equip or use something.");
+			Check("Release to equip##orbit", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip the last highlighted slot.\n"
+																	   "It's off by default because just opening the menu to look could accidentally equip or use something.");
 			KeyRow("Equip in left hand:", Input::kBindingLeftHand);
 			KeyRow("Equip in right hand:", Input::kBindingRightHand);
 			KeyRow("Swap hands:", Input::kBindingSwapHands);
@@ -130,14 +130,14 @@ namespace Orbit::Config::SettingsMenu
 			}
 
 			SeparatorText(Translation::Translate("Display"));
-			Slider("Menu size##orbit", _settings.orbitMenuScale, Settings::kMinOrbitMenuScale, Settings::kMaxOrbitMenuScale, "%.2f");
+			Slider("Menu Size##orbit", _settings.orbitMenuScale, Settings::kMinOrbitMenuScale, Settings::kMaxOrbitMenuScale, "%.2f");
 			Text("%s", Translation::Translate("Position"));
 			Number("X##orbit_position_x", _settings.positionX, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Y##orbit_position_y", _settings.positionY, Settings::kMinPosition, Settings::kMaxPosition, 10);
 			Number("Curve##orbit_curve", _settings.curve, Settings::kMinCurve, Settings::kMaxCurve, 5);
 			Color("Background Colour##orbit", _settings.backgroundColor);
 			Color("Highlight Colour##orbit", _settings.highlightColor);
-			Slider("Animation speed##orbit", _settings.animationSpeed, Settings::kMinAnimationSpeed, Settings::kMaxAnimationSpeed, "%.2f",
+			Slider("Animation Speed##orbit", _settings.animationSpeed, Settings::kMinAnimationSpeed, Settings::kMaxAnimationSpeed, "%.2f",
 				   "0 to turn off animations.");
 			Check("Show Background##orbit", _settings.showBackground);
 			Check("Show the Controls Hint##orbit", _settings.showControlsHint);
@@ -145,13 +145,13 @@ namespace Orbit::Config::SettingsMenu
 			NewLine();
 			SeparatorText(Translation::Translate("Slot"));
 			Check("Show Slot Key##orbit", _settings.showSlotKeys);
-			Check("Show Slot Key if controller detected##orbit", _settings.showSlotKeysOnController);
+			Check("Show Slot Key if a controller is detected##orbit", _settings.showSlotKeysOnController);
 			Check("Show Hand##orbit", _settings.showHand);
 			Check("Show Slot Empty##orbit", _settings.showSlotEmpty);
 			Check("Show Slot Glow##orbit", _settings.showSlotGlow);
 			Check("Show Slot Background##orbit", _settings.showSlotBackground);
 			Color("Slot Colour##orbit", _settings.slotColor);
-			Color("Slot key Background Colour##orbit", _settings.slotKeyBackgroundColor);
+			Color("Slot Key Background Colour##orbit", _settings.slotKeyBackgroundColor);
 			Color("Slot Glow Colour##orbit", _settings.slotGlowColor);
 			Number("Slot Size##orbit", _settings.slotSize, Settings::kMinSlotSize, Settings::kMaxSlotSize, 2);
 			Number("Slot Icon Size##orbit", _settings.slotIconSize, Settings::kMinSlotIconSize, Settings::kMaxSlotIconSize, 2);
@@ -189,7 +189,7 @@ namespace Orbit::Config::SettingsMenu
 				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
 				Slider("Line Spacing##orbit_description_line_spacing", _settings.itemDescriptionLineSpacing, Settings::kMinItemDescriptionLineSpacing, Settings::kMaxItemDescriptionLineSpacing, "%.2f");
-				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title is too big to fit in a single line when width is exceeded, the description moves down so they don't overlap.");
+				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title is too wide to fit on a single line, the description moves down so they don't overlap.");
 			}
 
 			NewLine();
@@ -216,7 +216,7 @@ namespace Orbit::Config::SettingsMenu
 			Number("##orbit_slot_empty_size", _settings.slotEmptyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_empty_colour", _settings.slotEmptyColor);
 			Spacing();
-			Text("%s", Translation::Translate("Slot key"));
+			Text("%s", Translation::Translate("Slot Key"));
 			Number("##orbit_slot_key_size", _settings.slotKeyTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_slot_key_colour", _settings.slotKeyColor);
 			Spacing();
@@ -294,7 +294,7 @@ namespace Orbit::Config::SettingsMenu
 			SeparatorText(Translation::Translate("Slow Motion"));
 			Check("Enable Slow Motion##orbit", _settings.enableSlowMotion);
 			Slider("Time Speed##orbit", _settings.slowMotionTimeSpeed, Settings::kMinSlowMotionTimeSpeed, Settings::kMaxSlowMotionTimeSpeed, "%.2f",
-				   "1 is off, 0.30 and lower I do not recommend, can mess up physics, and mods like HDT-SMP");
+				   "1 is off. I do not recommend 0.30 or lower, it can mess up physics and mods like HDT-SMP.");
 			Slider("Fade In##orbit", _settings.slowMotionFadeIn, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
 			Slider("Fade Out##orbit", _settings.slowMotionFadeOut, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
 

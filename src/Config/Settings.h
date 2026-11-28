@@ -17,7 +17,7 @@ namespace Orbit::Config
 
 	struct Settings
 	{
-		// Defaults come from OrbitMenu_Default.ini, then overwritten by user OrbitMenu.ini.
+		// Defaults come from OrbitMenu_Default.ini, then are overwritten by the user's OrbitMenu.ini.
 		std::uint32_t activationKey{};
 		float mouseSensitivity{};
 		std::int32_t mouseDPI{};

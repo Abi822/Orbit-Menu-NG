@@ -58,7 +58,7 @@ namespace Orbit::Items::Serialization
 				const auto *form = a_intfc.ResolveFormID(savedID, formID) ? RE::TESForm::LookupByID(formID) : nullptr;
 				if (GetItemKind(form) == ItemKind::kNone)
 				{
-					logger::warn("Serialization: slot {} item {:08X} ({}) no longer exists the slot cleared!", i + 1, savedID, name);
+					logger::warn("Serialization: slot {} item {:08X} ({}) no longer exists, the slot is cleared!", i + 1, savedID, name);
 					continue;
 				}
 				a_slots[i] = AssignedItem{formID, std::move(name)};
@@ -137,7 +137,7 @@ namespace Orbit::Items::Serialization
 			}
 			if (!read)
 			{
-				logger::error("Serialization: SKSE co-save pages record is damaged pages 2 and up are left empty!");
+				logger::error("Serialization: SKSE co-save pages record is damaged, pages 2 and up are left empty!");
 				return;
 			}
 			Pages::Get().Restore(std::move(pages));
@@ -163,7 +163,7 @@ namespace Orbit::Items::Serialization
 				{
 					if (!ReadSlots(*a_intfc, slots))
 					{
-						logger::error("Serialization: SKSE co-save slot record is damaged the slots are left empty!");
+						logger::error("Serialization: SKSE co-save slot record is damaged, the slots are left empty!");
 						slots = {};
 					}
 				}
@@ -194,7 +194,7 @@ namespace Orbit::Items::Serialization
 		const auto *serialization = SKSE::GetSerializationInterface();
 		if (!serialization)
 		{
-			logger::error("Serialization: SKSE serialization unavailable the slots will not be saved!");
+			logger::error("Serialization: SKSE serialization is unavailable, the slots will not be saved!");
 			return;
 		}
 		serialization->SetUniqueID(kCoSaveID);
