@@ -8,6 +8,7 @@ namespace Orbit::UI::OrbitMenu
 	struct Palette
 	{
 		ImVec4 highlight;
+		ImVec4 slotGlow;
 		ImVec4 pointer;
 		ImVec4 slotFill;
 		ImVec4 slotKeyBackground;

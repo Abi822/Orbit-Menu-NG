@@ -29,6 +29,7 @@ namespace Orbit::UI::OrbitMenu
 	{
 		Palette colors;
 		colors.highlight = FromArgb(a_settings.highlightColor, 1.0f);
+		colors.slotGlow = FromArgb(a_settings.slotGlowColor, 1.0f);
 		colors.pointer = FromArgb(a_settings.pointerColor, 1.0f);
 		colors.itemDescriptionFill = FromArgb(a_settings.itemDescriptionBackgroundColor, 1.0f);
 		colors.slotFill = FromArgb(a_settings.slotColor, 0.92f);

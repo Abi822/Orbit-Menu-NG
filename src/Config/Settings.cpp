@@ -77,6 +77,7 @@ namespace Orbit::Config
 			a_visit(kDisplay, "sSlotColor", Color{a_settings.slotColor});
 			a_visit(kDisplay, "sSlotKeyBackgroundColor", Color{a_settings.slotKeyBackgroundColor});
 			a_visit(kDisplay, "sHighlightColor", Color{a_settings.highlightColor});
+			a_visit(kDisplay, "sSlotGlowColor", Color{a_settings.slotGlowColor});
 			a_visit(kDisplay, "sPointerColor", Color{a_settings.pointerColor});
 			a_visit(kDisplay, "sItemDescriptionBackgroundColor", Color{a_settings.itemDescriptionBackgroundColor});
 			a_visit(kDisplay, "sSlotNameColor", Color{a_settings.slotNameColor});
@@ -97,6 +98,10 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iSlotDistance", a_settings.slotDistance);
 			a_visit(kDisplay, "iSlotSize", a_settings.slotSize);
 			a_visit(kDisplay, "iSlotIconSize", a_settings.slotIconSize);
+			a_visit(kDisplay, "iSlotIconX", a_settings.slotIconX);
+			a_visit(kDisplay, "iSlotIconY", a_settings.slotIconY);
+			a_visit(kDisplay, "iSlotNameX", a_settings.slotNameX);
+			a_visit(kDisplay, "iSlotNameY", a_settings.slotNameY);
 			a_visit(kDisplay, "bShowBackground", a_settings.showBackground);
 			a_visit(kDisplay, "bShowSlotBackground", a_settings.showSlotBackground);
 			a_visit(kDisplay, "bShowItemDescriptionBackground", a_settings.showItemDescriptionBackground);
@@ -356,6 +361,10 @@ namespace Orbit::Config
 		slotDistance = std::clamp(slotDistance, kMinSlotDistance, kMaxSlotDistance);
 		slotSize = std::clamp(slotSize, kMinSlotSize, kMaxSlotSize);
 		slotIconSize = std::clamp(slotIconSize, kMinSlotIconSize, kMaxSlotIconSize);
+		for (auto *position : {&slotIconX, &slotIconY, &slotNameX, &slotNameY})
+		{
+			*position = std::clamp(*position, kMinSlotPosition, kMaxSlotPosition);
+		}
 		itemDescriptionBackgroundSize = std::clamp(itemDescriptionBackgroundSize, kMinItemDescriptionBackgroundSize, kMaxItemDescriptionBackgroundSize);
 		slotKeyPosition = std::clamp(slotKeyPosition, 0, kLastSlotKeyPosition);
 		handPosition = std::clamp(handPosition, 0, kLastHandPosition);
@@ -383,6 +392,7 @@ namespace Orbit::Config
 		slotColor = a_from.slotColor;
 		slotKeyBackgroundColor = a_from.slotKeyBackgroundColor;
 		highlightColor = a_from.highlightColor;
+		slotGlowColor = a_from.slotGlowColor;
 		pointerColor = a_from.pointerColor;
 		itemDescriptionBackgroundColor = a_from.itemDescriptionBackgroundColor;
 		slotNameColor = a_from.slotNameColor;
@@ -403,6 +413,10 @@ namespace Orbit::Config
 		slotDistance = a_from.slotDistance;
 		slotSize = a_from.slotSize;
 		slotIconSize = a_from.slotIconSize;
+		slotIconX = a_from.slotIconX;
+		slotIconY = a_from.slotIconY;
+		slotNameX = a_from.slotNameX;
+		slotNameY = a_from.slotNameY;
 		showBackground = a_from.showBackground;
 		showSlotBackground = a_from.showSlotBackground;
 		showItemDescriptionBackground = a_from.showItemDescriptionBackground;

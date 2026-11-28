@@ -119,7 +119,8 @@ namespace Orbit::UI::OrbitMenu
 	ImVec2 Painter::NameAt(int a_slot) const
 	{
 		const ImVec2 center = _layout.SlotCenter(a_slot);
-		return {center.x, center.y + SlotRadius(a_slot) + Px(8.0f)};
+		const auto &settings = _scene.settings;
+		return {center.x + Px(static_cast<float>(settings.slotNameX)), center.y + SlotRadius(a_slot) + Px(8.0f + static_cast<float>(settings.slotNameY))};
 	}
 
 	void Painter::Bend(int a_firstVertex, int a_controlsHintVertex) const

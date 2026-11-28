@@ -41,6 +41,7 @@ namespace Orbit::Config
 		std::uint32_t slotColor{};
 		std::uint32_t slotKeyBackgroundColor{};
 		std::uint32_t highlightColor{};
+		std::uint32_t slotGlowColor{};
 		std::uint32_t pointerColor{};
 		std::uint32_t itemDescriptionBackgroundColor{};
 		std::uint32_t slotNameColor{};
@@ -61,6 +62,10 @@ namespace Orbit::Config
 		std::int32_t slotDistance{};
 		std::int32_t slotSize{};
 		std::int32_t slotIconSize{};
+		std::int32_t slotIconX{};
+		std::int32_t slotIconY{};
+		std::int32_t slotNameX{};
+		std::int32_t slotNameY{};
 		bool showBackground{};
 		bool showSlotBackground{};
 		bool showItemDescriptionBackground{};
@@ -145,6 +150,8 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMaxSlotSize = 200;
 		static constexpr std::int32_t kMinSlotIconSize = 16;
 		static constexpr std::int32_t kMaxSlotIconSize = 200;
+		static constexpr std::int32_t kMinSlotPosition = -600;
+		static constexpr std::int32_t kMaxSlotPosition = 600;
 		static constexpr std::int32_t kMinItemDescriptionBackgroundSize = 200;
 		static constexpr std::int32_t kMaxItemDescriptionBackgroundSize = 1200;
 		static constexpr std::int32_t kMinPointerSize = 8;

@@ -152,8 +152,15 @@ namespace Orbit::Config::SettingsMenu
 			Check("Show Slot Background##orbit", _settings.showSlotBackground);
 			Color("Slot Colour##orbit", _settings.slotColor);
 			Color("Slot key Background Colour##orbit", _settings.slotKeyBackgroundColor);
+			Color("Slot Glow Colour##orbit", _settings.slotGlowColor);
 			Number("Slot Size##orbit", _settings.slotSize, Settings::kMinSlotSize, Settings::kMaxSlotSize, 2);
 			Number("Slot Icon Size##orbit", _settings.slotIconSize, Settings::kMinSlotIconSize, Settings::kMaxSlotIconSize, 2);
+			Text("%s", Translation::Translate("Slot Icon Position"));
+			Number("X##orbit_slot_icon_x", _settings.slotIconX, Settings::kMinSlotPosition, Settings::kMaxSlotPosition);
+			Number("Y##orbit_slot_icon_y", _settings.slotIconY, Settings::kMinSlotPosition, Settings::kMaxSlotPosition);
+			Text("%s", Translation::Translate("Slot Name Position"));
+			Number("X##orbit_slot_name_x", _settings.slotNameX, Settings::kMinSlotPosition, Settings::kMaxSlotPosition);
+			Number("Y##orbit_slot_name_y", _settings.slotNameY, Settings::kMinSlotPosition, Settings::kMaxSlotPosition);
 			Number("Slot Distance##orbit", _settings.slotDistance, Settings::kMinSlotDistance, Settings::kMaxSlotDistance, 5);
 			Choice("Slot Key Position##orbit", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
 			Choice("Hand Position##orbit", _settings.handPosition, Settings::kLastHandPosition);

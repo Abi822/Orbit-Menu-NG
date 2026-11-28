@@ -25,8 +25,8 @@ namespace Orbit::UI::OrbitMenu
 			Image(*image, center, radius * 2.0f * Layout::kSlotGlowRatio, Graphics::PremultipliedColor(glow * _alpha));
 			return;
 		}
-		_drawList.AddCircleFilled(center, radius + Px(14.0f + 10.0f * flash), Color(_colors.highlight, 0.06f * glow * _alpha), kCircleSegments);
-		_drawList.AddCircleFilled(center, radius + Px(7.0f), Color(_colors.highlight, 0.10f * glow * _alpha), kCircleSegments);
+		_drawList.AddCircleFilled(center, radius + Px(14.0f + 10.0f * flash), Color(_colors.slotGlow, 0.06f * glow * _alpha), kCircleSegments);
+		_drawList.AddCircleFilled(center, radius + Px(7.0f), Color(_colors.slotGlow, 0.10f * glow * _alpha), kCircleSegments);
 	}
 
 	void Painter::DrawSlotShape(int a_slot) const
@@ -70,6 +70,7 @@ namespace Orbit::UI::OrbitMenu
 		const auto &settings = _scene.settings;
 		const auto &content = _scene.content;
 		const auto &icons = _scene.icons;
+		const ImVec2 offset{Px(static_cast<float>(settings.slotIconX)), Px(static_cast<float>(settings.slotIconY))};
 		Graphics::PremultipliedDraw premultiplied{_drawList};
 		for (int slot = 0; slot < Core::kSlotCount; ++slot)
 		{
@@ -81,7 +82,7 @@ namespace Orbit::UI::OrbitMenu
 			{
 				const float hover = _scene.motion.hover[static_cast<std::size_t>(slot)];
 				const float size = std::floor(Px(static_cast<float>(settings.slotIconSize)) * (1.0f + Layout::kSlotHoverGrowth * hover));
-				Image(*icon, _layout.SlotCenter(slot), size, Graphics::PremultipliedColor(SlotAlpha(slot) * _alpha, 0.8f + 0.2f * hover));
+				Image(*icon, _layout.SlotCenter(slot) + offset, size, Graphics::PremultipliedColor(SlotAlpha(slot) * _alpha, 0.8f + 0.2f * hover));
 			}
 		}
 	}
