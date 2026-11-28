@@ -368,7 +368,8 @@ namespace Orbit::Items
 					logger::info("Equip Controller: Player has no {} left", a_slot.name);
 					return;
 				}
-				_equipManager.EquipObject(&_player, &a_item, copy->extraList);
+				const bool misc = a_item.Is(RE::FormType::Misc);
+				_equipManager.EquipObject(&_player, &a_item, copy->extraList, 1, nullptr, !misc, misc);
 			}
 
 			void UnequipFromHand(RE::TESBoundObject &a_object, bool a_leftHand)
