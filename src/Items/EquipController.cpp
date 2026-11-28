@@ -368,7 +368,7 @@ namespace Orbit::Items
 					logger::info("Equip Controller: Player has no {} left", a_slot.name);
 					return;
 				}
-				const bool misc = a_item.Is(RE::FormType::Misc); //Checks for mods like Skyrim Has Talent for EquipHeld
+				const bool misc = a_item.Is(RE::FormType::Misc); //Checks Misc items, so they can equip right away for their scripts run, mods like Skyrim's Got Talent
 				_equipManager.EquipObject(&_player, &a_item, copy->extraList, 1, nullptr, !misc, misc); 
 			}
 
