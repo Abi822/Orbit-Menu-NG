@@ -267,14 +267,7 @@ namespace Orbit::Config
 
 			void Read(Settings &a_settings) const
 			{
-				const IniReader reader{_ini};
-				reader(kDisplay, "bShowCenterBackground", a_settings.showItemDescriptionBackground);
-				reader(kDisplay, "iCenterBackgroundSize", a_settings.itemDescriptionBackgroundSize);
-				reader(kDisplay, "sCenterBackgroundColor", Color{a_settings.itemDescriptionBackgroundColor});
-				reader(kDisplay, "bShowHint", a_settings.showControlsHint);
-				reader(kDisplay, "iHintTextSize", a_settings.controlsHintTextSize);
-				reader(kDisplay, "sHintColor", Color{a_settings.controlsHintColor});
-				ForEachSetting(a_settings, reader);
+				ForEachSetting(a_settings, IniReader{_ini});
 				if (const double opacity = _ini.GetDoubleValue(kDisplay, "fBackgroundOpacity", -1.0); opacity >= 0.0)
 				{
 					const auto alpha = static_cast<std::uint32_t>(std::lround(std::clamp(opacity, 0.0, 1.0) * 255.0));
