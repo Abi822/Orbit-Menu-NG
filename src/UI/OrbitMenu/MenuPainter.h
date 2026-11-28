@@ -74,5 +74,7 @@ namespace Orbit::UI::OrbitMenu
 		float _alpha;
 		int _strongestSlot;
 		float _strength;
+		int _descriptionSlot;
+		float _descriptionStrength;
 	};
 }

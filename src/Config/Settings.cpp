@@ -109,6 +109,7 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iControlsHintX", a_settings.controlsHintX);
 			a_visit(kDisplay, "iControlsHintY", a_settings.controlsHintY);
 			a_visit(kDisplay, "bShowItemDescription", a_settings.showItemDescription);
+			a_visit(kDisplay, "bShowLastEquippedItem", a_settings.showLastEquippedItem);
 			a_visit(kDisplay, "bShowItemIconDescription", a_settings.showItemIconDescription);
 			a_visit(kDisplay, "iItemIconDescriptionSize", a_settings.itemIconDescriptionSize);
 			a_visit(kDisplay, "bStaticItemDescription", a_settings.staticItemDescription);
@@ -414,6 +415,7 @@ namespace Orbit::Config
 		controlsHintX = a_from.controlsHintX;
 		controlsHintY = a_from.controlsHintY;
 		showItemDescription = a_from.showItemDescription;
+		showLastEquippedItem = a_from.showLastEquippedItem;
 		showItemIconDescription = a_from.showItemIconDescription;
 		itemIconDescriptionSize = a_from.itemIconDescriptionSize;
 		staticItemDescription = a_from.staticItemDescription;

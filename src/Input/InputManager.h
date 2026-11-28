@@ -18,6 +18,7 @@ namespace Orbit::Input
 	{
 		bool open = false;
 		int hoveredSlot = -1;
+		int lastEquippedSlot = -1;
 		std::uint32_t openCount = 0;
 		std::uint32_t closeCount = 0;
 		bool lastCloseChoseSlot = false;
@@ -57,7 +58,7 @@ namespace Orbit::Input
 			Clock::time_point at;
 		};
 
-		struct Commit
+		struct SlotAction
 		{
 			int slot;
 			Hand hand;
@@ -67,7 +68,7 @@ namespace Orbit::Input
 		struct Result
 		{
 			bool block = false;
-			std::optional<Commit> committed;
+			std::optional<SlotAction> slotAction;
 			bool swapHands = false;
 			int pageStep = 0;
 		};
@@ -80,9 +81,9 @@ namespace Orbit::Input
 		bool HandleCapture(RE::InputEvent &a_event);
 		bool IsBlockedLocked(bool a_assign) const;
 		void OpenLocked(bool a_gamepad, bool a_assign);
-		std::optional<int> CloseLocked(bool a_commit);
-		std::optional<Commit> ReleaseLocked(const Config::Settings &a_settings);
-		bool NotifyCommit(const Commit &a_commit) const;
+		std::optional<int> CloseLocked(bool a_chooseHovered);
+		std::optional<SlotAction> ReleaseLocked(const Config::Settings &a_settings);
+		bool RunSlotAction(const SlotAction &a_action);
 		mutable std::mutex _lock;
 		Config::Settings _settings;
 		std::optional<std::uint32_t> _settingsVersion;
@@ -96,6 +97,8 @@ namespace Orbit::Input
 		std::optional<CapturedPress> _capturedPress;
 		std::uint32_t _closeCount = 0;
 		bool _lastCloseChoseSlot = false;
+		int _lastEquippedPage = -1;
+		int _lastEquippedSlot = -1;
 		bool _openedWithGamepad = false;
 		bool _activationHeld = false;
 		std::atomic<bool> _orbitMenuOpen{false};

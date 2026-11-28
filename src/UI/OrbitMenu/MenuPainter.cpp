@@ -58,8 +58,18 @@ namespace Orbit::UI::OrbitMenu
 																											   _curve(OrbitMenuCurved::Make(a_scene.settings, _layout, a_display)),
 																											   _alpha(a_scene.motion.alpha),
 																											   _strongestSlot(a_scene.motion.StrongestSlot()),
-																											   _strength(a_scene.motion.hover[static_cast<std::size_t>(_strongestSlot)])
+																											   _strength(a_scene.motion.hover[static_cast<std::size_t>(_strongestSlot)]),
+																											   _descriptionSlot(_strongestSlot),
+																											   _descriptionStrength(_strength)
 	{
+		const int last = a_scene.input.lastEquippedSlot;
+		const bool closingAfterHighlight = !a_scene.input.open && a_scene.motion.pointerValid;
+		if (a_scene.settings.showLastEquippedItem && last >= 0 && !closingAfterHighlight && 1.0f - _strength > _strength &&
+			a_scene.content.View(last).state == Core::SlotState::kEquipped)
+		{
+			_descriptionSlot = last;
+			_descriptionStrength = 1.0f - _strength;
+		}
 	}
 
 	void MenuPainter::Paint() const
@@ -394,20 +404,20 @@ namespace Orbit::UI::OrbitMenu
 		const auto &icons = _scene.icons;
 		Graphics::PremultipliedDraw premultiplied{_drawList};
 
-		if (settings.showItemIconDescription && _strength > kHidden)
+		if (settings.showItemIconDescription && _descriptionStrength > kHidden)
 		{
-			const auto &view = content.View(_strongestSlot);
-			if (const auto icon = icons.Find(_strongestSlot, IconSize::kCentre); icon && view.state != Core::SlotState::kEmpty)
+			const auto &view = content.View(_descriptionSlot);
+			if (const auto icon = icons.Find(_descriptionSlot, IconSize::kCentre); icon && view.state != Core::SlotState::kEmpty)
 			{
 				const float iconSize = static_cast<float>(settings.itemIconDescriptionSize);
-				const float top = settings.showItemDescription ? content.Description(_strongestSlot).iconTop : -iconSize * 0.5f;
+				const float top = settings.showItemDescription ? content.Description(_descriptionSlot).iconTop : -iconSize * 0.5f;
 				const float size = std::floor(Px(iconSize));
 				ImVec2 center{_layout.center.x, _layout.center.y + Px(top) + size * 0.5f};
 				if (settings.staticItemDescription)
 				{
 					center = _layout.center + ImVec2{Px(static_cast<float>(settings.itemIconDescriptionX)), Px(static_cast<float>(settings.itemIconDescriptionY))};
 				}
-				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kNoneLeftAlpha : 1.0f) * _strength * _alpha));
+				Image(*icon, center, size, Graphics::PremultipliedColor((view.state == Core::SlotState::kMissing ? kNoneLeftAlpha : 1.0f) * _descriptionStrength * _alpha));
 			}
 		}
 
@@ -429,11 +439,11 @@ namespace Orbit::UI::OrbitMenu
 	void MenuPainter::DrawDescription() const
 	{
 		using TextRole = ItemDescriptionLayout::TextRole;
-		if (!_scene.settings.showItemDescription || _strength <= kHidden)
+		if (!_scene.settings.showItemDescription || _descriptionStrength <= kHidden)
 		{
 			return;
 		}
-		for (const auto &piece : _scene.content.Description(_strongestSlot).pieces)
+		for (const auto &piece : _scene.content.Description(_descriptionSlot).pieces)
 		{
 			ImVec4 color = _colors.descriptionBright;
 			if (piece.role == TextRole::kLabel)
@@ -444,7 +454,7 @@ namespace Orbit::UI::OrbitMenu
 			{
 				color = _colors.description;
 			}
-			TextAt(piece.size * _layout.scale, _layout.center + piece.topLeft * _layout.scale, Fade(color, _strength), piece.text);
+			TextAt(piece.size * _layout.scale, _layout.center + piece.topLeft * _layout.scale, Fade(color, _descriptionStrength), piece.text);
 		}
 	}
 

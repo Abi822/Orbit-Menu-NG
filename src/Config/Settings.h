@@ -73,6 +73,7 @@ namespace Orbit::Config
 		std::int32_t controlsHintX{};
 		std::int32_t controlsHintY{};
 		bool showItemDescription{};
+		bool showLastEquippedItem{};
 		bool showItemIconDescription{};
 		std::int32_t itemIconDescriptionSize{};
 		bool staticItemDescription{};

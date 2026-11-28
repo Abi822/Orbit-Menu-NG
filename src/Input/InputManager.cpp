@@ -111,7 +111,7 @@ namespace Orbit::Input
 			}
 		}
 
-		if (result.committed && NotifyCommit(*result.committed))
+		if (result.slotAction && RunSlotAction(*result.slotAction))
 		{
 			if (const auto *button = a_event->AsButtonEvent(); button && button->IsDown())
 			{
@@ -212,7 +212,7 @@ namespace Orbit::Input
 				{
 					if (a_settings.toggleOrbitMenu)
 					{
-						a_result.committed = ReleaseLocked(a_settings);
+						a_result.slotAction = ReleaseLocked(a_settings);
 					}
 					pressBlocked = true;
 					a_result.block = true;
@@ -224,7 +224,7 @@ namespace Orbit::Input
 				const bool wasPressBlocked = std::exchange(pressBlocked, false);
 				if (_state.IsOpen() && !a_settings.toggleOrbitMenu)
 				{
-					a_result.committed = ReleaseLocked(a_settings);
+					a_result.slotAction = ReleaseLocked(a_settings);
 				}
 				a_result.block = wasPressBlocked;
 				return;
@@ -255,7 +255,7 @@ namespace Orbit::Input
 				a_result.block = true;
 				if (const auto slot = _state.Choose())
 				{
-					a_result.committed = Commit{*slot, hand, _assignMode};
+					a_result.slotAction = SlotAction{*slot, hand, _assignMode};
 				}
 				return;
 			}
@@ -276,7 +276,7 @@ namespace Orbit::Input
 		{
 			if (down && !_capture.active && keySlot)
 			{
-				a_result.committed = Commit{*keySlot, Hand::kDefault, true};
+				a_result.slotAction = SlotAction{*keySlot, Hand::kDefault, true};
 			}
 			return;
 		}
@@ -397,6 +397,7 @@ namespace Orbit::Input
 		std::scoped_lock lock{_lock};
 		return {.open = _state.IsOpen(),
 				.hoveredSlot = _state.HoveredSlot(),
+				.lastEquippedSlot = _lastEquippedPage == Items::Pages::Get().Current() ? _lastEquippedSlot : -1,
 				.openCount = _state.OpenCount(),
 				.closeCount = _closeCount,
 				.lastCloseChoseSlot = _lastCloseChoseSlot,
@@ -448,36 +449,39 @@ namespace Orbit::Input
 		_orbitMenuOpen = true;
 	}
 
-	std::optional<int> InputManager::CloseLocked(bool a_commit)
+	std::optional<int> InputManager::CloseLocked(bool a_chooseHovered)
 	{
 		if (!_state.IsOpen())
 		{
 			return std::nullopt;
 		}
 		_clicks = 0;
-		const auto slot = _state.Close(a_commit);
+		const auto slot = _state.Close(a_chooseHovered);
 		++_closeCount;
 		_lastCloseChoseSlot = slot.has_value();
 		_orbitMenuOpen = false;
 		return slot;
 	}
 
-	std::optional<InputManager::Commit> InputManager::ReleaseLocked(const Config::Settings &a_settings)
+	std::optional<InputManager::SlotAction> InputManager::ReleaseLocked(const Config::Settings &a_settings)
 	{
 		if (const auto slot = CloseLocked(!_assignMode && a_settings.releaseToEquip))
 		{
-			return Commit{*slot, Hand::kDefault, false};
+			return SlotAction{*slot, Hand::kDefault, false};
 		}
 		return std::nullopt;
 	}
 
-	bool InputManager::NotifyCommit(const Commit &a_commit) const
+	bool InputManager::RunSlotAction(const SlotAction &a_action)
 	{
-		if (a_commit.assign)
+		if (a_action.assign)
 		{
-			return Items::Assignment::AssignHighlighted(a_commit.slot);
+			return Items::Assignment::AssignHighlighted(a_action.slot);
 		}
-		Items::EquipController::Get().EquipSlot(a_commit.slot, a_commit.hand);
+		Items::EquipController::Get().EquipSlot(a_action.slot, a_action.hand);
+		std::scoped_lock lock{_lock};
+		_lastEquippedPage = Items::Pages::Get().Current();
+		_lastEquippedSlot = a_action.slot;
 		return true;
 	}
 }

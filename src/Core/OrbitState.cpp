@@ -82,13 +82,13 @@ namespace Orbit::Core
 		return _hovered;
 	}
 
-	std::optional<int> OrbitState::Close(bool a_commit)
+	std::optional<int> OrbitState::Close(bool a_chooseHovered)
 	{
 		if (!_open)
 		{
 			return std::nullopt;
 		}
-		const auto slot = a_commit && !_chosen ? Choose() : std::nullopt;
+		const auto slot = a_chooseHovered && !_chosen ? Choose() : std::nullopt;
 		_open = false;
 		_pointer = {};
 		return slot;

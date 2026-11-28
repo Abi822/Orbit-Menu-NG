@@ -160,6 +160,7 @@ namespace Orbit::Config::SettingsMenu
 
 			NewLine();
 			SeparatorText(Translation::Translate("Item Description"));
+			Check("Show Last Equipped Item##orbit", _settings.showLastEquippedItem);
 			Check("Show Item Description##orbit", _settings.showItemDescription);
 			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
 			Check("Show Item Description Background##orbit", _settings.showItemDescriptionBackground);
