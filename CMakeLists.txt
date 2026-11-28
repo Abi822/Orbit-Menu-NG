@@ -21,7 +21,7 @@ include(FetchContent)
 
 FetchContent_Declare(
 	commonlibsse
-	URL https://github.com/alandtse/CommonLibVR/archive/f49373ed922fde1dfbff0208f63a49bf8846c109.tar.gz
+	URL https://github.com/alandtse/CommonLibSSE-NG/archive/f49373ed922fde1dfbff0208f63a49bf8846c109.tar.gz
 	URL_HASH SHA256=d5f3068944afceae56c50ee0a08bf5b798cc0f13451af345046f342a660f5095
 	SYSTEM
 )
