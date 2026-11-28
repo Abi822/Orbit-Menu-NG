@@ -70,6 +70,8 @@ namespace Orbit::Config
 		std::int32_t handPosition{};
 		bool showSlotEmpty{};
 		bool showControlsHint{};
+		std::int32_t controlsHintX{};
+		std::int32_t controlsHintY{};
 		bool showItemDescription{};
 		bool showItemIconDescription{};
 		std::int32_t itemIconDescriptionSize{};
@@ -78,8 +80,10 @@ namespace Orbit::Config
 		std::int32_t itemIconDescriptionY{};
 		std::int32_t itemDescriptionTitleX{};
 		std::int32_t itemDescriptionTitleY{};
+		std::int32_t itemDescriptionTitleWidth{};
 		std::int32_t itemDescriptionTextX{};
 		std::int32_t itemDescriptionTextY{};
+		bool itemDescriptionTextFollowsTitle{};
 		std::int32_t itemDescriptionWidth{};
 		float itemDescriptionLineSpacing{};
 		bool showSlotGlow{};

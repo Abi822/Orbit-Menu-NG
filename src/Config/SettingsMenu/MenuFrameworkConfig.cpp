@@ -138,6 +138,9 @@ namespace Orbit::Config::SettingsMenu
 				   "0 to turn off animations.");
 			Check("Show Background##orbit", _settings.showBackground);
 			Check("Show the Controls Hint##orbit", _settings.showControlsHint);
+			Text("%s", Translation::Translate("Controls Hint Position"));
+			Number("X##orbit_controls_hint_x", _settings.controlsHintX, Settings::kMinPosition, Settings::kMaxPosition, 5);
+			Number("Y##orbit_controls_hint_y", _settings.controlsHintY, Settings::kMinPosition, Settings::kMaxPosition, 5);
 
 			SeparatorText(Translation::Translate("Slot"));
 			Check("Show Slot Key##orbit", _settings.showSlotKeys);
@@ -170,11 +173,13 @@ namespace Orbit::Config::SettingsMenu
 				Text("%s", Translation::Translate("Title"));
 				Number("X##orbit_title_x", _settings.itemDescriptionTitleX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_title_y", _settings.itemDescriptionTitleY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
+				Number("Width##orbit_title_width", _settings.itemDescriptionTitleWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
 				Text("%s", Translation::Translate("Description"));
 				Number("X##orbit_description_x", _settings.itemDescriptionTextX, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Y##orbit_description_y", _settings.itemDescriptionTextY, Settings::kMinItemDescriptionPosition, Settings::kMaxItemDescriptionPosition);
 				Number("Width##orbit_description_width", _settings.itemDescriptionWidth, Settings::kMinItemDescriptionWidth, Settings::kMaxItemDescriptionWidth, 2);
 				Slider("Line Spacing##orbit_description_line_spacing", _settings.itemDescriptionLineSpacing, Settings::kMinItemDescriptionLineSpacing, Settings::kMaxItemDescriptionLineSpacing, "%.2f");
+				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title wraps to a second line, the description moves down with it so they don't overlap.");
 			}
 
 			SeparatorText(Translation::Translate("Pointer"));

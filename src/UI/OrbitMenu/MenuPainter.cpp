@@ -100,13 +100,13 @@ namespace Orbit::UI::OrbitMenu
 			}
 		}
 		DrawIcons();
-		DrawDescription();
 		for (int slot = 0; slot < Core::kSlotCount; ++slot)
 		{
 			DrawSlotLabels(slot);
-		}
+		} 
 		DrawBadges();
 		DrawHands();
+		DrawDescription();
 		const int controlsHintVertex = _drawList.VtxBuffer.Size;
 		DrawControlsHint();
 		DrawPageIndicator();
@@ -539,8 +539,8 @@ namespace Orbit::UI::OrbitMenu
 		const float size = TextPx(settings.controlsHintTextSize);
 		const auto &pageLine = _scene.content.PageLine();
 		const float pageLineGap = pageLine.text.empty() ? 0.0f : size * kControlsHintLineSpacing;
-		const float below = _layout.center.y + _layout.ringRadius + _layout.slotRadius + Px(16.0f) + 3.0f * TextPx(settings.slotNameTextSize) * MenuContent::kTitleLineSpacing;
-		ImVec2 at{_layout.center.x, std::min(below, _display.y - size * 1.6f - pageLineGap)};
+		ImVec2 at = _layout.center + ImVec2{Px(static_cast<float>(settings.controlsHintX)), Px(static_cast<float>(settings.controlsHintY))};
+		at.y = std::min(at.y, _display.y - size * 1.6f - pageLineGap);
 		Text(size, at, _colors.controlsHint, _scene.content.ControlsHint());
 		if (pageLineGap > 0.0f)
 		{

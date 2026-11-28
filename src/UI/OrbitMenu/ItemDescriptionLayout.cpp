@@ -363,7 +363,7 @@ namespace Orbit::UI::OrbitMenu
 		};
 	}
 
-	ItemDescriptionLayout ItemDescriptionLayout::Compute(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_titleSize, float a_textSize, float a_iconSize, float a_itemDescriptionBackgroundRadius)
+	ItemDescriptionLayout ItemDescriptionLayout::ComputeDynamicDescription(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, float a_titleSize, float a_textSize, float a_iconSize, float a_itemDescriptionBackgroundRadius)
 	{
 		ItemDescriptionLayout layout;
 		layout.iconTop = -a_iconSize * 0.5f;
@@ -432,7 +432,7 @@ namespace Orbit::UI::OrbitMenu
 		return layout;
 	}
 
-	ItemDescriptionLayout ItemDescriptionLayout::ComputeStatic(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, const Config::Settings &a_settings)
+	ItemDescriptionLayout ItemDescriptionLayout::ComputeStaticDescription(const Graphics::TextMeasure &a_text, const Core::ItemDescription &a_description, const Config::Settings &a_settings)
 	{
 		ItemDescriptionLayout layout;
 		if (a_description.name.empty())
@@ -440,11 +440,15 @@ namespace Orbit::UI::OrbitMenu
 			return layout;
 		}
 
+		const float titleSize = static_cast<float>(a_settings.itemDescriptionTitleTextSize);
+		const float titleTop = static_cast<float>(a_settings.itemDescriptionTitleY);
 		const float textSize = static_cast<float>(a_settings.itemDescriptionTextSize);
 		const float header = textSize / kTextSize;
-		const Placer placer{a_text, 0.0f, static_cast<float>(a_settings.itemDescriptionWidth)};
-		Block title = placer.PlaceTitle(a_description.name, static_cast<float>(a_settings.itemDescriptionTitleTextSize), static_cast<float>(a_settings.itemDescriptionTitleY));
-		Block text = placer.PlaceText(a_description, header, textSize, a_settings.itemDescriptionLineSpacing, static_cast<float>(a_settings.itemDescriptionTextY));
+		const Placer titlePlacer{a_text, 0.0f, static_cast<float>(a_settings.itemDescriptionTitleWidth)};
+		const Placer textPlacer{a_text, 0.0f, static_cast<float>(a_settings.itemDescriptionWidth)};
+		Block title = titlePlacer.PlaceTitle(a_description.name, titleSize, titleTop);
+		const float extraTitleHeight = a_settings.itemDescriptionTextFollowsTitle ? title.y - titleTop - titleSize : 0.0f;
+		Block text = textPlacer.PlaceText(a_description, header, textSize, a_settings.itemDescriptionLineSpacing, static_cast<float>(a_settings.itemDescriptionTextY) + extraTitleHeight);
 
 		for (auto &piece : title.pieces)
 		{

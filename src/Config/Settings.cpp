@@ -104,6 +104,8 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iHandPosition", a_settings.handPosition);
 			a_visit(kDisplay, "bShowSlotEmpty", a_settings.showSlotEmpty);
 			a_visit(kDisplay, "bShowControlsHint", a_settings.showControlsHint);
+			a_visit(kDisplay, "iControlsHintX", a_settings.controlsHintX);
+			a_visit(kDisplay, "iControlsHintY", a_settings.controlsHintY);
 			a_visit(kDisplay, "bShowItemDescription", a_settings.showItemDescription);
 			a_visit(kDisplay, "bShowItemIconDescription", a_settings.showItemIconDescription);
 			a_visit(kDisplay, "iItemIconDescriptionSize", a_settings.itemIconDescriptionSize);
@@ -112,8 +114,10 @@ namespace Orbit::Config
 			a_visit(kDisplay, "iItemIconDescriptionY", a_settings.itemIconDescriptionY);
 			a_visit(kDisplay, "iItemDescriptionTitleX", a_settings.itemDescriptionTitleX);
 			a_visit(kDisplay, "iItemDescriptionTitleY", a_settings.itemDescriptionTitleY);
+			a_visit(kDisplay, "iItemDescriptionTitleWidth", a_settings.itemDescriptionTitleWidth);
 			a_visit(kDisplay, "iItemDescriptionTextX", a_settings.itemDescriptionTextX);
 			a_visit(kDisplay, "iItemDescriptionTextY", a_settings.itemDescriptionTextY);
+			a_visit(kDisplay, "bItemDescriptionTextFollowsTitle", a_settings.itemDescriptionTextFollowsTitle);
 			a_visit(kDisplay, "iItemDescriptionWidth", a_settings.itemDescriptionWidth);
 			a_visit(kDisplay, "fItemDescriptionLineSpacing", a_settings.itemDescriptionLineSpacing);
 			a_visit(kDisplay, "bShowSlotGlow", a_settings.showSlotGlow);
@@ -336,6 +340,8 @@ namespace Orbit::Config
 		orbitMenuScale = std::clamp(orbitMenuScale, kMinOrbitMenuScale, kMaxOrbitMenuScale);
 		positionX = std::clamp(positionX, kMinPosition, kMaxPosition);
 		positionY = std::clamp(positionY, kMinPosition, kMaxPosition);
+		controlsHintX = std::clamp(controlsHintX, kMinPosition, kMaxPosition);
+		controlsHintY = std::clamp(controlsHintY, kMinPosition, kMaxPosition);
 		curve = std::clamp(curve, kMinCurve, kMaxCurve);
 		slotNameTextSize = std::clamp(slotNameTextSize, kMinTextSize, kMaxTextSize);
 		slotEmptyTextSize = std::clamp(slotEmptyTextSize, kMinTextSize, kMaxTextSize);
@@ -355,6 +361,7 @@ namespace Orbit::Config
 		{
 			*position = std::clamp(*position, kMinItemDescriptionPosition, kMaxItemDescriptionPosition);
 		}
+		itemDescriptionTitleWidth = std::clamp(itemDescriptionTitleWidth, kMinItemDescriptionWidth, kMaxItemDescriptionWidth);
 		itemDescriptionWidth = std::clamp(itemDescriptionWidth, kMinItemDescriptionWidth, kMaxItemDescriptionWidth);
 		itemDescriptionLineSpacing = std::clamp(itemDescriptionLineSpacing, kMinItemDescriptionLineSpacing, kMaxItemDescriptionLineSpacing);
 		pointerSize = std::clamp(pointerSize, kMinPointerSize, kMaxPointerSize);
@@ -402,6 +409,8 @@ namespace Orbit::Config
 		handPosition = a_from.handPosition;
 		showSlotEmpty = a_from.showSlotEmpty;
 		showControlsHint = a_from.showControlsHint;
+		controlsHintX = a_from.controlsHintX;
+		controlsHintY = a_from.controlsHintY;
 		showItemDescription = a_from.showItemDescription;
 		showItemIconDescription = a_from.showItemIconDescription;
 		itemIconDescriptionSize = a_from.itemIconDescriptionSize;
@@ -410,8 +419,10 @@ namespace Orbit::Config
 		itemIconDescriptionY = a_from.itemIconDescriptionY;
 		itemDescriptionTitleX = a_from.itemDescriptionTitleX;
 		itemDescriptionTitleY = a_from.itemDescriptionTitleY;
+		itemDescriptionTitleWidth = a_from.itemDescriptionTitleWidth;
 		itemDescriptionTextX = a_from.itemDescriptionTextX;
 		itemDescriptionTextY = a_from.itemDescriptionTextY;
+		itemDescriptionTextFollowsTitle = a_from.itemDescriptionTextFollowsTitle;
 		itemDescriptionWidth = a_from.itemDescriptionWidth;
 		itemDescriptionLineSpacing = a_from.itemDescriptionLineSpacing;
 		showSlotGlow = a_from.showSlotGlow;

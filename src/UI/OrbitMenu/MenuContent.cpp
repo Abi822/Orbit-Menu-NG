@@ -137,14 +137,14 @@ namespace Orbit::UI::OrbitMenu
 			}
 			else if (a_settings.staticItemDescription)
 			{
-				_descriptions[i] = ItemDescriptionLayout::ComputeStatic(a_text, view.description, a_settings);
+				_descriptions[i] = ItemDescriptionLayout::ComputeStaticDescription(a_text, view.description, a_settings);
 			}
 			else
 			{
-				_descriptions[i] = ItemDescriptionLayout::Compute(a_text, view.description, static_cast<float>(a_settings.itemDescriptionTitleTextSize),
-																  static_cast<float>(a_settings.itemDescriptionTextSize),
-																  a_settings.showItemIconDescription && !icons[i].Empty() ? static_cast<float>(a_settings.itemIconDescriptionSize) : 0.0f,
-																  static_cast<float>(a_settings.itemDescriptionBackgroundSize) * 0.5f);
+				_descriptions[i] = ItemDescriptionLayout::ComputeDynamicDescription(a_text, view.description, static_cast<float>(a_settings.itemDescriptionTitleTextSize),
+																					static_cast<float>(a_settings.itemDescriptionTextSize),
+																					a_settings.showItemIconDescription && !icons[i].Empty() ? static_cast<float>(a_settings.itemIconDescriptionSize) : 0.0f,
+																					static_cast<float>(a_settings.itemDescriptionBackgroundSize) * 0.5f);
 			}
 		}
 		if (icons != _icons)
