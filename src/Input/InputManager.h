@@ -18,7 +18,6 @@ namespace Orbit::Input
 	{
 		bool open = false;
 		int hoveredSlot = -1;
-		int lastEquippedSlot = -1;
 		std::uint32_t openCount = 0;
 		std::uint32_t closeCount = 0;
 		bool lastCloseChoseSlot = false;
@@ -83,7 +82,7 @@ namespace Orbit::Input
 		void OpenLocked(bool a_gamepad, bool a_assign);
 		std::optional<int> CloseLocked(bool a_chooseHovered);
 		std::optional<SlotAction> ReleaseLocked(const Config::Settings &a_settings);
-		bool RunSlotAction(const SlotAction &a_action);
+		bool RunSlotAction(const SlotAction &a_action) const;
 		mutable std::mutex _lock;
 		Config::Settings _settings;
 		std::optional<std::uint32_t> _settingsVersion;
@@ -97,8 +96,6 @@ namespace Orbit::Input
 		std::optional<CapturedPress> _capturedPress;
 		std::uint32_t _closeCount = 0;
 		bool _lastCloseChoseSlot = false;
-		int _lastEquippedPage = -1;
-		int _lastEquippedSlot = -1;
 		bool _openedWithGamepad = false;
 		bool _activationHeld = false;
 		std::atomic<bool> _orbitMenuOpen{false};

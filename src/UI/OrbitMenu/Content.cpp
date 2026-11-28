@@ -67,6 +67,10 @@ namespace Orbit::UI::OrbitMenu
 			_skinGeneration = a_skin.Generation();
 			LayoutSlots(text, a_settings, a_skin);
 		}
+		if (viewsChanged)
+		{
+			_lastEquippedSlot = Items::EquipController::Get().LastEquippedSlot();
+		}
 		if (settingsChanged || modeChanged || fontChanged)
 		{
 			_gamepad = a_input.gamepad;

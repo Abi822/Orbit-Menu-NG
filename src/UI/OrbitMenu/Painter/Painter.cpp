@@ -26,7 +26,7 @@ namespace Orbit::UI::OrbitMenu
 																									   _descriptionSlot(_strongestSlot),
 																									   _descriptionStrength(_strength)
 	{
-		const int last = a_scene.input.lastEquippedSlot;
+		const int last = a_scene.content.LastEquippedSlot();
 		const bool closingAfterHighlight = !a_scene.input.open && a_scene.motion.pointerValid;
 		if (a_scene.settings.showLastEquippedItem && last >= 0 && !closingAfterHighlight && 1.0f - _strength > _strength &&
 			a_scene.content.View(last).state == Core::SlotState::kEquipped)

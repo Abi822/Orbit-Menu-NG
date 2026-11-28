@@ -13,7 +13,6 @@ namespace Orbit::UI::OrbitMenu
 		bool gamepad = false;
 		bool assign = false;
 		int hoveredSlot = -1;
-		int lastEquippedSlot = -1;
 	};
 
 	struct Motion

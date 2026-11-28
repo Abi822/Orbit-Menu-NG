@@ -1,6 +1,7 @@
 #include "Items/EquipController.h"
 #include "Items/Inventory.h"
 #include "Items/ItemKind.h"
+#include "Items/Pages.h"
 #include "Items/SlotStore.h"
 
 #undef GetObject
@@ -455,7 +456,18 @@ namespace Orbit::Items
 		}
 		logger::info("Equip Controller: Slot {}: {}", a_slot + 1, slot.name);
 		equipper->Use(*form, slot, a_hand);
+		{
+			std::scoped_lock lock{_lock};
+			_lastEquippedPage = Pages::Get().Current();
+			_lastEquippedSlot = a_slot;
+		}
 		++_changes;
+	}
+
+	int EquipController::LastEquippedSlot() const
+	{
+		std::scoped_lock lock{_lock};
+		return _lastEquippedPage == Pages::Get().Current() ? _lastEquippedSlot : -1;
 	}
 
 	void EquipController::SwapHands()

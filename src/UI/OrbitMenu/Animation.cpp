@@ -67,8 +67,7 @@ namespace Orbit::UI::OrbitMenu
 				.previewing = previewing,
 				.gamepad = a_snapshot.gamepad,
 				.assign = a_snapshot.assign,
-				.hoveredSlot = a_snapshot.hoveredSlot,
-				.lastEquippedSlot = a_snapshot.lastEquippedSlot};
+				.hoveredSlot = a_snapshot.hoveredSlot};
 	}
 
 	bool Animation::Animate(int a_hoveredSlot, float a_speed)

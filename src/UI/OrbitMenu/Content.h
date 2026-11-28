@@ -44,6 +44,7 @@ namespace Orbit::UI::OrbitMenu
 		const TextLine &ControlsHint() const { return _controlsHint; }
 		const TextLine &PageLine() const { return _pageLine; }
 		int Page() const { return _page; }
+		int LastEquippedSlot() const { return _lastEquippedSlot; }
 		const TextLine &EmptyLabel() const { return _empty; }
 		int FirstFilledSlot() const;
 
@@ -70,6 +71,7 @@ namespace Orbit::UI::OrbitMenu
 		bool _gamepad = false;
 		bool _assign = false;
 		int _page = 0;
+		int _lastEquippedSlot = -1;
 		std::uint32_t _seenSlotChanges = 0;
 		std::uint32_t _seenEquipChanges = 0;
 		std::uint32_t _skinGeneration = 0;

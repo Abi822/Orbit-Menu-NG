@@ -397,7 +397,6 @@ namespace Orbit::Input
 		std::scoped_lock lock{_lock};
 		return {.open = _state.IsOpen(),
 				.hoveredSlot = _state.HoveredSlot(),
-				.lastEquippedSlot = _lastEquippedPage == Items::Pages::Get().Current() ? _lastEquippedSlot : -1,
 				.openCount = _state.OpenCount(),
 				.closeCount = _closeCount,
 				.lastCloseChoseSlot = _lastCloseChoseSlot,
@@ -472,16 +471,13 @@ namespace Orbit::Input
 		return std::nullopt;
 	}
 
-	bool InputManager::RunSlotAction(const SlotAction &a_action)
+	bool InputManager::RunSlotAction(const SlotAction &a_action) const
 	{
 		if (a_action.assign)
 		{
 			return Items::Assignment::AssignHighlighted(a_action.slot);
 		}
 		Items::EquipController::Get().EquipSlot(a_action.slot, a_action.hand);
-		std::scoped_lock lock{_lock};
-		_lastEquippedPage = Items::Pages::Get().Current();
-		_lastEquippedSlot = a_action.slot;
 		return true;
 	}
 }
