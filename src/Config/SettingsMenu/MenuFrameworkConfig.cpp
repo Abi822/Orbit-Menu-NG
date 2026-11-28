@@ -45,6 +45,7 @@ namespace Orbit::Config::SettingsMenu
 				   "It protects a small bump when you press the key doesn't highlight anything.\n"
 				   "Works like mouse DPI - the lower it is, the more you have to move the mouse, so slots are less likely to be highlighted by accident.");
 
+			NewLine();
 			SeparatorText(Translation::Translate("Slots"));
 			TextDisabled("%s", Translation::Translate("Hover over an item in the Inventory menu or a spell in the Magic menu, then press a slot key to assign it."));
 			const float em = GetFontSize();
@@ -74,6 +75,7 @@ namespace Orbit::Config::SettingsMenu
 				}
 			}
 
+			NewLine();
 			SeparatorText(Translation::Translate("Slot Controls"));
 			Check("Release to equip##orbit", _settings.releaseToEquip, "Letting go of the Orbit Menu key will equip last highlighted slot.\n"
 																	   "It's off by default because just by opening the menu to look could accidentally equip or use something.");
@@ -81,6 +83,7 @@ namespace Orbit::Config::SettingsMenu
 			KeyRow("Equip in right hand:", Input::kBindingRightHand);
 			KeyRow("Swap hands:", Input::kBindingSwapHands);
 
+			NewLine();
 			SeparatorText("I4 (Inventory Interface Information Injector)");
 			if (Integration::I4Icons::IsInstalled())
 			{
@@ -101,9 +104,9 @@ namespace Orbit::Config::SettingsMenu
 			SeparatorText(Translation::Translate("Messages"));
 			Check("Show HUD messages##orbit", _settings.showHudMessages);
 
-			SeparatorText(Translation::Translate("Settings"));
+			SeparatorText("");
 			Spacing();
-			if (Button(Label("Reset settings to defaults##orbit")))
+			if (Button(Label("Reset Settings To Defaults##orbit")))
 			{
 				_input.CancelKeyCapture();
 				Settings defaults = SettingsStore::Get().Defaults();
@@ -139,7 +142,7 @@ namespace Orbit::Config::SettingsMenu
 			Check("Show Background##orbit", _settings.showBackground);
 			Check("Show the Controls Hint##orbit", _settings.showControlsHint);
 
-			Spacing();
+			NewLine();
 			SeparatorText(Translation::Translate("Slot"));
 			Check("Show Slot Key##orbit", _settings.showSlotKeys);
 			Check("Show Slot Key if controller detected##orbit", _settings.showSlotKeysOnController);
@@ -155,7 +158,7 @@ namespace Orbit::Config::SettingsMenu
 			Choice("Slot Key Position##orbit", _settings.slotKeyPosition, Settings::kLastSlotKeyPosition);
 			Choice("Hand Position##orbit", _settings.handPosition, Settings::kLastHandPosition);
 
-			Spacing();
+			NewLine();
 			SeparatorText(Translation::Translate("Item Description"));
 			Check("Show Item Description##orbit", _settings.showItemDescription);
 			Check("Show Item Icon Description##orbit", _settings.showItemIconDescription);
@@ -181,7 +184,7 @@ namespace Orbit::Config::SettingsMenu
 				Check("Follow Title##orbit_description_follow_title", _settings.itemDescriptionTextFollowsTitle, "When the title is too big to fit in a single line when width is exceeded, the description moves down so they don't overlap.");
 			}
 
-			Spacing();
+			NewLine();
 			SeparatorText(Translation::Translate("Pointer"));
 			Check("Show Pointer##orbit", _settings.showPointer);
 			Color("Pointer Colour##orbit", _settings.pointerColor);
@@ -189,13 +192,13 @@ namespace Orbit::Config::SettingsMenu
 			Number("Pointer Distance##orbit", _settings.pointerDistance, Settings::kMinPointerDistance, Settings::kMaxPointerDistance);
 			Slider("Pointer Rotation##orbit", _settings.pointerRotation, 0, Settings::kMaxPointerRotation);
 
-			Spacing();
+			NewLine();
 			SeparatorText(Translation::Translate("Controls Hint"));
 			Text("%s", Translation::Translate("Controls Hint Position"));
 			Number("X##orbit_controls_hint_x", _settings.controlsHintX, Settings::kMinPosition, Settings::kMaxPosition, 5);
 			Number("Y##orbit_controls_hint_y", _settings.controlsHintY, Settings::kMinPosition, Settings::kMaxPosition, 5);
 
-			Spacing();
+			NewLine();
 			SeparatorText(Translation::Translate("Text"));
 			Text("%s", Translation::Translate("Slot Name"));
 			Number("##orbit_slot_name_size", _settings.slotNameTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
@@ -222,9 +225,9 @@ namespace Orbit::Config::SettingsMenu
 			Number("##orbit_controls_hint_size", _settings.controlsHintTextSize, Settings::kMinTextSize, Settings::kMaxTextSize);
 			Color("##orbit_controls_hint_colour", _settings.controlsHintColor);
 
-			Separator();
 			Spacing();
-			if (Button(Label("Reset display to defaults##orbit")))
+			SeparatorText("");
+			if (Button(Label("Reset Display To Defaults##orbit")))
 			{
 				_settings.CopyDisplay(SettingsStore::Get().Defaults());
 				RequestSave();
@@ -243,6 +246,7 @@ namespace Orbit::Config::SettingsMenu
 			KeyRow("Next Page:", Input::kBindingNextPage);
 			KeyRow("Previous Page:", Input::kBindingPreviousPage);
 
+			NewLine();
 			SeparatorText(Translation::Translate("Page Indicator"));
 			Check("Show Page Indicator##orbit", _settings.showPageIndicator);
 			Text("%s", Translation::Translate("Position"));
@@ -252,16 +256,18 @@ namespace Orbit::Config::SettingsMenu
 			Number("Columns##orbit_page_indicator_columns", _settings.pageIndicatorColumns, 1, Settings::kMaxNumberOfPages);
 			Number("Spacing##orbit_page_indicator_spacing", _settings.pageIndicatorSpacing, 0, Settings::kMaxPageIndicatorSpacing);
 			Number("Size##orbit_page_indicator_size", _settings.pageIndicatorSize, Settings::kMinPageIndicatorSize, Settings::kMaxPageIndicatorSize);
+			Color("Active Colour##orbit_page_indicator_active_colour", _settings.pageIndicatorActiveColor);
+			Color("Inactive Colour##orbit_page_indicator_inactive_colour", _settings.pageIndicatorInactiveColor);
 
-			Separator();
 			Spacing();
+			SeparatorText("");
 			if (Button(Label("Clear All Pages##orbit")))
 			{
 				Items::Pages::Get().ClearExtraPages();
 			}
-			Tooltip("Clears pages 2 and up. Page 1 is kept.");
+			Tooltip("Only clears from page 2 and beyond. Page 1 is kept.");
 			Spacing();
-			if (Button(Label("Reset pages to defaults##orbit")))
+			if (Button(Label("Reset Pages To Defaults##orbit")))
 			{
 				_input.CancelKeyCapture();
 				_settings.CopyPages(SettingsStore::Get().Defaults());
@@ -284,9 +290,9 @@ namespace Orbit::Config::SettingsMenu
 			Slider("Fade In##orbit", _settings.slowMotionFadeIn, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
 			Slider("Fade Out##orbit", _settings.slowMotionFadeOut, 0.0f, Settings::kMaxSlowMotionFade, "%.2f s", "0 is off");
 
-			Separator();
 			Spacing();
-			if (Button(Label("Reset slow motion to defaults##orbit")))
+			SeparatorText("");
+			if (Button(Label("Reset Slow Motion To Defaults##orbit")))
 			{
 				_settings.CopySlowMotion(SettingsStore::Get().Defaults());
 				RequestSave();

@@ -234,51 +234,46 @@ namespace Orbit::UI::OrbitMenu
 
 	void MenuPainter::DrawCentre() const
 	{
-		const auto skin = _scene.skin.Find(Skins::Part::kCentre);
+		if (const auto skin = _scene.skin.Find(Skins::Part::kCentre))
+		{
+			Graphics::PremultipliedDraw premultiplied{_drawList};
+			Image(*skin, _layout.center, _layout.itemDescriptionBackgroundRadius * 2.0f, Graphics::PremultipliedColor(_alpha));
+			return;
+		}
+
 		Core::PerSlot<ImVec2> outer{};
+		Core::PerSlot<ImVec2> inner{};
 		for (std::size_t i = 0; i < kSlots; ++i)
 		{
 			outer[i] = _layout.ItemDescriptionBackgroundVertex(static_cast<int>(i), _layout.itemDescriptionBackgroundRadius);
+			inner[i] = _layout.ItemDescriptionBackgroundVertex(static_cast<int>(i), _layout.itemDescriptionBackgroundRadius - Px(9.0f));
 		}
 		const auto next = [](std::size_t a_index)
 		{ return (a_index + 1) % kSlots; };
 
-		if (skin)
+		if (_curve.Active())
 		{
-			Graphics::PremultipliedDraw premultiplied{_drawList};
-			Image(*skin, _layout.center, _layout.itemDescriptionBackgroundRadius * 2.0f, Graphics::PremultipliedColor(_alpha));
+			std::array<ImVec2, kSlots * kEdgeSegments> fill{};
+			for (std::size_t i = 0; i < fill.size(); ++i)
+			{
+				const std::size_t edge = i / kEdgeSegments;
+				const float t = static_cast<float>(i % kEdgeSegments) / static_cast<float>(kEdgeSegments);
+				fill[i] = outer[edge] + (outer[next(edge)] - outer[edge]) * t;
+			}
+			_drawList.AddConvexPolyFilled(fill.data(), static_cast<int>(fill.size()), Color(_colors.centreFill, _alpha));
 		}
 		else
 		{
-			Core::PerSlot<ImVec2> inner{};
-			for (std::size_t i = 0; i < kSlots; ++i)
-			{
-				inner[i] = _layout.ItemDescriptionBackgroundVertex(static_cast<int>(i), _layout.itemDescriptionBackgroundRadius - Px(9.0f));
-			}
-			if (_curve.Active())
-			{
-				std::array<ImVec2, kSlots * kEdgeSegments> fill{};
-				for (std::size_t i = 0; i < fill.size(); ++i)
-				{
-					const std::size_t edge = i / kEdgeSegments;
-					const float t = static_cast<float>(i % kEdgeSegments) / static_cast<float>(kEdgeSegments);
-					fill[i] = outer[edge] + (outer[next(edge)] - outer[edge]) * t;
-				}
-				_drawList.AddConvexPolyFilled(fill.data(), static_cast<int>(fill.size()), Color(_colors.centreFill, _alpha));
-			}
-			else
-			{
-				_drawList.AddConvexPolyFilled(outer.data(), static_cast<int>(outer.size()), Color(_colors.centreFill, _alpha));
-			}
-			for (std::size_t i = 0; i < kSlots; ++i)
-			{
-				Line(outer[i], outer[next(i)], Color(_colors.centreBorder, _alpha), std::max(1.0f, Px(1.5f)));
-				Line(inner[i], inner[next(i)], Color(_colors.centreInnerBorder, _alpha), std::max(1.0f, Px(1.0f)));
-			}
+			_drawList.AddConvexPolyFilled(outer.data(), static_cast<int>(outer.size()), Color(_colors.centreFill, _alpha));
+		}
+		for (std::size_t i = 0; i < kSlots; ++i)
+		{
+			Line(outer[i], outer[next(i)], Color(_colors.centreBorder, _alpha), std::max(1.0f, Px(1.5f)));
+			Line(inner[i], inner[next(i)], Color(_colors.centreInnerBorder, _alpha), std::max(1.0f, Px(1.0f)));
 		}
 
 		const auto &motion = _scene.motion;
-		if (skin || _strength <= kHidden || !motion.pointerValid)
+		if (_strength <= kHidden || !motion.pointerValid)
 		{
 			return;
 		}
@@ -381,9 +376,10 @@ namespace Orbit::UI::OrbitMenu
 		const ImVec2 center = _layout.SlotCenter(a_slot);
 		const float size = SlotRadius(a_slot) * 2.0f;
 
-		if (base)
+		const float baseAlpha = hovered ? 1.0f - hover : 1.0f;
+		if (base && baseAlpha > kHidden)
 		{
-			Image(*base, center, size, Graphics::PremultipliedColor(_alpha * (hovered ? 1.0f - hover : 1.0f)));
+			Image(*base, center, size, Graphics::PremultipliedColor(_alpha * baseAlpha));
 		}
 		if (hovered && hover > kHidden)
 		{
@@ -604,11 +600,11 @@ namespace Orbit::UI::OrbitMenu
 			const ImVec2 at = spots[static_cast<std::size_t>(page)];
 			if (isCurrent)
 			{
-				_drawList.AddCircleFilled(at, size * 0.5f, Color(_colors.highlight, _alpha), kPageIndicatorSegments);
+				_drawList.AddCircleFilled(at, size * 0.5f, Color(_colors.pageIndicatorActive, _alpha), kPageIndicatorSegments);
 			}
 			else
 			{
-				_drawList.AddCircle(at, size * 0.5f - Px(1.0f), Color(_colors.highlight, 0.6f * _alpha), kPageIndicatorSegments, std::max(1.0f, Px(1.5f)));
+				_drawList.AddCircle(at, size * 0.5f - Px(1.0f), Color(_colors.pageIndicatorInactive, _alpha), kPageIndicatorSegments, std::max(1.0f, Px(1.5f)));
 			}
 		}
 	}

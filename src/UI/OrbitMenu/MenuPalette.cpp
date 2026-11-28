@@ -49,6 +49,8 @@ namespace Orbit::UI::OrbitMenu
 		colors.descriptionBright = Shade(colors.description, kBrighter, 1.0f);
 		colors.descriptionDim = Shade(colors.description, kDimmer, 1.0f);
 		colors.controlsHint = FromArgb(a_settings.controlsHintColor, 1.0f);
+		colors.pageIndicatorActive = FromArgb(a_settings.pageIndicatorActiveColor, 1.0f);
+		colors.pageIndicatorInactive = FromArgb(a_settings.pageIndicatorInactiveColor, 1.0f);
 		return colors;
 	}
 

@@ -26,6 +26,8 @@ namespace Orbit::UI::OrbitMenu
 		ImVec4 descriptionBright;
 		ImVec4 descriptionDim;
 		ImVec4 controlsHint;
+		ImVec4 pageIndicatorActive;
+		ImVec4 pageIndicatorInactive;
 		ImVec4 centreFill;
 		ImVec4 textShadow{0.0f, 0.0f, 0.0f, 0.75f};
 		static MenuPalette Make(const Config::Settings &a_settings);

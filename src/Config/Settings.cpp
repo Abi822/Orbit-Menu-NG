@@ -63,6 +63,8 @@ namespace Orbit::Config
 			a_visit(kPages, "iPageIndicatorColumns", a_settings.pageIndicatorColumns);
 			a_visit(kPages, "iPageIndicatorSpacing", a_settings.pageIndicatorSpacing);
 			a_visit(kPages, "iPageIndicatorSize", a_settings.pageIndicatorSize);
+			a_visit(kPages, "sPageIndicatorActiveColor", Color{a_settings.pageIndicatorActiveColor});
+			a_visit(kPages, "sPageIndicatorInactiveColor", Color{a_settings.pageIndicatorInactiveColor});
 			a_visit(kSlowMotion, "bEnableSlowMotion", a_settings.enableSlowMotion);
 			a_visit(kSlowMotion, "fSlowMotionTimeSpeed", a_settings.slowMotionTimeSpeed);
 			a_visit(kSlowMotion, "fSlowMotionFadeIn", a_settings.slowMotionFadeIn);
@@ -449,6 +451,8 @@ namespace Orbit::Config
 		pageIndicatorColumns = a_from.pageIndicatorColumns;
 		pageIndicatorSpacing = a_from.pageIndicatorSpacing;
 		pageIndicatorSize = a_from.pageIndicatorSize;
+		pageIndicatorActiveColor = a_from.pageIndicatorActiveColor;
+		pageIndicatorInactiveColor = a_from.pageIndicatorInactiveColor;
 	}
 
 	void Settings::CopySlowMotion(const Settings &a_from)

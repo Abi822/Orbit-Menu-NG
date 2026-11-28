@@ -110,6 +110,8 @@ namespace Orbit::Config
 		std::int32_t pageIndicatorColumns{};
 		std::int32_t pageIndicatorSpacing{};
 		std::int32_t pageIndicatorSize{};
+		std::uint32_t pageIndicatorActiveColor{};
+		std::uint32_t pageIndicatorInactiveColor{};
 		bool enableSlowMotion{};
 		float slowMotionTimeSpeed{};
 		float slowMotionFadeIn{};
