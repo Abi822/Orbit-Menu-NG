@@ -144,7 +144,7 @@ namespace Orbit::Config
 		static constexpr float kMinSlowMotionTimeSpeed = 0.1f;
 		static constexpr float kMaxSlowMotionTimeSpeed = 1.0f;
 		static constexpr float kMaxSlowMotionFade = 1.0f;
-		static constexpr std::int32_t kMinSlotDistance = 200;
+		static constexpr std::int32_t kMinSlotDistance = 100;
 		static constexpr std::int32_t kMaxSlotDistance = 800;
 		static constexpr std::int32_t kMinSlotSize = 50;
 		static constexpr std::int32_t kMaxSlotSize = 200;
