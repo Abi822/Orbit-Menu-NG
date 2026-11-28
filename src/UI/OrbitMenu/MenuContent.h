@@ -43,6 +43,7 @@ namespace Orbit::UI::OrbitMenu
 		const MenuPalette &Colors() const { return _colors; }
 		const TextLine &ControlsHint() const { return _controlsHint; }
 		const TextLine &PageLine() const { return _pageLine; }
+		int Page() const { return _page; }
 		const TextLine &EmptyLabel() const { return _empty; }
 		int FirstFilledSlot() const;
 

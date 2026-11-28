@@ -13,10 +13,12 @@ namespace Orbit::UI::Skins
 		kSlotEquipped,
 		kSlotGlow,
 		kPointer,
-		kSlotKeyBadge
+		kSlotKeyBadge,
+		kPageIndicatorActive,
+		kPageIndicatorInactive
 	};
 
-	inline constexpr std::size_t kPartCount = 7;
+	inline constexpr std::size_t kPartCount = 9;
 
 	class Skin
 	{

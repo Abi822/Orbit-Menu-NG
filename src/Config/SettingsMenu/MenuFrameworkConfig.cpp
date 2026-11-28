@@ -231,6 +231,16 @@ namespace Orbit::Config::SettingsMenu
 			KeyRow("Next Page:", Input::kBindingNextPage);
 			KeyRow("Previous Page:", Input::kBindingPreviousPage);
 
+			SeparatorText(Translation::Translate("Page Indicator"));
+			Check("Show Page Indicator##orbit", _settings.showPageIndicator);
+			Text("%s", Translation::Translate("Position"));
+			Number("X##orbit_page_indicator_x", _settings.pageIndicatorX, Settings::kMinPosition, Settings::kMaxPosition, 5);
+			Number("Y##orbit_page_indicator_y", _settings.pageIndicatorY, Settings::kMinPosition, Settings::kMaxPosition, 5);
+			Slider("Rotation##orbit_page_indicator_rotation", _settings.pageIndicatorRotation, 0, Settings::kMaxPageIndicatorRotation);
+			Number("Columns##orbit_page_indicator_columns", _settings.pageIndicatorColumns, 1, Settings::kMaxNumberOfPages);
+			Number("Spacing##orbit_page_indicator_spacing", _settings.pageIndicatorSpacing, 0, Settings::kMaxPageIndicatorSpacing);
+			Number("Size##orbit_page_indicator_size", _settings.pageIndicatorSize, Settings::kMinPageIndicatorSize, Settings::kMaxPageIndicatorSize);
+
 			Separator();
 			Spacing();
 			if (Button(Label("Clear All Pages##orbit")))

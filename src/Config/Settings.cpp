@@ -56,6 +56,13 @@ namespace Orbit::Config
 			a_visit(kPages, "iPreviousPageKey", a_settings.previousPageKey);
 			a_visit(kPages, "iGamepadNextPageKey", a_settings.gamepadNextPageKey);
 			a_visit(kPages, "iGamepadPreviousPageKey", a_settings.gamepadPreviousPageKey);
+			a_visit(kPages, "bShowPageIndicator", a_settings.showPageIndicator);
+			a_visit(kPages, "iPageIndicatorX", a_settings.pageIndicatorX);
+			a_visit(kPages, "iPageIndicatorY", a_settings.pageIndicatorY);
+			a_visit(kPages, "iPageIndicatorRotation", a_settings.pageIndicatorRotation);
+			a_visit(kPages, "iPageIndicatorColumns", a_settings.pageIndicatorColumns);
+			a_visit(kPages, "iPageIndicatorSpacing", a_settings.pageIndicatorSpacing);
+			a_visit(kPages, "iPageIndicatorSize", a_settings.pageIndicatorSize);
 			a_visit(kSlowMotion, "bEnableSlowMotion", a_settings.enableSlowMotion);
 			a_visit(kSlowMotion, "fSlowMotionTimeSpeed", a_settings.slowMotionTimeSpeed);
 			a_visit(kSlowMotion, "fSlowMotionFadeIn", a_settings.slowMotionFadeIn);
@@ -322,6 +329,12 @@ namespace Orbit::Config
 		checkKey(gamepadNextPageKey, a_valueDefault.gamepadNextPageKey, true);
 		checkKey(gamepadPreviousPageKey, a_valueDefault.gamepadPreviousPageKey, true);
 		numberOfPages = std::clamp(numberOfPages, kMinNumberOfPages, kMaxNumberOfPages);
+		pageIndicatorX = std::clamp(pageIndicatorX, kMinPosition, kMaxPosition);
+		pageIndicatorY = std::clamp(pageIndicatorY, kMinPosition, kMaxPosition);
+		pageIndicatorRotation = std::clamp(pageIndicatorRotation, 0, kMaxPageIndicatorRotation);
+		pageIndicatorColumns = std::clamp(pageIndicatorColumns, 1, kMaxNumberOfPages);
+		pageIndicatorSpacing = std::clamp(pageIndicatorSpacing, 0, kMaxPageIndicatorSpacing);
+		pageIndicatorSize = std::clamp(pageIndicatorSize, kMinPageIndicatorSize, kMaxPageIndicatorSize);
 		slowMotionTimeSpeed = std::clamp(slowMotionTimeSpeed, kMinSlowMotionTimeSpeed, kMaxSlowMotionTimeSpeed);
 		slowMotionFadeIn = std::clamp(slowMotionFadeIn, 0.0f, kMaxSlowMotionFade);
 		slowMotionFadeOut = std::clamp(slowMotionFadeOut, 0.0f, kMaxSlowMotionFade);
@@ -425,6 +438,13 @@ namespace Orbit::Config
 		previousPageKey = a_from.previousPageKey;
 		gamepadNextPageKey = a_from.gamepadNextPageKey;
 		gamepadPreviousPageKey = a_from.gamepadPreviousPageKey;
+		showPageIndicator = a_from.showPageIndicator;
+		pageIndicatorX = a_from.pageIndicatorX;
+		pageIndicatorY = a_from.pageIndicatorY;
+		pageIndicatorRotation = a_from.pageIndicatorRotation;
+		pageIndicatorColumns = a_from.pageIndicatorColumns;
+		pageIndicatorSpacing = a_from.pageIndicatorSpacing;
+		pageIndicatorSize = a_from.pageIndicatorSize;
 	}
 
 	void Settings::CopySlowMotion(const Settings &a_from)

@@ -99,6 +99,13 @@ namespace Orbit::Config
 		std::uint32_t previousPageKey{};
 		std::uint32_t gamepadNextPageKey{};
 		std::uint32_t gamepadPreviousPageKey{};
+		bool showPageIndicator{};
+		std::int32_t pageIndicatorX{};
+		std::int32_t pageIndicatorY{};
+		std::int32_t pageIndicatorRotation{};
+		std::int32_t pageIndicatorColumns{};
+		std::int32_t pageIndicatorSpacing{};
+		std::int32_t pageIndicatorSize{};
 		bool enableSlowMotion{};
 		float slowMotionTimeSpeed{};
 		float slowMotionFadeIn{};
@@ -118,6 +125,10 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMaxTextSize = 32;
 		static constexpr std::int32_t kMinNumberOfPages = 2;
 		static constexpr std::int32_t kMaxNumberOfPages = 10;
+		static constexpr std::int32_t kMaxPageIndicatorRotation = 360;
+		static constexpr std::int32_t kMaxPageIndicatorSpacing = 100;
+		static constexpr std::int32_t kMinPageIndicatorSize = 4;
+		static constexpr std::int32_t kMaxPageIndicatorSize = 128;
 		static constexpr float kMinSlowMotionTimeSpeed = 0.1f;
 		static constexpr float kMaxSlowMotionTimeSpeed = 1.0f;
 		static constexpr float kMaxSlowMotionFade = 1.0f;

@@ -62,6 +62,7 @@ namespace Orbit::UI::OrbitMenu
 		void DrawBadges() const;
 		void DrawHands() const;
 		void DrawControlsHint() const;
+		void DrawPageIndicator() const;
 		void Bend(int a_firstVertex, int a_controlsHintVertex) const;
 		ImDrawList &_drawList;
 		ImFont &_font;

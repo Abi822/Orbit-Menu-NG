@@ -41,7 +41,7 @@ namespace Orbit::Items
 
 	std::string Pages::Line(const Config::Settings &a_settings, bool a_gamepad) const
 	{
-		std::string line = Translation::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
+		std::string line = a_settings.showPageIndicator ? std::string{} : Translation::Translate("Page {} of {}", Current() + 1, a_settings.numberOfPages);
 		const auto previous = a_gamepad ? a_settings.gamepadPreviousPageKey : a_settings.previousPageKey;
 		const auto next = a_gamepad ? a_settings.gamepadNextPageKey : a_settings.nextPageKey;
 		std::string keys;
@@ -54,7 +54,8 @@ namespace Orbit::Items
 		}
 		if (!keys.empty())
 		{
-			line += "   |   " + Translation::Translate("Select Page: {}", keys);
+			const auto select = Translation::Translate("Select Page: {}", keys);
+			line += line.empty() ? select : "   |   " + select;
 		}
 		return line;
 	}

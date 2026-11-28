@@ -22,5 +22,6 @@ namespace Orbit::UI::Skins
 		float _pointerSize = 0.0f;
 		float _slotSize = 0.0f;
 		float _itemDescriptionBackgroundSize = 0.0f;
+		float _pageIndicatorSize = 0.0f;
 	};
 }

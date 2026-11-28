@@ -15,7 +15,9 @@ namespace Orbit::UI::Skins
 		constexpr std::array kPartNames{PartName{"orbit_background", Part::kCentre}, PartName{"wheel_background", Part::kCentre},
 										PartName{"slot_background", Part::kSlot}, PartName{"slot_highlighted_background", Part::kSlotHovered},
 										PartName{"slot_active_background", Part::kSlotEquipped}, PartName{"orbit_slot_glow", Part::kSlotGlow},
-										PartName{"orbit_pointer", Part::kPointer}, PartName{"slot_key_background", Part::kSlotKeyBadge}};
+										PartName{"orbit_pointer", Part::kPointer}, PartName{"slot_key_background", Part::kSlotKeyBadge},
+										PartName{"orbit_indicator_active", Part::kPageIndicatorActive}, PartName{"wheel_indicator_active", Part::kPageIndicatorActive},
+										PartName{"orbit_indicator_inactive", Part::kPageIndicatorInactive}, PartName{"wheel_indicator_inactive", Part::kPageIndicatorInactive}};
 
 		std::filesystem::path SkinFolder(std::string_view a_path)
 		{
