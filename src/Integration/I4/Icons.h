@@ -2,9 +2,9 @@
 
 #include "Integration/I4/Rules.h"
 
-namespace Orbit::Integration
+namespace Orbit::Integration::I4
 {
-	class I4Icons
+	class Icons
 	{
 	public:
 		struct Look
@@ -14,13 +14,13 @@ namespace Orbit::Integration
 			std::optional<std::uint32_t> iconColor;
 		};
 
-		static I4Icons &Get();
+		static Icons &Get();
 		static bool IsInstalled();
 		void Load();
 		Look Evaluate(const RE::TESForm &a_form, bool a_equipped, Look a_look) const;
 
 	private:
-		I4Icons() = default;
-		std::vector<I4::Rule> _rules;
+		Icons() = default;
+		std::vector<Rule> _rules;
 	};
 }

@@ -28,7 +28,7 @@ namespace Orbit::UI::OrbitMenu
 		int StrongestSlot() const;
 	};
 
-	class MenuAnimation
+	class Animation
 	{
 	public:
 		MenuInput Track(Input::OrbitSnapshot a_snapshot);

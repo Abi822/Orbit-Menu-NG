@@ -2,12 +2,12 @@
 #include "Config/SettingsMenu/MenuFrameworkBase.h"
 #include <SKSEMenuFramework.h>
 #include "Config/Settings.h"
-#include "Translation/Translation.h"
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
-#include "Integration/I4/I4Icons.h"
+#include "Integration/I4/Icons.h"
 #include "Items/Pages.h"
 #include "Items/SlotStore.h"
+#include "Translation/Translation.h"
 #include "UI/OrbitMenu/OrbitRenderer.h"
 
 namespace Orbit::Config::SettingsMenu
@@ -15,7 +15,7 @@ namespace Orbit::Config::SettingsMenu
 	namespace
 	{
 		// Used for MenuFrameworkBase::BoundKey returns where a binding key is stored in settings
-		constexpr std::array kBadgePositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
+		constexpr std::array kSlotTextPositions{"Top left", "Top middle", "Top right", "Bottom left", "Bottom middle", "Bottom right", "Next to name"};
 	}
 
 	class MenuFrameworkConfig::Page : public MenuFrameworkBase
@@ -85,7 +85,7 @@ namespace Orbit::Config::SettingsMenu
 
 			NewLine();
 			SeparatorText("I4 (Inventory Interface Information Injector)");
-			if (Integration::I4Icons::IsInstalled())
+			if (Integration::I4::Icons::IsInstalled())
 			{
 				Check("Use I4 icons##orbit", _settings.useI4);
 			}
@@ -303,8 +303,8 @@ namespace Orbit::Config::SettingsMenu
 	private:
 		void Choice(const char *a_label, std::int32_t &a_value, std::int32_t a_last)
 		{
-			std::array<const char *, kBadgePositions.size()> items{};
-			std::ranges::transform(kBadgePositions, items.begin(), [](const char *a_item)
+			std::array<const char *, kSlotTextPositions.size()> items{};
+			std::ranges::transform(kSlotTextPositions, items.begin(), [](const char *a_item)
 								   { return Translation::Translate(a_item); });
 			_save |= ImGuiMCP::Combo(Label(a_label), &a_value, items.data(), a_last + 1);
 		}

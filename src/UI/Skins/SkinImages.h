@@ -18,7 +18,7 @@ namespace Orbit::UI::Skins
 		std::array<std::optional<Graphics::CachedImage>, kPartCount> _images{};
 		std::uint32_t _generation = 0;
 		float _pixelScale = 0.0f;
-		float _badgeSize = 0.0f;
+		float _slotKeySize = 0.0f;
 		float _pointerSize = 0.0f;
 		float _slotSize = 0.0f;
 		float _itemDescriptionBackgroundSize = 0.0f;

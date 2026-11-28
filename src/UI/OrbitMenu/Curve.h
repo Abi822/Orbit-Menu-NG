@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Config/Settings.h"
-#include "UI/OrbitMenu/MenuLayout.h"
+#include "UI/OrbitMenu/Layout.h"
 
 namespace Orbit::UI::OrbitMenu
 {
-	struct OrbitMenuCurved
+	struct Curve
 	{
 		ImVec2 center{};
 		float bendRadius = 0.0f;
@@ -13,7 +13,7 @@ namespace Orbit::UI::OrbitMenu
 		float turnSin = 0.0f;
 		float distance = 1.0f;
 
-		static OrbitMenuCurved Make(const Config::Settings &a_settings, const MenuLayout &a_layout, ImVec2 a_display)
+		static Curve Make(const Config::Settings &a_settings, const Layout &a_layout, ImVec2 a_display)
 		{
 			constexpr float kViewDistance = 1.2f;
 			if (a_settings.curve == 0)

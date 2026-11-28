@@ -1,23 +1,23 @@
-#include "Integration/I4/I4Icons.h"
+#include "Integration/I4/Icons.h"
 #include "Integration/I4/ItemData.h"
 #include "Integration/I4/RuleParser.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-namespace Orbit::Integration
+namespace Orbit::Integration::I4
 {
-	I4Icons &I4Icons::Get()
+	Icons &Icons::Get()
 	{
-		static I4Icons instance;
+		static Icons instance;
 		return instance;
 	}
 
-	bool I4Icons::IsInstalled()
+	bool Icons::IsInstalled()
 	{
 		return GetModuleHandleW(L"InventoryInjector.dll") != nullptr;
 	}
 
-	void I4Icons::Load()
+	void Icons::Load()
 	{
 		_rules.clear();
 		if (!IsInstalled())
@@ -54,7 +54,7 @@ namespace Orbit::Integration
 			++files;
 			for (const auto &rule : root["rules"])
 			{
-				if (auto parsed = I4::ParseRule(rule))
+				if (auto parsed = ParseRule(rule))
 				{
 					_rules.push_back(std::move(*parsed));
 				}
@@ -63,9 +63,9 @@ namespace Orbit::Integration
 		logger::info("I4 Icons: {} icon mapping(s) from {} rule file(s)", _rules.size(), files);
 	}
 
-	I4Icons::Look I4Icons::Evaluate(const RE::TESForm &a_form, bool a_equipped, Look a_look) const
+	Icons::Look Icons::Evaluate(const RE::TESForm &a_form, bool a_equipped, Look a_look) const
 	{
-		auto itemData = I4::ItemDataFor(a_form, a_equipped);
+		auto itemData = ItemDataFor(a_form, a_equipped);
 		itemData["iconLabel"] = a_look.iconLabel;
 		if (a_look.iconColor)
 		{

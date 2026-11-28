@@ -29,7 +29,6 @@ namespace Orbit::Core
 
 	private:
 		void UpdateHover(const PointerLimits &a_limits);
-
 		bool _open = false;
 		bool _chosen = false;
 		int _hovered = -1;

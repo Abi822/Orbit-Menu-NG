@@ -7,9 +7,6 @@ namespace Orbit::Integration::I4
 {
 	namespace
 	{
-		using Json = nlohmann::json;
-		using Type = Condition::Type;
-
 		std::optional<std::uint32_t> ParseHex(std::string_view a_text)
 		{
 			std::string_view digits = a_text;
@@ -112,45 +109,45 @@ namespace Orbit::Integration::I4
 		{
 			if (a_key == "keywords" || a_key == "effectKeywords")
 			{
-				return {Type::kKeyword, a_text};
+				return {Condition::Type::kKeyword, a_text};
 			}
 			if (a_key == "formType")
 			{
-				return {Type::kEquals, ValueOf(kFormTypes, a_text).value_or(-1.0)};
+				return {Condition::Type::kEquals, ValueOf(kFormTypes, a_text).value_or(-1.0)};
 			}
 			if (a_key == "formId" || a_key == "equipSlot" || a_key == "teachesSpell")
 			{
-				return {Type::kEquals, FormIDOf(a_text)};
+				return {Condition::Type::kEquals, FormIDOf(a_text)};
 			}
 			if (a_key == "iconColor")
 			{
-				return {Type::kEquals, ColorOf(a_text)};
+				return {Condition::Type::kEquals, ColorOf(a_text)};
 			}
 			if (const auto flag = ValueOf(FlagNames(a_key, a_formType), a_text))
 			{
-				return {Type::kAnyBit, *flag};
+				return {Condition::Type::kAnyBit, *flag};
 			}
 			if (auto value = EnumValue(a_key, a_formType, a_text))
 			{
-				return {Type::kEquals, std::move(*value)};
+				return {Condition::Type::kEquals, std::move(*value)};
 			}
-			return {Type::kEquals, a_text};
+			return {Condition::Type::kEquals, a_text};
 		}
 
 		Condition NumberCondition(std::string_view a_key, double a_number)
 		{
 			if (a_key == "parts")
 			{
-				return {Type::kAnyBit, PartBit(a_number)};
+				return {Condition::Type::kAnyBit, PartBit(a_number)};
 			}
 			if (a_key == "mainPart")
 			{
-				return {Type::kMainPart, PartBit(a_number)};
+				return {Condition::Type::kMainPart, PartBit(a_number)};
 			}
-			return {Type::kEquals, a_number};
+			return {Condition::Type::kEquals, a_number};
 		}
 
-		void ParseSpec(const Json &a_spec, std::string_view a_key, RE::FormType a_formType, std::vector<Condition> &a_out)
+		void ParseSpec(const nlohmann::json &a_spec, std::string_view a_key, RE::FormType a_formType, std::vector<Condition> &a_out)
 		{
 			if (a_spec.is_string())
 			{
@@ -162,7 +159,7 @@ namespace Orbit::Integration::I4
 			}
 			else if (a_spec.is_boolean())
 			{
-				a_out.push_back({Type::kEquals, a_spec.get<bool>()});
+				a_out.push_back({Condition::Type::kEquals, a_spec.get<bool>()});
 			}
 			else if (a_spec.is_null())
 			{
@@ -179,7 +176,7 @@ namespace Orbit::Integration::I4
 			{
 				if (const auto anyOf = a_spec.find("anyOf"); anyOf != a_spec.end() && anyOf->is_array())
 				{
-					Condition any{Type::kAnyOf};
+					Condition any{Condition::Type::kAnyOf};
 					for (const auto &item : *anyOf)
 					{
 						ParseSpec(item, a_key, a_formType, any.parts);
@@ -192,7 +189,7 @@ namespace Orbit::Integration::I4
 				const bool hasMax = max != a_spec.end() && max->is_number();
 				if (hasMin || hasMax)
 				{
-					Condition range{Type::kRange};
+					Condition range{Condition::Type::kRange};
 					if (hasMin)
 					{
 						range.min = min->get<double>();
@@ -206,7 +203,7 @@ namespace Orbit::Integration::I4
 			}
 		}
 
-		std::optional<Value> AssignedValue(std::string_view a_key, RE::FormType a_formType, const Json &a_data)
+		std::optional<Value> AssignedValue(std::string_view a_key, RE::FormType a_formType, const nlohmann::json &a_data)
 		{
 			if (a_data.is_boolean())
 			{
@@ -247,7 +244,7 @@ namespace Orbit::Integration::I4
 		}
 	}
 
-	std::optional<Rule> ParseRule(const Json &a_rule)
+	std::optional<Rule> ParseRule(const nlohmann::json &a_rule)
 	{
 		const auto match = a_rule.find("match");
 		const auto assign = a_rule.find("assign");

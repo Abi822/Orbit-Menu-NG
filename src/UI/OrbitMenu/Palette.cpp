@@ -1,4 +1,4 @@
-#include "UI/OrbitMenu/MenuPalette.h"
+#include "UI/OrbitMenu/Palette.h"
 
 namespace Orbit::UI::OrbitMenu
 {
@@ -25,20 +25,20 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	MenuPalette MenuPalette::Make(const Config::Settings &a_settings)
+	Palette Palette::Make(const Config::Settings &a_settings)
 	{
-		MenuPalette colors;
+		Palette colors;
 		colors.highlight = FromArgb(a_settings.highlightColor, 1.0f);
 		colors.pointer = FromArgb(a_settings.pointerColor, 1.0f);
-		colors.centreFill = FromArgb(a_settings.itemDescriptionBackgroundColor, 1.0f);
+		colors.itemDescriptionFill = FromArgb(a_settings.itemDescriptionBackgroundColor, 1.0f);
 		colors.slotFill = FromArgb(a_settings.slotColor, 0.92f);
-		colors.keyBadge = FromArgb(a_settings.slotKeyBackgroundColor, 0.95f);
+		colors.slotKeyBackground = FromArgb(a_settings.slotKeyBackgroundColor, 0.95f);
 		colors.background = FromArgb(a_settings.backgroundColor, 1.0f);
 		const ImVec4 tint = Mix(Grey(colors.highlight), colors.highlight, 0.5f);
 		colors.slotBorder = Shade(tint, 0.64f, 0.85f);
 		colors.slotInnerRing = Shade(tint, 1.0f, 0.07f);
-		colors.centreBorder = Shade(tint, 0.86f, 0.55f);
-		colors.centreInnerBorder = Shade(tint, 1.0f, 0.10f);
+		colors.itemDescriptionBorder = Shade(tint, 0.86f, 0.55f);
+		colors.itemDescriptionInnerBorder = Shade(tint, 1.0f, 0.10f);
 		colors.slotName = FromArgb(a_settings.slotNameColor, 1.0f);
 		colors.slotNameHovered = Shade(colors.slotName, kBrighter, 1.0f);
 		colors.slotNameDim = Shade(colors.slotName, kDimmer, 1.0f);

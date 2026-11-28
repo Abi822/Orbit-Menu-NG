@@ -1,8 +1,8 @@
 #include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include <SKSEMenuFramework.h>
 #include "Config/SettingsMenu/MenuFrameworkConfig.h"
-#include "Translation/Translation.h"
 #include "Input/InputManager.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::Integration::MenuFramework
 {

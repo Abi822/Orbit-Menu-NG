@@ -1,8 +1,8 @@
 #include "Items/Assignment.h"
-#include "Translation/Translation.h"
 #include "Game/GameState.h"
 #include "Input/InputManager.h"
 #include "Items/ItemKind.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::Items
 {

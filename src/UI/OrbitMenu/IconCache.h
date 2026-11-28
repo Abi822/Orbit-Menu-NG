@@ -18,13 +18,13 @@ namespace Orbit::UI::OrbitMenu
 	enum class IconSize
 	{
 		kSlot,
-		kCentre
+		kItemDescription
 	};
 
 	class IconCache
 	{
 	public:
-		void Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_centrePixels);
+		void Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_itemDescriptionPixels);
 		std::optional<Graphics::CachedImage> Find(int a_slot, IconSize a_size) const;
 
 	private:
@@ -40,7 +40,7 @@ namespace Orbit::UI::OrbitMenu
 		Core::PerSlot<int> _slotIcons{};
 		std::uint32_t _revision = 0;
 		int _slotPixels = 0;
-		int _centrePixels = 0;
+		int _itemDescriptionPixels = 0;
 		int _cell = 0;
 	};
 }

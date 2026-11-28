@@ -4,7 +4,7 @@
 
 namespace Orbit::Config
 {
-	enum class BadgePosition : std::int32_t
+	enum class SlotTextPosition : std::int32_t
 	{
 		kTopLeft,
 		kTopMiddle,
@@ -162,8 +162,8 @@ namespace Orbit::Config
 		static constexpr std::int32_t kMaxPointerRotation = 360;
 		static constexpr float kMinAnimationSpeed = 0.0f;
 		static constexpr float kMaxAnimationSpeed = 2.0f;
-		static constexpr auto kLastSlotKeyPosition = static_cast<std::int32_t>(BadgePosition::kBottomRight);
-		static constexpr auto kLastHandPosition = static_cast<std::int32_t>(BadgePosition::kNextToName);
+		static constexpr auto kLastSlotKeyPosition = static_cast<std::int32_t>(SlotTextPosition::kBottomRight);
+		static constexpr auto kLastHandPosition = static_cast<std::int32_t>(SlotTextPosition::kNextToName);
 		void Clamp(const Settings &a_valueDefault);
 		void CopyDisplay(const Settings &a_from);
 		void CopyPages(const Settings &a_from);

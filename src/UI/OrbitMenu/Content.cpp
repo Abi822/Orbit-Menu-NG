@@ -1,9 +1,9 @@
-#include "UI/OrbitMenu/MenuContent.h"
-#include "Translation/Translation.h"
+#include "UI/OrbitMenu/Content.h"
 #include "Items/EquipController.h"
 #include "Items/Pages.h"
 #include "Items/SlotStore.h"
 #include "Items/SlotViewBuilder.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::UI::OrbitMenu
 {
@@ -48,7 +48,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	void MenuContent::Refresh(ImFont &a_font, const Config::Settings &a_settings, bool a_settingsChanged, const Skins::Skin &a_skin, const MenuInput &a_input)
+	void Content::Refresh(ImFont &a_font, const Config::Settings &a_settings, bool a_settingsChanged, const Skins::Skin &a_skin, const MenuInput &a_input)
 	{
 		const bool settingsChanged = a_settingsChanged || !_ready;
 		const bool skinChanged = a_skin.Generation() != _skinGeneration;
@@ -57,7 +57,7 @@ namespace Orbit::UI::OrbitMenu
 		_font = &a_font;
 		if (settingsChanged)
 		{
-			_colors = MenuPalette::Make(a_settings);
+			_colors = Palette::Make(a_settings);
 		}
 
 		const Graphics::TextMeasure text{a_font};
@@ -83,14 +83,14 @@ namespace Orbit::UI::OrbitMenu
 		_ready = true;
 	}
 
-	int MenuContent::FirstFilledSlot() const
+	int Content::FirstFilledSlot() const
 	{
 		const auto filled = std::ranges::find_if(_views, [](const Core::SlotView &a_view)
 												 { return a_view.state != Core::SlotState::kEmpty; });
 		return filled == _views.end() ? -1 : static_cast<int>(filled - _views.begin());
 	}
 
-	bool MenuContent::DescribeSlots(const Config::Settings &a_settings, bool a_force)
+	bool Content::DescribeSlots(const Config::Settings &a_settings, bool a_force)
 	{
 		const auto slotChanges = Items::SlotStore::Get().ChangeCount();
 		const auto equipChanges = Items::EquipController::Get().ChangeCount();
@@ -110,7 +110,7 @@ namespace Orbit::UI::OrbitMenu
 		return true;
 	}
 
-	void MenuContent::LayoutSlots(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings, const Skins::Skin &a_skin)
+	void Content::LayoutSlots(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings, const Skins::Skin &a_skin)
 	{
 		const float nameSize = static_cast<float>(a_settings.slotNameTextSize);
 		_empty = Measure(a_text, Translation::Translate("Empty"));
@@ -154,7 +154,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	void MenuContent::LayoutKeys(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
+	void Content::LayoutKeys(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
 	{
 		const bool show = a_settings.showSlotKeys && (!_gamepad || a_settings.showSlotKeysOnController);
 		for (std::size_t i = 0; i < _text.size(); ++i)
@@ -174,29 +174,29 @@ namespace Orbit::UI::OrbitMenu
 		}
 	}
 
-	void MenuContent::LayoutControlsHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
+	void Content::LayoutControlsHint(const Graphics::TextMeasure &a_text, const Config::Settings &a_settings)
 	{
 		const auto &s = a_settings;
 		ControlsHintKeys keys = _gamepad ? ControlsHintKeys{s.gamepadActivationKey, s.gamepadLeftHandKey, s.gamepadRightHandKey, s.gamepadSwapHandsKey}
-								 : ControlsHintKeys{s.activationKey, s.leftHandKey, s.rightHandKey, s.swapHandsKey};
+										 : ControlsHintKeys{s.activationKey, s.leftHandKey, s.rightHandKey, s.swapHandsKey};
 		keys.assign = _assign;
 		keys.releaseToEquip = s.releaseToEquip;
 		keys.toggle = s.toggleOrbitMenu;
 		_controlsHint = Measure(a_text, BuildControlsHint(keys));
 	}
 
-	TextLine MenuContent::Measure(const Graphics::TextMeasure &a_text, std::string a_line)
+	TextLine Content::Measure(const Graphics::TextMeasure &a_text, std::string a_line)
 	{
 		constexpr float kReferenceSize = 32.0f;
 		const float width = a_text.Width(kReferenceSize, a_line);
 		return {std::move(a_line), width / kReferenceSize};
 	}
 
-	std::string MenuContent::BuildControlsHint(const ControlsHintKeys &a_keys)
+	std::string Content::BuildControlsHint(const ControlsHintKeys &a_keys)
 	{
 		const bool equip = a_keys.releaseToEquip && !a_keys.assign;
 		std::string controlsHint = a_keys.toggle ? Translation::Translate(equip ? "Press {} to equip" : "Press {} to close", Input::KeyName(a_keys.open))
-										 : Translation::Translate(equip ? "Release {} to equip" : "Release {} to close", Input::KeyName(a_keys.open));
+												 : Translation::Translate(equip ? "Release {} to equip" : "Release {} to close", Input::KeyName(a_keys.open));
 		const bool left = a_keys.left != Input::kKeyBindNone;
 		const bool right = a_keys.right != Input::kKeyBindNone;
 		if (a_keys.assign)

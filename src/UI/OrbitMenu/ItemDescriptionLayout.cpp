@@ -1,5 +1,5 @@
 #include "UI/OrbitMenu/ItemDescriptionLayout.h"
-#include "UI/OrbitMenu/MenuLayout.h"
+#include "UI/OrbitMenu/Layout.h"
 #include <cfloat>
 #include <ranges>
 #include <span>
@@ -8,9 +8,6 @@ namespace Orbit::UI::OrbitMenu
 {
 	namespace
 	{
-		using TextPiece = ItemDescriptionLayout::TextPiece;
-		using TextRole = ItemDescriptionLayout::TextRole;
-
 		constexpr float kEdgeInset = 16.0f;
 		constexpr float kIconInset = 22.0f;
 		constexpr float kIconGap = 10.0f;
@@ -43,7 +40,7 @@ namespace Orbit::UI::OrbitMenu
 
 		struct Block
 		{
-			std::vector<TextPiece> pieces;
+			std::vector<ItemDescriptionLayout::TextPiece> pieces;
 			float y = 0.0f;
 			float bottom = 0.0f;
 			bool even = false;
@@ -75,7 +72,7 @@ namespace Orbit::UI::OrbitMenu
 		float HalfWidthAt(float a_radius, float a_y)
 		{
 			const float half = Core::kSliceAngle * 0.5f;
-			const float side = MenuLayout::InnerRadius(a_radius) - kEdgeInset;
+			const float side = Layout::InnerRadius(a_radius) - kEdgeInset;
 			const float diagonal = a_radius * (std::cos(half) + std::sin(half)) - kEdgeInset * std::numbers::sqrt2_v<float> - std::abs(a_y);
 			return std::max(0.0f, std::min(side, diagonal));
 		}
@@ -103,7 +100,7 @@ namespace Orbit::UI::OrbitMenu
 				if (!a_description.text.empty())
 				{
 					block.Gap(gap);
-					AddLines(block, a_description.text, a_sizes.text, a_sizes.text * kTextLineHeight, kNoLineLimit, TextRole::kText);
+					AddLines(block, a_description.text, a_sizes.text, a_sizes.text * kTextLineHeight, kNoLineLimit, ItemDescriptionLayout::TextRole::kText);
 				}
 				return block;
 			}
@@ -111,7 +108,7 @@ namespace Orbit::UI::OrbitMenu
 			Block PlaceTitle(std::string_view a_name, float a_size, float a_top) const
 			{
 				Block block{.y = a_top, .bottom = FLT_MAX, .even = true};
-				AddLines(block, a_name, a_size, a_size * kNameLineHeight, kNameLines, TextRole::kName);
+				AddLines(block, a_name, a_size, a_size * kNameLineHeight, kNameLines, ItemDescriptionLayout::TextRole::kName);
 				return block;
 			}
 
@@ -125,7 +122,7 @@ namespace Orbit::UI::OrbitMenu
 				if (!a_description.text.empty())
 				{
 					block.Gap(kGap * a_header);
-					AddLines(block, a_description.text, a_textSize, a_textSize * a_lineSpacing, kNoLineLimit, TextRole::kText);
+					AddLines(block, a_description.text, a_textSize, a_textSize * a_lineSpacing, kNoLineLimit, ItemDescriptionLayout::TextRole::kText);
 				}
 				return block;
 			}
@@ -237,7 +234,7 @@ namespace Orbit::UI::OrbitMenu
 				return lines;
 			}
 
-			bool AddLines(Block &a_block, std::string_view a_text, float a_size, float a_lineHeight, std::size_t a_maxLines, TextRole a_role) const
+			bool AddLines(Block &a_block, std::string_view a_text, float a_size, float a_lineHeight, std::size_t a_maxLines, ItemDescriptionLayout::TextRole a_role) const
 			{
 				const Words words = Measure(a_size, a_text);
 				const Lines lines = a_block.even ? WrapEvenly(words, a_size, a_lineHeight, a_maxLines, a_block)
@@ -259,7 +256,7 @@ namespace Orbit::UI::OrbitMenu
 				for (float size = a_size;; size -= 1.0f)
 				{
 					Block trial = a_block;
-					if (AddLines(trial, a_name, size, size * kNameLineHeight, kNameLines, TextRole::kName) || size - 1.0f < smallest)
+					if (AddLines(trial, a_name, size, size * kNameLineHeight, kNameLines, ItemDescriptionLayout::TextRole::kName) || size - 1.0f < smallest)
 					{
 						a_block = std::move(trial);
 						return;
@@ -333,7 +330,7 @@ namespace Orbit::UI::OrbitMenu
 					}
 					const float labelTop = rowTop + (size - labelSize) * 0.8f;
 					float x = -RowWidth(rows[i], size) * 0.5f;
-					const auto add = [&](const std::string &a_text, float a_textSize, float a_y, TextRole a_role)
+					const auto add = [&](const std::string &a_text, float a_textSize, float a_y, ItemDescriptionLayout::TextRole a_role)
 					{
 						a_block.pieces.push_back({a_text, a_textSize, {x, a_y}, a_role});
 						x += _text.Width(a_textSize, a_text);
@@ -342,14 +339,14 @@ namespace Orbit::UI::OrbitMenu
 					{
 						if (!stat.label.empty())
 						{
-							add(stat.label, labelSize, labelTop, TextRole::kLabel);
+							add(stat.label, labelSize, labelTop, ItemDescriptionLayout::TextRole::kLabel);
 							x += size * kLabelSpacingRatio;
 						}
-						add(stat.value, size, rowTop, TextRole::kValue);
+						add(stat.value, size, rowTop, ItemDescriptionLayout::TextRole::kValue);
 						if (!stat.suffix.empty())
 						{
 							x += size * kLabelSpacingRatio;
-							add(stat.suffix, labelSize, labelTop, TextRole::kLabel);
+							add(stat.suffix, labelSize, labelTop, ItemDescriptionLayout::TextRole::kLabel);
 						}
 						x += size * kStatSpacingRatio;
 					}
@@ -373,7 +370,7 @@ namespace Orbit::UI::OrbitMenu
 		}
 
 		const bool withIcon = a_iconSize > 0.0f;
-		const float innerRadius = MenuLayout::InnerRadius(a_itemDescriptionBackgroundRadius);
+		const float innerRadius = Layout::InnerRadius(a_itemDescriptionBackgroundRadius);
 		const float lead = withIcon ? a_iconSize + kIconGap : 0.0f;
 		const float top = withIcon ? kIconInset + lead - innerRadius : kEdgeInset - innerRadius;
 		const float bottom = innerRadius - kEdgeInset;

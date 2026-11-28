@@ -1,4 +1,4 @@
-#include "UI/OrbitMenu/MenuAnimation.h"
+#include "UI/OrbitMenu/Animation.h"
 #include "Core/OrbitMath.h"
 
 namespace Orbit::UI::OrbitMenu
@@ -36,7 +36,7 @@ namespace Orbit::UI::OrbitMenu
 		return static_cast<int>(std::ranges::max_element(hover) - hover.begin());
 	}
 
-	MenuInput MenuAnimation::Track(Input::OrbitSnapshot a_snapshot)
+	MenuInput Animation::Track(Input::OrbitSnapshot a_snapshot)
 	{
 		_now = Clock::now();
 		_dt = _lastFrame == Clock::time_point{} ? 0.0f : std::clamp(std::chrono::duration<float>(_now - _lastFrame).count(), 0.0f, 0.1f);
@@ -71,7 +71,7 @@ namespace Orbit::UI::OrbitMenu
 				.lastEquippedSlot = a_snapshot.lastEquippedSlot};
 	}
 
-	bool MenuAnimation::Animate(int a_hoveredSlot, float a_speed)
+	bool Animation::Animate(int a_hoveredSlot, float a_speed)
 	{
 		if (!_snapshot.open && (_snapshot.closeCount != _seenCloseCount || _previewEnded))
 		{
@@ -129,7 +129,7 @@ namespace Orbit::UI::OrbitMenu
 		return true;
 	}
 
-	float MenuAnimation::Progress(Clock::time_point a_since, float a_seconds, float a_speed) const
+	float Animation::Progress(Clock::time_point a_since, float a_seconds, float a_speed) const
 	{
 		return a_speed > 0.0f ? std::chrono::duration<float>(_now - a_since).count() * a_speed / a_seconds : 1.0f;
 	}

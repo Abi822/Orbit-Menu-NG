@@ -369,7 +369,7 @@ namespace Orbit::Items
 					return;
 				}
 				const bool misc = a_item.Is(RE::FormType::Misc); //Checks Misc items, so they can equip right away for their scripts run, mods like Skyrim's Got Talent
-				_equipManager.EquipObject(&_player, &a_item, copy->extraList, 1, nullptr, !misc, misc); 
+				_equipManager.EquipObject(&_player, &a_item, copy->extraList, 1, nullptr, !misc, misc);
 			}
 
 			void UnequipFromHand(RE::TESBoundObject &a_object, bool a_leftHand)

@@ -7,13 +7,13 @@ namespace Orbit::UI::Skins
 {
 	enum class Part
 	{
-		kCentre,
+		kItemDescriptionBackground,
 		kSlot,
 		kSlotHovered,
 		kSlotEquipped,
 		kSlotGlow,
 		kPointer,
-		kSlotKeyBadge,
+		kSlotKeyBackground,
 		kPageIndicatorActive,
 		kPageIndicatorInactive
 	};

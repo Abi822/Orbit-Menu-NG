@@ -12,18 +12,18 @@ namespace Orbit::UI::OrbitMenu
 		constexpr int kCapacity = kColumns * kRows;
 	}
 
-	void IconCache::Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_centrePixels)
+	void IconCache::Update(const Core::PerSlot<IconRequest> &a_requests, std::uint32_t a_revision, int a_slotPixels, int a_itemDescriptionPixels)
 	{
-		if (a_revision == _revision && a_slotPixels == _slotPixels && a_centrePixels == _centrePixels)
+		if (a_revision == _revision && a_slotPixels == _slotPixels && a_itemDescriptionPixels == _itemDescriptionPixels)
 		{
 			return;
 		}
 		_revision = a_revision;
-		if (a_slotPixels != _slotPixels || a_centrePixels != _centrePixels)
+		if (a_slotPixels != _slotPixels || a_itemDescriptionPixels != _itemDescriptionPixels)
 		{
 			_slotPixels = a_slotPixels;
-			_centrePixels = a_centrePixels;
-			_cell = std::max(a_slotPixels, a_centrePixels) + kGap;
+			_itemDescriptionPixels = a_itemDescriptionPixels;
+			_cell = std::max(a_slotPixels, a_itemDescriptionPixels) + kGap;
 			_icons.clear();
 			if (_texture.Create(_cell * kColumns, _cell * 2 * kRows))
 			{
@@ -114,7 +114,7 @@ namespace Orbit::UI::OrbitMenu
 		{
 			const std::vector<std::uint8_t> blank(static_cast<std::size_t>(_cell) * static_cast<std::size_t>(_cell) * 4);
 			_texture.Upload(CellX(a_index), CellY(a_index, IconSize::kSlot), _slotPixels, blank);
-			_texture.Upload(CellX(a_index), CellY(a_index, IconSize::kCentre), _centrePixels, blank);
+			_texture.Upload(CellX(a_index), CellY(a_index, IconSize::kItemDescription), _itemDescriptionPixels, blank);
 			_icons[index] = a_request;
 		}
 		Draw(a_request, a_index);
@@ -127,13 +127,13 @@ namespace Orbit::UI::OrbitMenu
 		{
 			const Skins::SvgImage image{a_request.skinFile};
 			const auto slotIcon = image.Rasterize(_slotPixels);
-			const auto centreIcon = image.Rasterize(_centrePixels);
-			if (slotIcon.empty() || centreIcon.empty())
+			const auto itemDescriptionIcon = image.Rasterize(_itemDescriptionPixels);
+			if (slotIcon.empty() || itemDescriptionIcon.empty())
 			{
 				return;
 			}
 			_texture.Upload(x, CellY(a_index, IconSize::kSlot), _slotPixels, slotIcon);
-			_texture.Upload(x, CellY(a_index, IconSize::kCentre), _centrePixels, centreIcon);
+			_texture.Upload(x, CellY(a_index, IconSize::kItemDescription), _itemDescriptionPixels, itemDescriptionIcon);
 			return;
 		}
 		Graphics::SwfIcon icon{a_request.source, a_request.label, a_request.tint};
@@ -142,12 +142,12 @@ namespace Orbit::UI::OrbitMenu
 			return;
 		}
 		icon.Render(x, CellY(a_index, IconSize::kSlot), _slotPixels, _texture.Width(), _texture.Height());
-		icon.Render(x, CellY(a_index, IconSize::kCentre), _centrePixels, _texture.Width(), _texture.Height());
+		icon.Render(x, CellY(a_index, IconSize::kItemDescription), _itemDescriptionPixels, _texture.Width(), _texture.Height());
 	}
 
 	int IconCache::Pixels(IconSize a_size) const
 	{
-		return a_size == IconSize::kSlot ? _slotPixels : _centrePixels;
+		return a_size == IconSize::kSlot ? _slotPixels : _itemDescriptionPixels;
 	}
 
 	int IconCache::CellX(int a_index) const

@@ -1,8 +1,8 @@
 #include "Items/SlotViewBuilder.h"
-#include "Translation/Translation.h"
-#include "Integration/I4/I4Icons.h"
+#include "Integration/I4/Icons.h"
 #include "Items/ItemDescription.h"
 #include "Items/ItemIcons.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::Items
 {
@@ -103,7 +103,7 @@ namespace Orbit::Items
 			return;
 		}
 		const bool equipped = a_view.state == Core::SlotState::kEquipped;
-		auto look = Integration::I4Icons::Get().Evaluate(a_form, equipped, {{}, a_view.iconLabel, a_view.iconColor});
+		auto look = Integration::I4::Icons::Get().Evaluate(a_form, equipped, {{}, a_view.iconLabel, a_view.iconColor});
 		a_view.iconSource = std::move(look.iconSource);
 		a_view.iconLabel = std::move(look.iconLabel);
 		a_view.iconColor = look.iconColor;

@@ -1,13 +1,13 @@
 #include "Config/Settings.h"
-#include "Translation/Translation.h"
 #include "Game/Hooks.h"
 #include "Game/SlowMotion.h"
 #include "Input/InputManager.h"
 #include "Input/KeyBinds.h"
-#include "Integration/I4/I4Icons.h"
+#include "Integration/I4/Icons.h"
 #include "Integration/MenuFramework/MenuFrameworkBridge.h"
 #include "Items/EquipController.h"
 #include "Items/SlotStore.h"
+#include "Translation/Translation.h"
 #include "UI/ImGuiLayer.h"
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
@@ -44,7 +44,7 @@ namespace
 
 		case SKSE::MessagingInterface::kDataLoaded:
 		{
-			Orbit::Integration::I4Icons::Get().Load();
+			Orbit::Integration::I4::Icons::Get().Load();
 			Orbit::Items::EquipController::Get().Register();
 			Orbit::UI::ImGuiLayer::Setup();
 			input.Enable();

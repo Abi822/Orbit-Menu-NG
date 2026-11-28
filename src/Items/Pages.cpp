@@ -1,6 +1,6 @@
 #include "Items/Pages.h"
-#include "Translation/Translation.h"
 #include "Input/KeyBinds.h"
+#include "Translation/Translation.h"
 
 namespace Orbit::Items
 {

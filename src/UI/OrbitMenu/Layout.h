@@ -5,13 +5,13 @@
 
 namespace Orbit::UI::OrbitMenu
 {
-	struct MenuLayout
+	struct Layout
 	{
 		static constexpr float kBaseScreenHeight = 1080.0f;
 		static constexpr float kBaseRingRadius = 300.0f;
 		static constexpr float kSlotHoverGrowth = 0.08f;
 		static constexpr float kSlotGlowRatio = 1.5f;
-		static constexpr float kBadgeInset = 0.72f;
+		static constexpr float kSlotKeyInset = 0.72f;
 		ImVec2 center{};
 		float scale = 1.0f;
 		float ringRadius = kBaseRingRadius;
@@ -28,9 +28,9 @@ namespace Orbit::UI::OrbitMenu
 			return a_slotRadius * (1.0f + kSlotHoverGrowth);
 		}
 
-		static MenuLayout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_itemDescriptionBackgroundRadius)
+		static Layout Compute(ImVec2 a_display, ImVec2 a_offset, float a_userScale, float a_animScale, float a_ringRadius, float a_slotRadius, float a_itemDescriptionBackgroundRadius)
 		{
-			MenuLayout layout;
+			Layout layout;
 			const float screenScale = ScreenScale(a_display);
 			layout.center = a_display * 0.5f + a_offset * screenScale;
 			layout.scale = screenScale * a_userScale * a_animScale;

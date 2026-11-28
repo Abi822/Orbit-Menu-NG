@@ -25,12 +25,11 @@ namespace Orbit::UI::Graphics
 
 		RE::GRenderer::Cxform TintTransform(std::uint32_t a_tint)
 		{
-			using Cxform = RE::GRenderer::Cxform;
-			Cxform transform;
-			for (const auto channel : {Cxform::kR, Cxform::kG, Cxform::kB})
+			RE::GRenderer::Cxform transform;
+			for (const auto channel : {RE::GRenderer::Cxform::kR, RE::GRenderer::Cxform::kG, RE::GRenderer::Cxform::kB})
 			{
-				transform.matrix[channel][Cxform::kMult] = 0.0f;
-				transform.matrix[channel][Cxform::kAdd] = static_cast<float>((a_tint >> (16 - 8 * channel)) & 0xFF);
+				transform.matrix[channel][RE::GRenderer::Cxform::kMult] = 0.0f;
+				transform.matrix[channel][RE::GRenderer::Cxform::kAdd] = static_cast<float>((a_tint >> (16 - 8 * channel)) & 0xFF);
 			}
 			return transform;
 		}

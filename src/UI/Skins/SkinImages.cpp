@@ -1,5 +1,5 @@
 #include "UI/Skins/SkinImages.h"
-#include "UI/OrbitMenu/MenuLayout.h"
+#include "UI/OrbitMenu/Layout.h"
 #include "UI/Skins/SvgImage.h"
 
 namespace Orbit::UI::Skins
@@ -8,20 +8,19 @@ namespace Orbit::UI::Skins
 	{
 		constexpr int kGap = 2;
 
-		float BaseSize(Part a_part, float a_badgeSize, float a_pointerSize, float a_slotSize, float a_itemDescriptionBackgroundSize, float a_pageIndicatorSize)
+		float BaseSize(Part a_part, float a_slotKeySize, float a_pointerSize, float a_slotSize, float a_itemDescriptionBackgroundSize, float a_pageIndicatorSize)
 		{
-			using Layout = OrbitMenu::MenuLayout;
-			const float largestSlot = Layout::LargestSlotRadius(a_slotSize * 0.5f) * 2.0f;
+			const float largestSlot = OrbitMenu::Layout::LargestSlotRadius(a_slotSize * 0.5f) * 2.0f;
 			switch (a_part)
 			{
-			case Part::kCentre:
+			case Part::kItemDescriptionBackground:
 				return a_itemDescriptionBackgroundSize;
 			case Part::kSlotGlow:
-				return largestSlot * Layout::kSlotGlowRatio;
+				return largestSlot * OrbitMenu::Layout::kSlotGlowRatio;
 			case Part::kPointer:
 				return a_pointerSize;
-			case Part::kSlotKeyBadge:
-				return a_badgeSize;
+			case Part::kSlotKeyBackground:
+				return a_slotKeySize;
 			case Part::kPageIndicatorActive:
 			case Part::kPageIndicatorInactive:
 				return a_pageIndicatorSize;
@@ -33,12 +32,12 @@ namespace Orbit::UI::Skins
 
 	void SkinImages::Update(const Skin &a_skin, float a_pixelScale, const Config::Settings &a_settings)
 	{
-		const float badgeSize = 2.0f * static_cast<float>(a_settings.slotKeyTextSize);
+		const float slotKeySize = 2.0f * static_cast<float>(a_settings.slotKeyTextSize);
 		const auto pointerSize = static_cast<float>(a_settings.pointerSize);
 		const auto slotSize = static_cast<float>(a_settings.slotSize);
 		const auto itemDescriptionBackgroundSize = static_cast<float>(a_settings.itemDescriptionBackgroundSize);
 		const auto pageIndicatorSize = static_cast<float>(a_settings.pageIndicatorSize);
-		if (a_skin.Generation() == _generation && a_pixelScale == _pixelScale && badgeSize == _badgeSize && pointerSize == _pointerSize &&
+		if (a_skin.Generation() == _generation && a_pixelScale == _pixelScale && slotKeySize == _slotKeySize && pointerSize == _pointerSize &&
 			slotSize == _slotSize && itemDescriptionBackgroundSize == _itemDescriptionBackgroundSize && pageIndicatorSize == _pageIndicatorSize)
 		{
 			return;
@@ -46,7 +45,7 @@ namespace Orbit::UI::Skins
 
 		_generation = a_skin.Generation();
 		_pixelScale = a_pixelScale;
-		_badgeSize = badgeSize;
+		_slotKeySize = slotKeySize;
 		_pointerSize = pointerSize;
 		_slotSize = slotSize;
 		_itemDescriptionBackgroundSize = itemDescriptionBackgroundSize;
@@ -66,7 +65,7 @@ namespace Orbit::UI::Skins
 			{
 				continue;
 			}
-			sizes[i] = static_cast<int>(std::ceil(BaseSize(part, badgeSize, pointerSize, slotSize, itemDescriptionBackgroundSize, pageIndicatorSize) * a_pixelScale));
+			sizes[i] = static_cast<int>(std::ceil(BaseSize(part, slotKeySize, pointerSize, slotSize, itemDescriptionBackgroundSize, pageIndicatorSize) * a_pixelScale));
 			pixels[i] = SvgImage{file}.Rasterize(sizes[i]);
 			if (pixels[i].empty())
 			{

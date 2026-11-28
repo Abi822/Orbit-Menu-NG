@@ -10,10 +10,6 @@ namespace Orbit::Integration::I4
 		std::uint32_t value;
 	};
 
-	using EffectFlag = RE::EffectSetting::EffectSettingData::Flag;
-	using PotionFlag = RE::AlchemyItem::AlchemyFlag;
-	using AmmoFlag = RE::AMMO_DATA::Flag;
-
 	inline constexpr std::array kFormTypes{
 		Name{"Ammo", std::to_underlying(RE::FormType::Ammo)},
 		Name{"Armor", std::to_underlying(RE::FormType::Armor)},
@@ -33,36 +29,36 @@ namespace Orbit::Integration::I4
 	inline constexpr std::array kWeightClasses{Name{"Light", 0}, Name{"Heavy", 1}, Name{"Clothing", 3}, Name{"Jewelry", 4}};
 
 	inline constexpr std::array kEffectFlags{
-		Name{"Hostile", std::to_underlying(EffectFlag::kHostile)},
-		Name{"Recover", std::to_underlying(EffectFlag::kRecover)},
-		Name{"Detrimental", std::to_underlying(EffectFlag::kDetrimental)},
-		Name{"SnapToNavMesh", std::to_underlying(EffectFlag::kSnapToNavMesh)},
-		Name{"NoHitEvent", std::to_underlying(EffectFlag::kNoHitEvent)},
-		Name{"DispelWithKeywords", std::to_underlying(EffectFlag::kDispelWithKeywords)},
-		Name{"NoDuration", std::to_underlying(EffectFlag::kNoDuration)},
-		Name{"NoArea", std::to_underlying(EffectFlag::kNoArea)},
-		Name{"FXPersist", std::to_underlying(EffectFlag::kFXPersist)},
-		Name{"GoryVisuals", std::to_underlying(EffectFlag::kGoryVisuals)},
-		Name{"HideInUI", std::to_underlying(EffectFlag::kHideInUI)},
-		Name{"NoRecast", std::to_underlying(EffectFlag::kNoRecast)},
-		Name{"PowerAffectsMagnitude", std::to_underlying(EffectFlag::kPowerAffectsMagnitude)},
-		Name{"PowerAffectsDuration", std::to_underlying(EffectFlag::kPowerAffectsDuration)},
-		Name{"Painless", std::to_underlying(EffectFlag::kPainless)},
-		Name{"NoHitEffect", std::to_underlying(EffectFlag::kNoHitEffect)},
-		Name{"NoDeathDispel", std::to_underlying(EffectFlag::kNoDeathDispel)},
+		Name{"Hostile", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kHostile)},
+		Name{"Recover", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kRecover)},
+		Name{"Detrimental", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kDetrimental)},
+		Name{"SnapToNavMesh", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kSnapToNavMesh)},
+		Name{"NoHitEvent", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoHitEvent)},
+		Name{"DispelWithKeywords", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kDispelWithKeywords)},
+		Name{"NoDuration", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoDuration)},
+		Name{"NoArea", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoArea)},
+		Name{"FXPersist", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kFXPersist)},
+		Name{"GoryVisuals", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kGoryVisuals)},
+		Name{"HideInUI", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kHideInUI)},
+		Name{"NoRecast", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoRecast)},
+		Name{"PowerAffectsMagnitude", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kPowerAffectsMagnitude)},
+		Name{"PowerAffectsDuration", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kPowerAffectsDuration)},
+		Name{"Painless", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kPainless)},
+		Name{"NoHitEffect", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoHitEffect)},
+		Name{"NoDeathDispel", std::to_underlying(RE::EffectSetting::EffectSettingData::Flag::kNoDeathDispel)},
 	};
 
 	inline constexpr std::array kPotionFlags{
-		Name{"ManualCalc", std::to_underlying(PotionFlag::kCostOverride)},
-		Name{"Food", std::to_underlying(PotionFlag::kFoodItem)},
-		Name{"Medicine", std::to_underlying(PotionFlag::kMedicine)},
-		Name{"Poison", std::to_underlying(PotionFlag::kPoison)},
+		Name{"ManualCalc", std::to_underlying(RE::AlchemyItem::AlchemyFlag::kCostOverride)},
+		Name{"Food", std::to_underlying(RE::AlchemyItem::AlchemyFlag::kFoodItem)},
+		Name{"Medicine", std::to_underlying(RE::AlchemyItem::AlchemyFlag::kMedicine)},
+		Name{"Poison", std::to_underlying(RE::AlchemyItem::AlchemyFlag::kPoison)},
 	};
 
 	inline constexpr std::array kAmmoFlags{
-		Name{"IgnoresNormalWeaponResistance", std::to_underlying(AmmoFlag::kIgnoresNormalWeaponResistance)},
-		Name{"NonPlayable", std::to_underlying(AmmoFlag::kNonPlayable)},
-		Name{"NonBolt", std::to_underlying(AmmoFlag::kNonBolt)},
+		Name{"IgnoresNormalWeaponResistance", std::to_underlying(RE::AMMO_DATA::Flag::kIgnoresNormalWeaponResistance)},
+		Name{"NonPlayable", std::to_underlying(RE::AMMO_DATA::Flag::kNonPlayable)},
+		Name{"NonBolt", std::to_underlying(RE::AMMO_DATA::Flag::kNonBolt)},
 	};
 
 	inline constexpr auto kWeaponTypes = std::to_array<std::string_view>({"HandToHandMelee", "OneHandSword", "OneHandDagger", "OneHandAxe", "OneHandMace",

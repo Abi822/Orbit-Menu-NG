@@ -5,10 +5,10 @@
 #include "Core/Slots.h"
 #include "Input/KeyBinds.h"
 #include "UI/Graphics/TextMeasure.h"
+#include "UI/OrbitMenu/Animation.h"
 #include "UI/OrbitMenu/IconCache.h"
 #include "UI/OrbitMenu/ItemDescriptionLayout.h"
-#include "UI/OrbitMenu/MenuAnimation.h"
-#include "UI/OrbitMenu/MenuPalette.h"
+#include "UI/OrbitMenu/Palette.h"
 #include "UI/Skins/Skin.h"
 
 namespace Orbit::UI::OrbitMenu
@@ -28,7 +28,7 @@ namespace Orbit::UI::OrbitMenu
 		TextLine hand;
 	};
 
-	class MenuContent
+	class Content
 	{
 	public:
 		static constexpr float kStatusRatio = 0.8125f;
@@ -40,7 +40,7 @@ namespace Orbit::UI::OrbitMenu
 		const ItemDescriptionLayout &Description(int a_slot) const { return _descriptions[static_cast<std::size_t>(a_slot)]; }
 		const Core::PerSlot<IconRequest> &IconRequests() const { return _icons; }
 		std::uint32_t IconRevision() const { return _iconRevision; }
-		const MenuPalette &Colors() const { return _colors; }
+		const Palette &Colors() const { return _colors; }
 		const TextLine &ControlsHint() const { return _controlsHint; }
 		const TextLine &PageLine() const { return _pageLine; }
 		int Page() const { return _page; }
@@ -78,7 +78,7 @@ namespace Orbit::UI::OrbitMenu
 		Core::PerSlot<IconRequest> _icons{};
 		Core::PerSlot<SlotText> _text{};
 		Core::PerSlot<ItemDescriptionLayout> _descriptions{};
-		MenuPalette _colors{};
+		Palette _colors{};
 		TextLine _controlsHint;
 		TextLine _pageLine;
 		TextLine _empty;

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Config/Settings.h"
+#include "UI/OrbitMenu/Animation.h"
+#include "UI/OrbitMenu/Content.h"
 #include "UI/OrbitMenu/IconCache.h"
-#include "UI/OrbitMenu/MenuAnimation.h"
-#include "UI/OrbitMenu/MenuContent.h"
 #include "UI/Skins/Skin.h"
 #include "UI/Skins/SkinImages.h"
 
@@ -25,12 +25,12 @@ namespace Orbit::UI::OrbitMenu
 		OrbitRenderer() = default;
 		bool SyncSettings();
 		void UpdateContent(ImFont &a_font, const MenuInput &a_input);
-		MenuAnimation _animation;
+		Animation _animation;
 		Config::Settings _settings;
 		std::optional<std::uint32_t> _settingsVersion;
 		Skins::Skin _skin;
 		Skins::SkinImages _skinImages;
-		MenuContent _content;
+		Content _content;
 		IconCache _icons;
 	};
 }

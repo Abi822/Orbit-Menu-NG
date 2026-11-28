@@ -1,7 +1,7 @@
 #include "UI/OrbitMenu/OrbitRenderer.h"
 #include "Input/InputManager.h"
-#include "UI/OrbitMenu/MenuLayout.h"
-#include "UI/OrbitMenu/MenuPainter.h"
+#include "UI/OrbitMenu/Layout.h"
+#include "UI/OrbitMenu/Painter/Painter.h"
 
 namespace Orbit::UI::OrbitMenu
 {
@@ -33,9 +33,9 @@ namespace Orbit::UI::OrbitMenu
 
 	void OrbitRenderer::UpdateImages(ImVec2 a_display)
 	{
-		const float pixelScale = MenuLayout::ScreenScale(a_display) * _settings.orbitMenuScale;
+		const float pixelScale = Layout::ScreenScale(a_display) * _settings.orbitMenuScale;
 		_skinImages.Update(_skin, pixelScale, _settings);
-		const float slotIcon = static_cast<float>(_settings.slotIconSize) * (1.0f + MenuLayout::kSlotHoverGrowth);
+		const float slotIcon = static_cast<float>(_settings.slotIconSize) * (1.0f + Layout::kSlotHoverGrowth);
 		_icons.Update(_content.IconRequests(), _content.IconRevision(), Pixels(slotIcon, pixelScale), Pixels(static_cast<float>(_settings.itemIconDescriptionSize), pixelScale));
 	}
 
@@ -50,7 +50,7 @@ namespace Orbit::UI::OrbitMenu
 			return;
 		}
 		const Scene scene{_settings, input, _animation.GetMotion(), _content, _icons, _skinImages};
-		MenuPainter{a_drawList, a_font, a_display, scene}.Paint();
+		Painter{a_drawList, a_font, a_display, scene}.Paint();
 	}
 
 	bool OrbitRenderer::SyncSettings()
